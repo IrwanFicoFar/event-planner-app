@@ -1,10 +1,11 @@
 import { FC } from "react";
+import { Layout } from "../components/Layout";
 
 const DetailEvent: FC = () => {
   return (
-    <div>
+    <Layout>
       <h1> Detail Event Page</h1>
-    </div>
+    </Layout>
   );
 };
 

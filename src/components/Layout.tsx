@@ -1,9 +1,16 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
+import { Navbar } from "./Navbar";
 
-export const Layout: FC = () => {
+interface Props {
+  children: ReactNode;
+}
+
+export const Layout: FC<Props> = (props) => {
+  const { children } = props;
   return (
-    <div>
-      <h1>Layout Page</h1>
+    <div className="h-screen">
+      <Navbar />
+      <div>{children}</div>
     </div>
   );
 };

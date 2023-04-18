@@ -1,10 +1,11 @@
 import { FC } from "react";
+import { Layout } from "../components/Layout";
 
 const Cart: FC = () => {
   return (
-    <div>
+    <Layout>
       <h1> Cart Page</h1>
-    </div>
+    </Layout>
   );
 };
 

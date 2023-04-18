@@ -1,10 +1,11 @@
 import { FC } from "react";
+import { Layout } from "../components/Layout";
 
 const Event: FC = () => {
   return (
-    <div>
+    <Layout>
       <h1> Event Page</h1>
-    </div>
+    </Layout>
   );
 };
 
