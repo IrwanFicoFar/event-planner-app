@@ -1,5 +1,6 @@
 import { FC, ReactNode } from "react";
 import { Navbar } from "./Navbar";
+import { Footer } from "./Footer";
 
 interface Props {
   children: ReactNode;
@@ -11,6 +12,7 @@ export const Layout: FC<Props> = (props) => {
     <div className="h-screen">
       <Navbar />
       <div>{children}</div>
+      <Footer />
     </div>
   );
 };
