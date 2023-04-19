@@ -24,7 +24,7 @@ const Login: FC = () => {
             Event Planner App
           </h1>
         </div>
-        <h1 className="text-xl font-semibold my-20">Sign In</h1>
+        <h1 className="text-xl text-white font-semibold my-20">Sign In</h1>
         <div className="">
           <form>
             <div className="w-[70%] flex flex-col gap-12">
@@ -50,9 +50,11 @@ const Login: FC = () => {
             </div>
           </form>
           <div className="my-5">
-            <h1 className="text-xl font-semibold">
+            <h1 className="text-xl font-semibold text-white">
               don’t have an account ?{" "}
-              <span className="text-@028090">Sign Up !!</span>{" "}
+              <span className="text-@028090">
+                <Link to="/register">Sign Up here !!</Link>
+              </span>
             </h1>
           </div>
         </div>

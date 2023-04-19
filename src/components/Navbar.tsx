@@ -19,7 +19,7 @@ export const Navbar: FC = () => {
   const [login, setLogin] = useState<boolean>(true);
 
   useEffect(() => {
-    setLogin(true);
+    setLogin(false);
   }, []);
 
   return (
@@ -131,14 +131,14 @@ export const Navbar: FC = () => {
                   <div className="hidden sm:block sm:ml-6">
                     <div className="flex space-x-4">
                       <Link
-                        to="login"
+                        to="/login"
                         className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium"
                       >
                         <BiLogIn />
                         Login
                       </Link>
                       <Link
-                        to="register"
+                        to="/register"
                         className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium"
                       >
                         <BiUserPlus className="text-xl" />
