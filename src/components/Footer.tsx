@@ -4,7 +4,7 @@ export const Footer: FC = () => {
   return (
     <footer>
       <div className="bg-black opacity-80 mx-auto px-4 py-6 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-3 gap-10">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-10">
           <div className="text-white">
             <h1 className="text-xl font-semibold mb-4">Event Planner App</h1>
             <p>
@@ -24,7 +24,7 @@ export const Footer: FC = () => {
               minimum abuse app
             </p>
           </div>
-          <div className="text-white">
+          <div className="text-white col-span-full md:col-span-1">
             <h1 className="text-xl font-semibold mb-4">Stay Connected</h1>
             <form>
               <div className=" flex flex-col items-center gap-2 sm:flex-row sm:gap-3 bg-white rounded-md p-2">
@@ -52,9 +52,7 @@ export const Footer: FC = () => {
       </div>
       <div className="bg-black mx-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          <div className="text-gray-400 text-sm">
-            © 2023 Acme Inc. All rights reserved.
-          </div>
+          <div className="text-gray-400 text-sm">© 2023 Copy right Alta</div>
           <div className="text-gray-400">
             <a
               className="inline-flex justify-center items-center gap-x-3.5 w-10 h-10 text-center text-gray-200 hover:bg-white/[.1] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
