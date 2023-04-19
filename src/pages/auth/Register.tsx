@@ -23,15 +23,17 @@ const Register: FC = () => {
     <div className="h-screen flex mx-auto space-x-10 bg-black">
       <div className="hidden md:block  md:w-[50%] bg-[url('/register.jpg')] bg-center bg-cover rounded-r-3xl"></div>
       <div className="w-full  md:w-[50%] ">
-        <div className="h-32 bg-black flex items-center">
+        <div className="h-20 md:h-32 bg-black flex items-center">
           <h1 className="text-2xl font-semibold text-white">
             Event Planner App
           </h1>
         </div>
-        <h1 className="text-xl text-white font-semibold my-20">Sign Up</h1>
+        <h1 className="text-xl text-white font-semibold my-5 md:my-20">
+          Sign Up
+        </h1>
         <div className="">
           <form>
-            <div className="w-[70%] flex flex-col gap-10">
+            <div className="w-[70%] flex flex-col gap-8 md:gap-10">
               <Input
                 placeholder="Input Name"
                 id="input-name"
@@ -64,17 +66,17 @@ const Register: FC = () => {
                   setObjSubmit({ ...objSUbmit, address: event.target.value })
                 }
               />
-              <div>
+              <div className="my-5 md:my-10">
                 <ButtonSubmit type="submit" label="Submit" />
               </div>
             </div>
           </form>
-          <div className="my-5">
+          <div className="my-5 flex flex-col md:flex-row gap-2 md:gap-5">
             <h1 className="text-xl font-semibold text-white">
               have an account ?{" "}
-              <span className="text-@028090">
-                <Link to="/login">Sign In here !!</Link>
-              </span>
+            </h1>
+            <h1 className="text-xl font-semibold text-@028090">
+              <Link to="/login">Sign In here !!</Link>
             </h1>
           </div>
         </div>
