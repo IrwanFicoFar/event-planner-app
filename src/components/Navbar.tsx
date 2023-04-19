@@ -19,7 +19,7 @@ export const Navbar: FC = () => {
   const [login, setLogin] = useState<boolean>(true);
 
   useEffect(() => {
-    setLogin(false);
+    setLogin(true);
   }, []);
 
   return (
