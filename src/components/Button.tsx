@@ -1,9 +1,17 @@
-import { FC } from "react";
+import { FC, ButtonHTMLAttributes } from "react";
 
-export const Button: FC = () => {
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
+  label: string;
+}
+
+export const ButtonSubmit: FC<Props> = (props) => {
+  const { label } = props;
   return (
-    <div>
-      <h1>Button Page</h1>
-    </div>
+    <button
+      className="bg-@028090 py-3 my-10 px-14 inline-flex justify-center items-center rounded-2xl text-xl font-semibold "
+      {...props}
+    >
+      {label}
+    </button>
   );
 };

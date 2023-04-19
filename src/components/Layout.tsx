@@ -11,7 +11,7 @@ export const Layout: FC<Props> = (props) => {
   return (
     <div className="h-screen">
       <Navbar />
-      <div>{children}</div>
+      <div className="h-full">{children}</div>
       <Footer />
     </div>
   );
