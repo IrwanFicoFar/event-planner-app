@@ -35,7 +35,7 @@ const Router = () => {
       element: <Cart />,
     },
     {
-      path: "/detail-event",
+      path: "/detail-event/:id",
       element: <DetailEvent />,
     },
     {
