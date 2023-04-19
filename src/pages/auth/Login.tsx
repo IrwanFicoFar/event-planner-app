@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Login: FC = () => {
   return (
-    <div>
+    <div className="h-screen">
       <h1>Login Page</h1>
       <Link to="/register">
         <h1>to Register</h1>
