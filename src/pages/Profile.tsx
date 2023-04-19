@@ -43,46 +43,60 @@ const Profile: FC = () => {
 
   return (
     <Layout>
-      <div className="h-screen flex flex-col bg-white">
+      <div className="flex flex-col bg-white pb-20">
         <div className="relative h-40 bg-@night rounded-b-@nice flex flex-col place-content-end">
-          <h1 className="ml-100 text-white text-3xl font-semibold mb-3">
+          <h1 className="hidden md:block ml-100 text-white text-3xl font-semibold mb-3">
             Detail
           </h1>
         </div>
-        <div
-          className={`absolute ml-40 mt-10 rounded-full border-8 border-white w-56 h-56 bg-[url(/avatar.jpg)] bg-center bg-cover`}
-        ></div>
-        <div className="h-40 bg-white">
-          <h1 className="ml-100 text-black text-3xl font-semibold mt-3">
+        <div className="absolute md:ml-40 mt-10 w-full  flex justify-center md:justify-start">
+          <div
+            className={`rounded-full border-8 border-white w-40 h-40 sm:w-56 sm:h-56 bg-[url(/avatar.jpg)] bg-center bg-cover`}
+          ></div>
+        </div>
+
+        <div className="h-10 sm:h-20 md:h-40 bg-white">
+          <h1 className="hidden md:block ml-100 text-black text-3xl font-semibold mt-3">
             User Profile
           </h1>
         </div>
-        <div className="container mx-auto bg-black mt-5 rounded-@yes flex">
-          <div className="flex flex-col gap-8 p-20 w-[60%]">
-            <div className="flex h-20 gap-8">
+        {/* main */}
+        <div className="container mx-auto bg-black md:mt-5 rounded-xl sm:rounded-2xl md:rounded-@yes flex">
+          <div className="flex flex-col gap-8 p-10 sm:p-20 w-full lg:w-[60%]">
+            <div className="flex h-16 sm:h-20 gap-8">
               <div className="w-40 flex items-center">
-                <h1 className="text-2xl font-semibold">Name</h1>
+                <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
+                  Name
+                </h1>
               </div>
               <div className="bg-white w-full rounded-3xl flex items-center px-5">
-                <h1 className="text-black text-2xl font-semibold ">string</h1>
+                <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
+                  string
+                </h1>
               </div>
             </div>
-            <div className="flex h-20 gap-8">
+            <div className="flex h-16 sm:h-20 gap-8">
               <div className="w-40 flex items-center">
-                <h1 className="text-2xl font-semibold">Email</h1>
+                <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
+                  Email
+                </h1>
               </div>
               <div className="bg-white w-full rounded-3xl flex items-center px-5">
-                <h1 className="text-black text-2xl font-semibold ">
+                <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
                   satrio@gmail.com
                 </h1>
               </div>
             </div>
-            <div className="flex h-20 gap-8">
+            <div className="flex h-16 sm:h-20 gap-8">
               <div className="w-40 flex items-center">
-                <h1 className="text-2xl font-semibold">address</h1>
+                <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
+                  address
+                </h1>
               </div>
               <div className="bg-white w-full rounded-3xl flex items-center px-5">
-                <h1 className="text-black text-2xl font-semibold ">Bogor</h1>
+                <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
+                  Bogor
+                </h1>
               </div>
             </div>
             <div className="flex justify-end gap-6">
@@ -93,7 +107,7 @@ const Profile: FC = () => {
               />
             </div>
           </div>
-          <div className="bg-[url('/profile.jpg')] bg-center m-5 bg-cover w-[40%] rounded-@yes"></div>
+          <div className="hidden lg:block lg:bg-[url('/profile.jpg')] bg-center m-5 bg-cover lg:w-[40%] rounded-@yes"></div>
         </div>
       </div>
 
@@ -112,7 +126,7 @@ const Profile: FC = () => {
             <div className="fixed inset-0 bg-black bg-opacity-25" />
           </Transition.Child>
           <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <div className="flex items-center justify-center p-4 text-center">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"

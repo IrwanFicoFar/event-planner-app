@@ -23,7 +23,7 @@ export const Navbar: FC = () => {
   }, []);
 
   return (
-    <Disclosure as="nav" className="bg-black">
+    <Disclosure as="nav" className="bg-black z-50">
       {({ open }) => (
         <>
           <div className="mx-auto px-2 sm:px-6 lg:px-8">
@@ -39,23 +39,26 @@ export const Navbar: FC = () => {
                 </Disclosure.Button>
               </div>
               <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-between">
-                <div className="flex-shrink-0 justify-center flex items-center">
-                  <img
-                    className="block  md:hidden h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
-                    alt="Workflow"
-                  />
-                  <div className="hidden md:flex h-8 w-auto flex-row items-center space-x-4">
+                <Link to="/">
+                  <div className="flex-shrink-0 justify-center flex items-center">
                     <img
-                      className="h-8 w-auto"
+                      className="block  md:hidden h-8 w-auto"
                       src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
-                      alt="Event planner App image"
+                      alt="Workflow"
                     />
-                    <h1 className="text-xl font-semibold text-white">
-                      Event Planner App
-                    </h1>
+
+                    <div className="hidden md:flex h-8 w-auto flex-row items-center space-x-4">
+                      <img
+                        className="h-8 w-auto"
+                        src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
+                        alt="Event planner App image"
+                      />
+                      <h1 className="text-xl font-semibold text-white">
+                        Event Planner App
+                      </h1>
+                    </div>
                   </div>
-                </div>
+                </Link>
                 {login ? (
                   <div className="hidden sm:block sm:ml-6">
                     <div className="flex space-x-4">
@@ -69,7 +72,7 @@ export const Navbar: FC = () => {
 
                       <Menu
                         as="div"
-                        className="relative inline-block text-left"
+                        className="z-50 relative inline-block text-left"
                       >
                         <div>
                           <Menu.Button className="hover:bg-gray-700 text-white px-3 py-2 rounded-md text-md font-medium flex gap-2 items-center">
