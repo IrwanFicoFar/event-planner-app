@@ -15,3 +15,33 @@ export const ButtonSubmit: FC<Props> = (props) => {
     </button>
   );
 };
+
+interface PropsAction extends ButtonHTMLAttributes<HTMLButtonElement> {
+  label: string;
+}
+
+export const ButtonAction: FC<Partial<PropsAction>> = (props) => {
+  const { label, onClick } = props;
+  return (
+    <button
+      className={`bg-@028090 py-3 px-10 inline-flex justify-center items-center rounded-2xl text-xl text-white font-semibold `}
+      {...props}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  );
+};
+
+export const ButtonCancelOrDelete: FC<Partial<PropsAction>> = (props) => {
+  const { label, onClick } = props;
+  return (
+    <button
+      className={`bg-@F46036 py-3 px-10 inline-flex justify-center items-center rounded-2xl text-xl text-white font-semibold `}
+      {...props}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  );
+};
