@@ -2,6 +2,7 @@ import { FC, ReactNode } from "react";
 import { Disclosure } from "@headlessui/react";
 import { BiTime, BiMap, BiMicrophone } from "react-icons/bi";
 import { Link } from "react-router-dom";
+import { ButtonCheckout } from "./Button";
 
 interface Props {
   date: ReactNode;
@@ -33,8 +34,7 @@ export const Card: FC<Partial<Props>> = (props) => {
             <div className="flex space-x-2 items-center">
               <BiTime className="text-orange-500 text-xl" />
               <div>
-                <h1>{"2023-04-13 17:17:02"} to</h1>
-                <h1>{"2023-04-13 18:17:02"}</h1>
+                <h1>{"2023-04-13 17:17:02"}</h1>
               </div>
             </div>
             <div className="flex space-x-2 items-center">
@@ -49,6 +49,91 @@ export const Card: FC<Partial<Props>> = (props) => {
         </div>
       </Link>
       <div>participants = {"10"}</div>
+    </div>
+  );
+};
+
+interface DataAttandance {
+  image: string;
+  name: string;
+}
+
+export const CardAttandance: FC<Partial<DataAttandance>> = (props) => {
+  const { image, name } = props;
+  return (
+    <div className="bg-white rounded-2xl">
+      <div className=" flex justify-center items-center pt-5 px-3">
+        <Link to={`detail-event/:id`}>
+          <img
+            src={image}
+            alt="image-card"
+            className="rounded-full border-2 drop-shadow-lg border-black w-28"
+          />
+        </Link>
+      </div>
+      <div className=" flex justify-center items-center py-5">
+        <h1 className="text-black font-semibold text:xl md:text-2xl">{name}</h1>
+      </div>
+    </div>
+  );
+};
+
+interface DataComment {
+  image: string;
+  name: string;
+  comment: string;
+}
+
+export const CardComment: FC<Partial<DataComment>> = (props) => {
+  const { image, name, comment } = props;
+  return (
+    <div className="flex">
+      <div className="bg-white rounded-2xl py-2 w-24 px-3">
+        <div className=" flex justify-center items-center pt-2">
+          <Link to={`detail-event/:id`}>
+            <img
+              src={image}
+              alt="image-card"
+              className="rounded-full border-2 drop-shadow-lg border-black w-16"
+            />
+          </Link>
+        </div>
+        <div className="flex justify-center items-center">
+          <h1 className="text-black font-semibold text:xl md:text-2xl ">
+            {name}
+          </h1>
+        </div>
+      </div>
+      <div className="p-5 space-x-5">
+        <h1>{comment}</h1>
+      </div>
+    </div>
+  );
+};
+
+interface DataTicket {
+  ticket: string;
+  price: string;
+  onClick: React.MouseEventHandler<Element>;
+}
+
+export const CardTicket: FC<Partial<DataTicket>> = (props) => {
+  const { ticket, price, onClick } = props;
+  return (
+    <div className="rounded-2xl">
+      <div className="bg-white rounded-2xl">
+        <div className="bg-black rounded-b-2xl border-b-4 border-white py-4 flex justify-center drop-shadow-lg">
+          <h1 className="text-xl font-semibold">{ticket}</h1>
+        </div>
+        <div className="flex justify-center py-8">
+          <h1 className="text-orange-500 lg:text-md xl:text-xl font-semibold">
+            {price}
+          </h1>
+        </div>
+      </div>
+      <div className="py-5 flex justify-center">
+        <ButtonCheckout label="Checkout" onClick={onClick} />
+      </div>
     </div>
   );
 };

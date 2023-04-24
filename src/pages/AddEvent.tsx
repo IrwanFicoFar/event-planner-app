@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { Layout } from "../components/Layout";
 import { Input, TextArea } from "../components/Input";
-import { BiMap } from "react-icons/bi";
 import { ButtonAction } from "../components/Button";
 
 interface EventAdd {
@@ -19,6 +18,7 @@ interface EventAdd {
   ticket: string;
   price: number;
   image: any;
+  hosted: string;
 }
 
 interface dataTicket {
@@ -36,7 +36,7 @@ const AddEvent: FC = () => {
     price: 0,
   });
 
-  console.log(type);
+  // console.log(type);
 
   useEffect(() => {
     setDisplayAddTicket("");
@@ -68,9 +68,15 @@ const AddEvent: FC = () => {
   ) => {
     console.log(value);
     let temp = { ...objSubmit };
-    temp[key] = value;
+    if (value === null) {
+      temp[key] = null;
+    } else {
+      temp[key] = value;
+    }
     setObjSubmit(temp);
   };
+
+  console.log(objSubmit);
 
   return (
     <Layout>
@@ -122,34 +128,25 @@ const AddEvent: FC = () => {
                 // defaultValue={"name"}
                 onChange={(event) => handleChange(event.target.value, "name")}
               />
-              {/* <Input
+              <Input
                 placeholder=""
                 id="input-host"
                 defaultValue={"hosted by"}
                 onChange={(event) => handleChange(event.target.value, "hosted")}
-              /> */}
+              />
               <TextArea
                 placeholder="Detail"
                 id="input-textarea"
                 // defaultValue={"detail"}
                 onChange={(event) => handleChange(event.target.value, "detail")}
               />
-              <div className="flex space-x-3 items-center">
-                <Input
-                  placeholder="select date"
-                  id="input-date"
-                  // defaultValue={"date"}
-                  type="date"
-                  onChange={(event) => handleChange(event.target.value, "date")}
-                />
-                <Input
-                  placeholder="Time"
-                  id="input-date"
-                  // defaultValue={"date"}
-                  type="time"
-                  onChange={(event) => handleChange(event.target.value, "time")}
-                />
-              </div>
+              <Input
+                placeholder="Location"
+                id="input-location"
+                step="1"
+                type="datetime-local"
+                onChange={(event) => handleChange(event.target.value, "date")}
+              />
               <div className="flex space-x-3">
                 <Input
                   placeholder="Kuota"
@@ -196,6 +193,7 @@ const AddEvent: FC = () => {
                   handleChange(event.target.value, "location")
                 }
               />
+
               <div className="flex flex-col py-5 sm:py-10  md:py-16 lg:py-20">
                 <ButtonAction label="Submit" onClick={() => handleSubmit()} />
               </div>
