@@ -2,7 +2,7 @@ import { FC, ReactNode } from "react";
 import { Disclosure } from "@headlessui/react";
 import { BiTime, BiMap, BiMicrophone } from "react-icons/bi";
 import { Link } from "react-router-dom";
-import { ButtonCheckout } from "./Button";
+import { ButtonAction, ButtonCheckout } from "./Button";
 
 interface Props {
   date: ReactNode;
@@ -132,7 +132,47 @@ export const CardTicket: FC<Partial<DataTicket>> = (props) => {
         </div>
       </div>
       <div className="py-5 flex justify-center">
-        <ButtonCheckout label="Checkout" onClick={onClick} />
+        <ButtonCheckout label="Add to Cart" onClick={onClick} />
+      </div>
+    </div>
+  );
+};
+
+interface DataCheckout {
+  ticket: string;
+  price: string;
+}
+
+export const CardCart: FC<Partial<DataCheckout>> = (props) => {
+  const { ticket, price } = props;
+  return (
+    <div className="flex justify-between bg-white text-black sm:text-xl font-semibold px-5 pt-5 pb-10 rounded-3xl">
+      <div>
+        <h1>{ticket}</h1>
+      </div>
+      <div>
+        <h1>{price}</h1>
+      </div>
+    </div>
+  );
+};
+
+interface Payment {
+  id: string;
+  image: string;
+  payment: string;
+}
+
+export const PaymentMethode: FC<Partial<Payment>> = (props) => {
+  const { image, payment, id } = props;
+  return (
+    <div
+      className=" rounded-3xl border-black px-5 py-1 my-2 flex items-center justify-between"
+      id={id}
+    >
+      <div className="flex justify-between items-center">
+        <img src={image} alt="payment image" className="h-12 w-auto" />
+        <h1>{payment}</h1>
       </div>
     </div>
   );
