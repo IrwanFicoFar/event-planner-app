@@ -1,9 +1,11 @@
-import { FC, Fragment, useState } from "react";
+import { FC, Fragment, useState, useEffect } from "react";
 import { Layout } from "../components/Layout";
 import { CardCart, PaymentMethode } from "../components/Card";
-import { Disclosure, Listbox, Transition } from "@headlessui/react";
+import { Dialog, Listbox, Transition } from "@headlessui/react";
 import { MdArrowForwardIos, MdCheck } from "react-icons/md";
 import { ButtonCheckout } from "../components/Button";
+import CountdownTimer from "../functions/timer";
+import { count } from "console";
 
 interface Option {
   id: string;
@@ -40,10 +42,35 @@ const classNames = (...classes: string[]) => {
 
 const Cart: FC = () => {
   const [selectedOption, setSelectedOption] = useState<Option>(options[0]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [showTimer, setShowTimer] = useState(false);
+
+  const count = 5000;
+  const displayCount = count / 1000;
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  function openModal() {
+    setIsOpen(true);
+  }
 
   const handleCheckout = () => {
-    alert("button checkout success");
+    alert("success pay");
+    closeModal();
   };
+
+  const handleStartTimer = () => {
+    setShowTimer(true);
+  };
+
+  const handleTimerComplete = () => {
+    setShowTimer(false);
+    alert("Time out, please back to checkout again");
+    closeModal();
+  };
+
   return (
     <Layout>
       <div className="h-full grid grid-cols-1 md:grid-cols-2">
@@ -148,11 +175,97 @@ const Cart: FC = () => {
             <div className=" flex flex-col">
               <ButtonCheckout
                 label="Checkout "
-                onClick={() => handleCheckout()}
+                onClick={() => {
+                  handleStartTimer();
+                  openModal();
+                }}
               />
             </div>
           </div>
         </div>
+      </div>
+      <div>
+        <Transition appear show={isOpen} as={Fragment}>
+          <Dialog as="div" className="relative z-10" onClose={closeModal}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black bg-opacity-25" />
+            </Transition.Child>
+            <div className="fixed inset-0 overflow-y-auto">
+              <div className="flex min-h-full items-center justify-center p-4 text-center">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 scale-95"
+                  enterTo="opacity-100 scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 scale-100"
+                  leaveTo="opacity-0 scale-95"
+                >
+                  <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg font-semibold flex justify-center leading-6 text-gray-900 py-5"
+                    >
+                      Detail Transaction
+                    </Dialog.Title>
+                    <div className="mt-2 text-black">
+                      <div className="grid grid-cols-2">
+                        <div className="flex flex-col justify-center">
+                          <h1 className="text-xl font-semibold">
+                            Payment Methode
+                          </h1>
+                          <img src={selectedOption.image} alt="" />
+                        </div>
+                        <div className="bg-black rounded-3xl p-5 text-white flex flex-col justify-between">
+                          <div className="flex justify-between py-5 ">
+                            <h1 className="text-xl font-semibold">Total</h1>
+                            <h1 className="text-xl font-semibold">
+                              {"Rp 250.000"}
+                            </h1>
+                          </div>
+                          <div className=" flex flex-col">
+                            <ButtonCheckout
+                              label="Pay Now"
+                              onClick={() => {
+                                handleCheckout();
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex justify-between">
+                      <button
+                        type="button"
+                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        onClick={closeModal}
+                      >
+                        close
+                      </button>
+                      <div className="text-black flex space-x-3 items-center ">
+                        <h1>Pay before :</h1>
+                        {showTimer && (
+                          <CountdownTimer
+                            duration={displayCount}
+                            onComplete={handleTimerComplete}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition>
       </div>
     </Layout>
   );

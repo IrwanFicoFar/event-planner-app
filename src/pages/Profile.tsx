@@ -37,7 +37,7 @@ const Profile: FC = () => {
   };
 
   const handleUpdate = () => {
-    console.log("update");
+    alert("update");
     setIsOpen(false);
   };
 
