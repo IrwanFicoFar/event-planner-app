@@ -3,6 +3,7 @@ import { Layout } from "../components/Layout";
 import { ButtonAction, ButtonCheckout } from "../components/Button";
 import { Dialog, Listbox, Transition } from "@headlessui/react";
 import { TbFileInvoice, TbDownload } from "react-icons/tb";
+import { Link } from "react-router-dom";
 
 const DetailTransaction: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -77,7 +78,7 @@ const DetailTransaction: FC = () => {
         </div>
       </div>
       {/* modal invoice */}
-      <div>
+      <div id="pdf-content">
         <Transition appear show={isOpen} as={Fragment}>
           <Dialog as="div" className="relative z-10" onClose={closeModal}>
             <Transition.Child
@@ -169,8 +170,10 @@ const DetailTransaction: FC = () => {
                     </div>
                     <div className="flex justify-end px-10">
                       <button className="flex space-x-2 bg-@028090 px-3 py-2 rounded-3xl">
-                        <TbDownload className="text-2xl" />
-                        <h1>pdf</h1>
+                        <Link to="/pdf" target="_blank">
+                          <TbDownload className="text-2xl" />
+                          <h1>pdf</h1>
+                        </Link>
                       </button>
                     </div>
                     <div className="mt-4">

@@ -9,6 +9,7 @@ import Cart from "../pages/Cart";
 import DetailTransaction from "../pages/DetailTransaction";
 import Profile from "../pages/Profile";
 import Event from "../pages/Event";
+import MyPdf from "../pages/PDF";
 
 axios.defaults.baseURL = "https://virtserver.swaggerhub.com/ropel12/tes/1.0.0";
 
@@ -49,6 +50,10 @@ const Router = () => {
     {
       path: "/Profile",
       element: <Profile />,
+    },
+    {
+      path: "/pdf",
+      element: <MyPdf />,
     },
   ]);
 
