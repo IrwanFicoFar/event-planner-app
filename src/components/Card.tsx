@@ -23,11 +23,11 @@ export const Card: FC<Partial<Props>> = (props) => {
         </div>
       </div>
       <div className="mb-5">
-        <Link to={`detail-event/:id`}>
+        <Link to={`/detail-event/:id`}>
           <img src="/header3.jpg" alt="image-card" className="rounded-3xl" />
         </Link>
       </div>
-      <Link to={"detail-event/:id"}>
+      <Link to={"/detail-event/:id"}>
         <div className="bg-gray-800 p-5 mb-5 flex flex-col gap-4 rounded-3xl">
           <h1 className="text-xl font-semibold">{"Title Conference"}</h1>
           <div className="flex flex-col gap-2">
