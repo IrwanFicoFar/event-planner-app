@@ -184,7 +184,6 @@ interface DataCard {
 
 export const CardEdit: FC<Partial<DataCard>> = (props) => {
   const { onClick } = props;
-
   return (
     <div className="bg-black p-5 rounded-3xl hover:scale-105 hover:-translate-y-1 transition ease-in-out delay-150 drop-shadow-md hover:drop-shadow-xl  duration-300">
       <div className="flex justify-between mb-5">
@@ -196,11 +195,11 @@ export const CardEdit: FC<Partial<DataCard>> = (props) => {
         </div>
       </div>
       <div className="mb-5">
-        <Link to={`detail-event/:id`}>
+        <Link to={`/detail-event/:id`}>
           <img src="/header3.jpg" alt="image-card" className="rounded-3xl" />
         </Link>
       </div>
-      <Link to={"detail-event/:id"}>
+      <Link to={"/detail-event/:id"}>
         <div className="bg-gray-800 p-5 mb-5 flex flex-col gap-4 rounded-3xl">
           <h1 className="text-xl font-semibold">{"Title Conference"}</h1>
           <div className="flex flex-col gap-2">
