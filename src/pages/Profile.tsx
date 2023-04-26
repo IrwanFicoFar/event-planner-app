@@ -49,12 +49,11 @@ const Profile: FC = () => {
             Detail
           </h1>
         </div>
-        <div className="absolute md:ml-40 mt-10 w-full  flex justify-center md:justify-start">
+        <div className="absolute md:ml-40 mt-10 w-full md:w-max flex justify-center md:justify-start">
           <div
             className={`rounded-full border-8 border-white w-40 h-40 sm:w-56 sm:h-56 bg-[url(/avatar.jpg)] bg-center bg-cover`}
           ></div>
         </div>
-
         <div className="h-10 sm:h-20 md:h-40 bg-white">
           <h1 className="hidden md:block ml-100 text-black text-3xl font-semibold mt-3">
             User Profile

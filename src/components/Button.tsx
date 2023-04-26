@@ -50,7 +50,7 @@ export const ButtonCheckout: FC<Partial<PropsAction>> = (props) => {
   const { label, onClick } = props;
   return (
     <button
-      className={`bg-orange-500 py-3 px-10 inline-flex justify-center items-center rounded-2xl lg:text-md xl:text-lg  text-white font-semibold `}
+      className={`bg-orange-500 py-3 px-5 md:px-10 inline-flex justify-center items-center rounded-2xl lg:text-md xl:text-lg  text-white font-semibold `}
       {...props}
       onClick={onClick}
     >

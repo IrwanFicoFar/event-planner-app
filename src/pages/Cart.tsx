@@ -84,7 +84,7 @@ const Cart: FC = () => {
               {({ open }) => (
                 <>
                   <div className="relative">
-                    <Listbox.Button className="relative w-full py-2 bg-white text-black rounded-3xl border-4 border-black shadow-md  focus:outline-none sm:text-sm">
+                    <Listbox.Button className="flex items-center justify-between relative w-full py-2 bg-white text-black rounded-3xl border-4 border-black shadow-md  focus:outline-none sm:text-sm">
                       <span className="flex items-center sm:text-xl font-semibold">
                         <PaymentMethode
                           id={selectedOption.id}
@@ -92,7 +92,7 @@ const Cart: FC = () => {
                         />
                         {selectedOption.name}
                       </span>
-                      <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                      <span className="inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                         <MdArrowForwardIos
                           className={`${
                             open ? "rotate-90 transform" : ""
@@ -118,7 +118,7 @@ const Cart: FC = () => {
                                 active
                                   ? "text-black text-xl bg-gray-100"
                                   : "text-gray-900",
-                                "cursor-default select-none relative py-7 pl-3 pr-9"
+                                "cursor-default select-none relative py-3 sm:py-7 pl-3 pr-9"
                               )
                             }
                             value={option}
@@ -226,9 +226,9 @@ const Cart: FC = () => {
                           <img src={selectedOption.image} alt="" />
                         </div>
                         <div className="bg-black rounded-3xl p-5 text-white flex flex-col justify-between">
-                          <div className="flex justify-between py-5 ">
-                            <h1 className="text-xl font-semibold">Total</h1>
-                            <h1 className="text-xl font-semibold">
+                          <div className="flex flex-col sm:flex-row justify-between py-5 ">
+                            <h1 className="md:text-xl font-semibold">Total</h1>
+                            <h1 className="md:text-xl font-semibold">
                               {"Rp 250.000"}
                             </h1>
                           </div>
