@@ -1,13 +1,7 @@
 import React, { Fragment } from "react";
 import { PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  Font,
-} from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+// import { css } from "@react-pdf/renderer";
 
 import { Transition, Dialog } from "@headlessui/react";
 import { TbFileInvoice, TbDownload } from "react-icons/tb";
@@ -15,74 +9,36 @@ import { Link } from "react-router-dom";
 
 const styles = StyleSheet.create({
   page: {
-    flexDirection: "column",
-    backgroundColor: "#ffffff",
-    padding: "1cm",
-  },
-  section: {
-    margin: 10,
     padding: 10,
-    flexGrow: 1,
   },
-  table: {
-    display: "table",
-    width: "auto",
-    margin: "auto",
-  },
-  tableRow: {
-    margin: "auto",
-    flexDirection: "row",
-  },
-  tableCellHeader: {
-    backgroundColor: "#eeeeee",
+  title: {
+    fontSize: 20,
     fontWeight: "bold",
-    padding: 5,
-    width: "25%",
-    fontSize: 12,
     textAlign: "center",
-    border: "1px solid #000",
+    borderBottom: 1,
   },
-  tableCell: {
-    padding: 5,
-    width: "25%",
-    fontSize: 12,
+  noInvoice: {
+    fontSize: 20,
+    fontWeight: "normal",
+    marginBottom: 10,
     textAlign: "center",
-    border: "1px solid #000",
   },
+  subtitle: { fontSize: 20, fontWeight: "bold", marginBottom: 5 },
+  paragraph: { fontSize: 12, lineHeight: 1.5 },
 });
 
 const MyDocument = () => (
   <Document>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.section}>
-        <Text>
-          <h1>SUMMARY</h1>
-          <View style={styles.table}>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCellHeader}>Mythic</Text>
-              <Text style={styles.tableCellHeader}>Price</Text>
-              <Text style={styles.tableCellHeader}>Quantity</Text>
-              <Text style={styles.tableCellHeader}>Subtotal</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Mythic Item</Text>
-              <Text style={styles.tableCell}>Rp 150.000</Text>
-              <Text style={styles.tableCell}>1 pc</Text>
-              <Text style={styles.tableCell}>Rp 150.000</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Legend Item</Text>
-              <Text style={styles.tableCell}>Rp 100.000</Text>
-              <Text style={styles.tableCell}>2 pcs</Text>
-              <Text style={styles.tableCell}>Rp 200.000</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}></Text>
-              <Text style={styles.tableCell}></Text>
-              <Text style={styles.tableCell}>Total</Text>
-              <Text style={styles.tableCell}>Rp 350.000</Text>
-            </View>
-          </View>
+    <Page>
+      <View style={styles.page}>
+        <Text style={styles.title}>INVOICE</Text>
+        <Text style={styles.noInvoice}>INVOICE</Text>
+        <Text style={styles.subtitle}>Subtitle</Text>
+        <Text style={styles.paragraph}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec dolor
+          id nisi volutpat semper. Praesent nec risus velit. Aliquam vitae mi
+          nulla. Morbi non elit ut lorem bibendum faucibus. Sed ut ullamcorper
+          elit. Nullam quis tellus id tellus faucibus commodo non vel dolor.
         </Text>
       </View>
     </Page>
