@@ -60,15 +60,6 @@ const Home: FC = () => {
                     <input className="w-full bg-@F46036 hover:bg-orange-700 duration-300 rounded-lg px-2 mr-3 text-white font-semibold focus:outline-none" />
                   </div>
                 </div>
-                {/* <div className="bg-@F46036 flex items-center p-3 hover:p-4 rounded-full duration-300">
-                  <button
-                    className="mr-1 px-2 py-3 duration-300"
-                    onClick={() => handleSeacrh()}
-                  >
-                    <BiSearchAlt className="text-3xl hover:text-5xl duration-300 hover:bg-orange-700 hover:p-1 hover:rounded-full" />
-                  </button>
-                  <input className=" bg-orange-700 rounded-full h-16 text-xl text-white font-semibold md:px-4 focus:outline-none" />
-                </div> */}
               </div>
             </div>
           </div>

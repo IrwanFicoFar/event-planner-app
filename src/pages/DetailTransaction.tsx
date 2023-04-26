@@ -36,8 +36,8 @@ const DetailTransaction: FC = () => {
 
   return (
     <Layout>
-      <div className="h-screen bg-white py-10 px-20">
-        <div className="grid grid-cols-3 text-white text-2xl font-semibold bg-black py-8 rounded-3xl my-5">
+      <div className="h-screen bg-white py-10 px-3 md:px-20">
+        <div className="grid grid-cols-3 text-white text-lg md:text-2xl font-semibold bg-black py-8 rounded-3xl my-5">
           <div className="flex justify-center">
             <h1>Event</h1>
           </div>
@@ -48,7 +48,7 @@ const DetailTransaction: FC = () => {
             <h1>Ticket</h1>
           </div>
         </div>
-        <div className="grid grid-cols-3 text-black text-xl font-semibold bg-gray-200 py-5 items-center rounded-3xl my-5">
+        <div className="grid grid-cols-3 text-black md:text-xl font-semibold bg-gray-200 py-5 items-center rounded-3xl my-5">
           <div className="flex justify-center">
             <h1>{"Web Design"}</h1>
           </div>
@@ -67,9 +67,9 @@ const DetailTransaction: FC = () => {
             />
           </div>
         </div>
-        <div className="grid grid-cols-3 place-items-center text-black text-xl font-semibold bg-gray-200 py-5 items-center rounded-3xl my-5">
+        <div className="grid grid-cols-3 place-items-center text-black md:text-xl font-semibold bg-gray-200 py-5 items-center rounded-3xl my-5">
           <div className="">
-            <h1>{"Javascript Learning"}</h1>
+            <h1>{"Javascript"}</h1>
           </div>
           <div className="">
             <ButtonCheckout
@@ -246,7 +246,7 @@ const DetailTransaction: FC = () => {
                       <div className="mt-14 flex flex-col justify-center items-center  font-medium">
                         <h1 className="text-white text-xl">TICKET</h1>
                       </div>
-                      <div className="p-10 print-section">
+                      <div className="pt-10 px-3 sm:px-10">
                         <div className="rounded-2xl bg-amber-500 p-4 flex border-2">
                           <div className=" rounded-2xl my-16 -rotate-90 text-black text-3xl font-semibold w-[10%] mr-2 flex justify-center">
                             MYTHIC
@@ -269,7 +269,7 @@ const DetailTransaction: FC = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="p-10 ">
+                      <div className="pt-10 px-3 sm:px-10 ">
                         <div className="rounded-2xl bg-teal-500 p-4 flex border-2">
                           <div className=" rounded-2xl my-16 -rotate-90 text-black text-3xl font-semibold w-[10%] mr-2 flex justify-center">
                             LEGEND
@@ -292,7 +292,7 @@ const DetailTransaction: FC = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="p-10 ">
+                      <div className="pt-10 px-3 sm:px-10">
                         <div className="rounded-2xl bg-teal-500 p-4 flex border-2">
                           <div className=" rounded-2xl my-16 -rotate-90 text-black text-3xl font-semibold w-[10%] mr-2 flex justify-center">
                             LEGEND
@@ -315,7 +315,7 @@ const DetailTransaction: FC = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex justify-between px-10">
+                      <div className="flex justify-between px-10 py-10">
                         <button
                           type="button"
                           className="inline-flex justify-center items-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
