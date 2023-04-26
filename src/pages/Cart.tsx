@@ -48,13 +48,13 @@ const Cart: FC = () => {
   const count = 5000;
   const displayCount = count / 1000;
 
-  function closeModal() {
+  const closeModal = () => {
     setIsOpen(false);
-  }
+  };
 
-  function openModal() {
+  const openModal = () => {
     setIsOpen(true);
-  }
+  };
 
   const handleCheckout = () => {
     alert("success pay");
@@ -184,6 +184,7 @@ const Cart: FC = () => {
           </div>
         </div>
       </div>
+      {/* Modal */}
       <div>
         <Transition appear show={isOpen} as={Fragment}>
           <Dialog as="div" className="relative z-10" onClose={closeModal}>

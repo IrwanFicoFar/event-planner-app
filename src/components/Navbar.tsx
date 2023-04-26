@@ -5,7 +5,7 @@ import {
   BiMenu,
   BiX,
   BiDownArrow,
-  BiUpArrow,
+  BiMessageSquareDetail,
   BiHome,
   BiUser,
   BiCalendarCheck,
@@ -69,7 +69,13 @@ export const Navbar: FC = () => {
                         <BiCartAlt />
                         Cart
                       </Link>
-
+                      <Link
+                        to="/detail-transaction"
+                        className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium"
+                      >
+                        <BiMessageSquareDetail />
+                        Transactions
+                      </Link>
                       <Menu
                         as="div"
                         className="z-50 relative inline-block text-left"
@@ -172,6 +178,13 @@ export const Navbar: FC = () => {
                 >
                   <BiCartAlt />
                   Cart
+                </Link>
+                <Link
+                  to="/detail-transaction"
+                  className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium"
+                >
+                  <BiMessageSquareDetail />
+                  Transactions
                 </Link>
                 <Link
                   to="/"
