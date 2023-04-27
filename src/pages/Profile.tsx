@@ -1,8 +1,10 @@
-import { FC, useState, Fragment } from "react";
+import { FC, useState, Fragment, MouseEvent, useEffect } from "react";
 import { Layout } from "../components/Layout";
 import { ButtonAction, ButtonCancelOrDelete } from "../components/Button";
 import { Dialog, Transition } from "@headlessui/react";
 import { Input } from "../components/Input";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 interface UserEdit {
   id: number;
@@ -15,10 +17,37 @@ interface UserEdit {
 
 const Profile: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [data, setData] = useState<Partial<UserEdit>>({});
+  const [datas, setDatas] = useState<Partial<UserEdit>>({});
+  const [csrf, setCsrf] = useState<string>("");
   const [objSubmit, setObjSubmit] = useState<Partial<UserEdit>>({});
+  const [loading, setloading] = useState<boolean>(true);
 
-  const closeModal = () => {
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
+    axios
+      .get("/users")
+      .then((response) => {
+        const { message, data } = response.data;
+        setDatas(data.data);
+        setCsrf(data.csrf);
+        document.title = `${data.data.name} | User Management`;
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Failed",
+          text: error,
+          showCancelButton: false,
+        });
+      })
+      .finally(() => setloading(false));
+  };
+
+  const closeModal = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
     setIsOpen(false);
   };
 
@@ -51,8 +80,14 @@ const Profile: FC = () => {
         </div>
         <div className="absolute md:ml-40 mt-10 w-full md:w-max flex justify-center md:justify-start">
           <div
-            className={`rounded-full border-8 border-white w-40 h-40 sm:w-56 sm:h-56 bg-[url(/avatar.jpg)] bg-center bg-cover`}
-          ></div>
+            className={`rounded-full border-8 border-white w-40 h-40 sm:w-56 sm:h-56 `}
+          >
+            <img
+              src={datas.image ? datas.image : "/avatar.jpg"}
+              alt=""
+              className="rounded-full"
+            />
+          </div>
         </div>
         <div className="h-10 sm:h-20 md:h-40 bg-white">
           <h1 className="hidden md:block ml-100 text-black text-3xl font-semibold mt-3">
@@ -60,59 +95,65 @@ const Profile: FC = () => {
           </h1>
         </div>
         {/* main */}
-        <div className="container mx-auto bg-black md:mt-5 rounded-xl sm:rounded-2xl md:rounded-@yes flex">
-          <div className="flex flex-col gap-8 p-10 sm:p-20 w-full lg:w-[60%]">
-            <div className="flex h-16 sm:h-20 gap-8">
-              <div className="w-40 flex items-center">
-                <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
-                  Name
-                </h1>
-              </div>
-              <div className="bg-white w-full rounded-3xl flex items-center px-5">
-                <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
-                  string
-                </h1>
-              </div>
-            </div>
-            <div className="flex h-16 sm:h-20 gap-8">
-              <div className="w-40 flex items-center">
-                <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
-                  Email
-                </h1>
-              </div>
-              <div className="bg-white w-full rounded-3xl flex items-center px-5">
-                <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
-                  satrio@gmail.com
-                </h1>
-              </div>
-            </div>
-            <div className="flex h-16 sm:h-20 gap-8">
-              <div className="w-40 flex items-center">
-                <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
-                  address
-                </h1>
-              </div>
-              <div className="bg-white w-full rounded-3xl flex items-center px-5">
-                <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
-                  Bogor
-                </h1>
-              </div>
-            </div>
-            <div className="flex justify-end gap-6">
-              <ButtonAction label="Edit" onClick={openModal} />
-              <ButtonCancelOrDelete
-                label="Delete"
-                onClick={() => handleDelete()}
-              />
-            </div>
+        {loading ? (
+          <div className="h-screen text-black font-bold text-3xl flex justify-center">
+            Loading...
           </div>
-          <div className="hidden lg:block lg:bg-[url('/profile.jpg')] bg-center m-5 bg-cover lg:w-[40%] rounded-@yes"></div>
-        </div>
+        ) : (
+          <div className="container mx-auto bg-black md:mt-5 rounded-xl sm:rounded-2xl md:rounded-@yes flex">
+            <div className="flex flex-col gap-8 p-10 sm:p-20 w-full lg:w-[60%]">
+              <div className="flex h-16 sm:h-20 gap-8">
+                <div className="w-40 flex items-center">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
+                    Name
+                  </h1>
+                </div>
+                <div className="bg-white w-full rounded-3xl flex items-center px-5">
+                  <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
+                    {datas.name}
+                  </h1>
+                </div>
+              </div>
+              <div className="flex h-16 sm:h-20 gap-8">
+                <div className="w-40 flex items-center">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
+                    Email
+                  </h1>
+                </div>
+                <div className="bg-white w-full rounded-3xl flex items-center px-5">
+                  <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
+                    {datas.email}
+                  </h1>
+                </div>
+              </div>
+              <div className="flex h-16 sm:h-20 gap-8">
+                <div className="w-40 flex items-center">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
+                    address
+                  </h1>
+                </div>
+                <div className="bg-white w-full rounded-3xl flex items-center px-5">
+                  <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
+                    {datas.address}
+                  </h1>
+                </div>
+              </div>
+              <div className="flex justify-end gap-6">
+                <ButtonAction label="Edit" onClick={openModal} />
+                <ButtonCancelOrDelete
+                  label="Delete"
+                  onClick={() => handleDelete()}
+                />
+              </div>
+            </div>
+            <div className="hidden lg:block lg:bg-[url('/profile.jpg')] bg-center m-5 bg-cover lg:w-[40%] rounded-@yes"></div>
+          </div>
+        )}
       </div>
 
       {/* modal */}
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+        <Dialog as="div" className="relative z-10" onClose={() => closeModal}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -159,8 +200,8 @@ const Profile: FC = () => {
                             if (!event.currentTarget.files) {
                               return;
                             }
-                            setData({
-                              ...data,
+                            setDatas({
+                              ...datas,
                               image: URL.createObjectURL(
                                 event.currentTarget.files[0]
                               ),
@@ -211,7 +252,7 @@ const Profile: FC = () => {
                       />
                       <ButtonCancelOrDelete
                         label="Cancel"
-                        onClick={closeModal}
+                        onClick={(event) => closeModal(event)}
                       />
                     </div>
                   </Dialog.Panel>
