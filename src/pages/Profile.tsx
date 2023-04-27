@@ -1,4 +1,11 @@
-import { FC, useState, Fragment, MouseEvent, useEffect } from "react";
+import {
+  FC,
+  useState,
+  Fragment,
+  MouseEvent,
+  useEffect,
+  FormEvent,
+} from "react";
 import { Layout } from "../components/Layout";
 import { ButtonAction, ButtonCancelOrDelete } from "../components/Button";
 import { Dialog, Transition } from "@headlessui/react";
@@ -55,7 +62,7 @@ const Profile: FC = () => {
     setObjSubmit(temp);
   };
 
-  const handleUpdate = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleUpdate = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData();
