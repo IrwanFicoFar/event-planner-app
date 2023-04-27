@@ -1,33 +1,52 @@
-import { FC, useState, Fragment } from "react";
+import { FC, useState, Fragment, MouseEvent, useEffect } from "react";
 import { Layout } from "../components/Layout";
 import { ButtonAction, ButtonCancelOrDelete } from "../components/Button";
 import { Dialog, Transition } from "@headlessui/react";
 import { Input } from "../components/Input";
-
-interface UserEdit {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  address: string;
-  image: any;
-}
+import axios from "axios";
+import Swal from "sweetalert2";
+import { UserEdit } from "../utils/user";
+import { useNavigate } from "react-router-dom";
 
 const Profile: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [data, setData] = useState<Partial<UserEdit>>({});
+  const [datas, setDatas] = useState<Partial<UserEdit>>({});
+  const [csrf, setCsrf] = useState<string>("");
   const [objSubmit, setObjSubmit] = useState<Partial<UserEdit>>({});
+  const [loading, setloading] = useState<boolean>(true);
+  const navigate = useNavigate();
 
-  const closeModal = () => {
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
+    axios
+      .get("/users")
+      .then((response) => {
+        const { message, data } = response.data;
+        setDatas(data.data);
+        setCsrf(data.csrf);
+        document.title = `${data.data.name} | User Management`;
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Failed",
+          text: error,
+          showCancelButton: false,
+        });
+      })
+      .finally(() => setloading(false));
+  };
+
+  const closeModal = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
     setIsOpen(false);
   };
 
   const openModal = () => {
     setIsOpen(true);
-  };
-
-  const handleDelete = () => {
-    console.log("delete");
   };
 
   const handleChange = (value: string | File, key: keyof typeof objSubmit) => {
@@ -36,9 +55,86 @@ const Profile: FC = () => {
     setObjSubmit(temp);
   };
 
-  const handleUpdate = () => {
-    alert("update");
-    setIsOpen(false);
+  const handleUpdate = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData();
+    let key: keyof typeof objSubmit;
+    for (key in objSubmit) {
+      formData.append(key, objSubmit[key]);
+    }
+
+    axios
+      .put("/users", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${csrf}`,
+        },
+      })
+      .then((response) => {
+        const { message, code } = response.data;
+        // console.log(response);
+        Swal.fire({
+          icon: "success",
+          title: code,
+          text: message,
+          showCancelButton: false,
+          showConfirmButton: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setObjSubmit({});
+            setIsOpen(false);
+          }
+        });
+      })
+      .catch((error) => {
+        // console.log(error.message);
+        Swal.fire({
+          icon: "error",
+          title: "Failed, update at least 1",
+          text: error,
+          showCancelButton: false,
+        });
+      })
+      .finally(() => fetchData());
+  };
+
+  const handleDelete = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`/users`)
+          .then((response) => {
+            const { message, code } = response.data;
+            Swal.fire({
+              icon: "info",
+              title: "Success Deleted!",
+              text: message,
+              showCancelButton: false,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                navigate("/");
+              }
+            });
+          })
+          .catch((error) => {
+            Swal.fire({
+              icon: "error",
+              title: "Failed to delete user profile",
+              text: error,
+              showCancelButton: false,
+            });
+          });
+      }
+    });
   };
 
   return (
@@ -51,8 +147,14 @@ const Profile: FC = () => {
         </div>
         <div className="absolute md:ml-40 mt-10 w-full md:w-max flex justify-center md:justify-start">
           <div
-            className={`rounded-full border-8 border-white w-40 h-40 sm:w-56 sm:h-56 bg-[url(/avatar.jpg)] bg-center bg-cover`}
-          ></div>
+            className={`rounded-full border-8 border-white w-40 h-40 sm:w-56 sm:h-56 `}
+          >
+            <img
+              src={datas.image ? datas.image : "/avatar.jpg"}
+              alt=""
+              className="rounded-full"
+            />
+          </div>
         </div>
         <div className="h-10 sm:h-20 md:h-40 bg-white">
           <h1 className="hidden md:block ml-100 text-black text-3xl font-semibold mt-3">
@@ -60,59 +162,65 @@ const Profile: FC = () => {
           </h1>
         </div>
         {/* main */}
-        <div className="container mx-auto bg-black md:mt-5 rounded-xl sm:rounded-2xl md:rounded-@yes flex">
-          <div className="flex flex-col gap-8 p-10 sm:p-20 w-full lg:w-[60%]">
-            <div className="flex h-16 sm:h-20 gap-8">
-              <div className="w-40 flex items-center">
-                <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
-                  Name
-                </h1>
-              </div>
-              <div className="bg-white w-full rounded-3xl flex items-center px-5">
-                <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
-                  string
-                </h1>
-              </div>
-            </div>
-            <div className="flex h-16 sm:h-20 gap-8">
-              <div className="w-40 flex items-center">
-                <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
-                  Email
-                </h1>
-              </div>
-              <div className="bg-white w-full rounded-3xl flex items-center px-5">
-                <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
-                  satrio@gmail.com
-                </h1>
-              </div>
-            </div>
-            <div className="flex h-16 sm:h-20 gap-8">
-              <div className="w-40 flex items-center">
-                <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
-                  address
-                </h1>
-              </div>
-              <div className="bg-white w-full rounded-3xl flex items-center px-5">
-                <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
-                  Bogor
-                </h1>
-              </div>
-            </div>
-            <div className="flex justify-end gap-6">
-              <ButtonAction label="Edit" onClick={openModal} />
-              <ButtonCancelOrDelete
-                label="Delete"
-                onClick={() => handleDelete()}
-              />
-            </div>
+        {loading ? (
+          <div className="h-screen text-black font-bold text-3xl flex justify-center">
+            Loading...
           </div>
-          <div className="hidden lg:block lg:bg-[url('/profile.jpg')] bg-center m-5 bg-cover lg:w-[40%] rounded-@yes"></div>
-        </div>
+        ) : (
+          <div className="container mx-auto bg-black md:mt-5 rounded-xl sm:rounded-2xl md:rounded-@yes flex">
+            <div className="flex flex-col gap-8 p-10 sm:p-20 w-full lg:w-[60%]">
+              <div className="flex h-16 sm:h-20 gap-8">
+                <div className="w-40 flex items-center">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
+                    Name
+                  </h1>
+                </div>
+                <div className="bg-white w-full rounded-3xl flex items-center px-5">
+                  <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
+                    {datas.name}
+                  </h1>
+                </div>
+              </div>
+              <div className="flex h-16 sm:h-20 gap-8">
+                <div className="w-40 flex items-center">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
+                    Email
+                  </h1>
+                </div>
+                <div className="bg-white w-full rounded-3xl flex items-center px-5">
+                  <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
+                    {datas.email}
+                  </h1>
+                </div>
+              </div>
+              <div className="flex h-16 sm:h-20 gap-8">
+                <div className="w-40 flex items-center">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
+                    address
+                  </h1>
+                </div>
+                <div className="bg-white w-full rounded-3xl flex items-center px-5">
+                  <h1 className="text-black text-lg sm:text-xl md:text-2xl font-semibold ">
+                    {datas.address}
+                  </h1>
+                </div>
+              </div>
+              <div className="flex justify-end gap-6">
+                <ButtonAction label="Edit" onClick={openModal} />
+                <ButtonCancelOrDelete
+                  label="Delete"
+                  onClick={() => handleDelete()}
+                />
+              </div>
+            </div>
+            <div className="hidden lg:block lg:bg-[url('/profile.jpg')] bg-center m-5 bg-cover lg:w-[40%] rounded-@yes"></div>
+          </div>
+        )}
       </div>
 
       {/* modal */}
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+        <Dialog as="div" className="relative z-10" onClose={() => closeModal}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -135,7 +243,7 @@ const Profile: FC = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <form>
+                <form onSubmit={(event) => handleUpdate(event)}>
                   <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-@yes bg-black px-16 border-2 border-x-white text-left align-middle shadow-xl transition-all">
                     <Dialog.Title className="flex justify-center m-10">
                       <img
@@ -159,8 +267,8 @@ const Profile: FC = () => {
                             if (!event.currentTarget.files) {
                               return;
                             }
-                            setData({
-                              ...data,
+                            setDatas({
+                              ...datas,
                               image: URL.createObjectURL(
                                 event.currentTarget.files[0]
                               ),
@@ -172,7 +280,7 @@ const Profile: FC = () => {
                       <Input
                         placeholder=""
                         id="input-name"
-                        defaultValue={"name"}
+                        defaultValue={datas.name}
                         onChange={(event) =>
                           handleChange(event.target.value, "name")
                         }
@@ -180,7 +288,7 @@ const Profile: FC = () => {
                       <Input
                         placeholder=""
                         id="input-email"
-                        defaultValue={"email"}
+                        defaultValue={datas.email}
                         onChange={(event) =>
                           handleChange(event.target.value, "email")
                         }
@@ -189,7 +297,7 @@ const Profile: FC = () => {
                         placeholder=""
                         type="password"
                         id="input-password"
-                        defaultValue={"password"}
+                        defaultValue={datas.password}
                         onChange={(event) =>
                           handleChange(event.target.value, "password")
                         }
@@ -198,20 +306,17 @@ const Profile: FC = () => {
                         placeholder=""
                         type="text"
                         id="input-address"
-                        defaultValue={"address"}
+                        defaultValue={datas.address}
                         onChange={(event) =>
                           handleChange(event.target.value, "address")
                         }
                       />
                     </div>
                     <div className="my-10 flex justify-between">
-                      <ButtonAction
-                        label="Update"
-                        onClick={() => handleUpdate()}
-                      />
+                      <ButtonAction label="Update" type="submit" />
                       <ButtonCancelOrDelete
                         label="Cancel"
-                        onClick={closeModal}
+                        onClick={(event) => closeModal(event)}
                       />
                     </div>
                   </Dialog.Panel>
