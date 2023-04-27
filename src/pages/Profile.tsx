@@ -5,15 +5,8 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Input } from "../components/Input";
 import axios from "axios";
 import Swal from "sweetalert2";
-
-interface UserEdit {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  address: string;
-  image: any;
-}
+import { UserEdit } from "../utils/user";
+import { useNavigate } from "react-router-dom";
 
 const Profile: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -21,6 +14,7 @@ const Profile: FC = () => {
   const [csrf, setCsrf] = useState<string>("");
   const [objSubmit, setObjSubmit] = useState<Partial<UserEdit>>({});
   const [loading, setloading] = useState<boolean>(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -55,19 +49,92 @@ const Profile: FC = () => {
     setIsOpen(true);
   };
 
-  const handleDelete = () => {
-    console.log("delete");
-  };
-
   const handleChange = (value: string | File, key: keyof typeof objSubmit) => {
     let temp = { ...objSubmit };
     temp[key] = value;
     setObjSubmit(temp);
   };
 
-  const handleUpdate = () => {
-    alert("update");
-    setIsOpen(false);
+  const handleUpdate = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData();
+    let key: keyof typeof objSubmit;
+    for (key in objSubmit) {
+      formData.append(key, objSubmit[key]);
+    }
+
+    axios
+      .put("/users", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${csrf}`,
+        },
+      })
+      .then((response) => {
+        const { message, code } = response.data;
+        // console.log(response);
+        Swal.fire({
+          icon: "success",
+          title: code,
+          text: message,
+          showCancelButton: false,
+          showConfirmButton: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setObjSubmit({});
+            setIsOpen(false);
+          }
+        });
+      })
+      .catch((error) => {
+        // console.log(error.message);
+        Swal.fire({
+          icon: "error",
+          title: "Failed, update at least 1",
+          text: error,
+          showCancelButton: false,
+        });
+      })
+      .finally(() => fetchData());
+  };
+
+  const handleDelete = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`/users`)
+          .then((response) => {
+            const { message, code } = response.data;
+            Swal.fire({
+              icon: "info",
+              title: "Success Deleted!",
+              text: message,
+              showCancelButton: false,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                navigate("/");
+              }
+            });
+          })
+          .catch((error) => {
+            Swal.fire({
+              icon: "error",
+              title: "Failed to delete user profile",
+              text: error,
+              showCancelButton: false,
+            });
+          });
+      }
+    });
   };
 
   return (
@@ -176,7 +243,7 @@ const Profile: FC = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <form>
+                <form onSubmit={(event) => handleUpdate(event)}>
                   <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-@yes bg-black px-16 border-2 border-x-white text-left align-middle shadow-xl transition-all">
                     <Dialog.Title className="flex justify-center m-10">
                       <img
@@ -213,7 +280,7 @@ const Profile: FC = () => {
                       <Input
                         placeholder=""
                         id="input-name"
-                        defaultValue={"name"}
+                        defaultValue={datas.name}
                         onChange={(event) =>
                           handleChange(event.target.value, "name")
                         }
@@ -221,7 +288,7 @@ const Profile: FC = () => {
                       <Input
                         placeholder=""
                         id="input-email"
-                        defaultValue={"email"}
+                        defaultValue={datas.email}
                         onChange={(event) =>
                           handleChange(event.target.value, "email")
                         }
@@ -230,7 +297,7 @@ const Profile: FC = () => {
                         placeholder=""
                         type="password"
                         id="input-password"
-                        defaultValue={"password"}
+                        defaultValue={datas.password}
                         onChange={(event) =>
                           handleChange(event.target.value, "password")
                         }
@@ -239,17 +306,14 @@ const Profile: FC = () => {
                         placeholder=""
                         type="text"
                         id="input-address"
-                        defaultValue={"address"}
+                        defaultValue={datas.address}
                         onChange={(event) =>
                           handleChange(event.target.value, "address")
                         }
                       />
                     </div>
                     <div className="my-10 flex justify-between">
-                      <ButtonAction
-                        label="Update"
-                        onClick={() => handleUpdate()}
-                      />
+                      <ButtonAction label="Update" type="submit" />
                       <ButtonCancelOrDelete
                         label="Cancel"
                         onClick={(event) => closeModal(event)}
