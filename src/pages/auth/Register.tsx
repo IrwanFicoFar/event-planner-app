@@ -1,7 +1,9 @@
-import { FC, useState } from "react";
-import { Link } from "react-router-dom";
+import { FC, useEffect, useState, FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "../../components/Input";
 import { ButtonSubmit } from "../../components/Button";
+import Swal from "sweetalert2";
+import axios from "axios";
 
 interface objSubmitType {
   name: string;
@@ -12,12 +14,67 @@ interface objSubmitType {
 
 const Register: FC = () => {
   const [inputValue, setInputValue] = useState<string>("");
-  const [objSUbmit, setObjSubmit] = useState<objSubmitType>({
+  const [objSubmit, setObjSubmit] = useState<objSubmitType>({
     name: "",
     email: "",
     password: "",
     address: "",
   });
+  const [isEmpty, setIsEmpty] = useState<boolean>(true);
+
+  const navigate = useNavigate();
+  document.title = `Register | User Management`;
+
+  useEffect(() => {
+    setIsEmpty(Object.values(objSubmit).every((val) => val === ""));
+  }, [objSubmit]);
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (
+      objSubmit.name === "" ||
+      objSubmit.email === "" ||
+      objSubmit.password === "" ||
+      objSubmit.address === ""
+    ) {
+      Swal.fire({
+        title: "Not Completed",
+        text: "Please Fill All Input",
+        showCancelButton: false,
+      });
+      return;
+    }
+    console.log(objSubmit);
+    axios
+      .post("/register", objSubmit)
+      .then((response) => {
+        const { message, code } = response.data;
+        console.log(message.data);
+        Swal.fire({
+          icon: "success",
+          title: code,
+          text: message,
+          showCancelButton: false,
+          showConfirmButton: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/login");
+          }
+        });
+      })
+      .catch((error) => {
+        const { message } = error.message;
+        // console.log(message);
+        Swal.fire({
+          icon: "error",
+          title: "Failed",
+          text: error,
+          showCancelButton: false,
+        });
+      })
+      .finally(() => {});
+  };
 
   return (
     <div className="h-screen flex mx-auto space-x-10 bg-black">
@@ -32,14 +89,14 @@ const Register: FC = () => {
           Sign Up
         </h1>
         <div className="">
-          <form>
+          <form onSubmit={(event) => handleSubmit(event)}>
             <div className="w-[70%] flex flex-col gap-8 md:gap-10">
               <Input
                 placeholder="Input Name"
                 id="input-name"
                 type="text"
                 onChange={(event) =>
-                  setObjSubmit({ ...objSUbmit, name: event.target.value })
+                  setObjSubmit({ ...objSubmit, name: event.target.value })
                 }
               />
               <Input
@@ -47,7 +104,7 @@ const Register: FC = () => {
                 id="input-email"
                 type="email"
                 onChange={(event) =>
-                  setObjSubmit({ ...objSUbmit, email: event.target.value })
+                  setObjSubmit({ ...objSubmit, email: event.target.value })
                 }
               />
               <Input
@@ -55,7 +112,7 @@ const Register: FC = () => {
                 id="input-password"
                 type="password"
                 onChange={(event) =>
-                  setObjSubmit({ ...objSUbmit, password: event.target.value })
+                  setObjSubmit({ ...objSubmit, password: event.target.value })
                 }
               />
               <Input
@@ -63,7 +120,7 @@ const Register: FC = () => {
                 id="input-address"
                 type="text"
                 onChange={(event) =>
-                  setObjSubmit({ ...objSUbmit, address: event.target.value })
+                  setObjSubmit({ ...objSubmit, address: event.target.value })
                 }
               />
               <div className="my-5 md:my-10">
