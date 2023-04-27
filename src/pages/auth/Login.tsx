@@ -1,7 +1,10 @@
-import { FC, useState } from "react";
-import { Link } from "react-router-dom";
+import { FC, useState, useEffect, FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "../../components/Input";
 import { ButtonSubmit } from "../../components/Button";
+import { useCookies } from "react-cookie";
+import Swal from "sweetalert2";
+import axios from "axios";
 
 interface objSubmitType {
   email: string;
@@ -10,10 +13,61 @@ interface objSubmitType {
 
 const Login: FC = () => {
   const [inputValue, setInputValue] = useState<string>("");
-  const [objSUbmit, setObjSubmit] = useState<objSubmitType>({
+  const [objSubmit, setObjSubmit] = useState<objSubmitType>({
     email: "",
     password: "",
   });
+  const [isEmpty, setIsEmpty] = useState(true);
+  const navigate = useNavigate();
+  const [, setCookie] = useCookies();
+
+  useEffect(() => {
+    setIsEmpty(Object.values(objSubmit).every((val) => val === ""));
+  }, [objSubmit]);
+
+  const handleLogin = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (objSubmit.email === "" || objSubmit.password === "") {
+      Swal.fire({
+        icon: "warning",
+        title: " Not Completed",
+        text: "Please Fill All Input",
+        showCancelButton: false,
+      });
+      return;
+    }
+
+    axios
+      .post("/login", objSubmit)
+      .then((response) => {
+        const { data, message, code } = response.data;
+        console.log(data.Token);
+        Swal.fire({
+          icon: "success",
+          title: code,
+          text: message,
+          showConfirmButton: true,
+          showCancelButton: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setCookie("tkn", data.Token);
+            setCookie("uname", data.Token); // sementara uname pake token dlu aja
+            navigate("/");
+          }
+        });
+      })
+      .catch((error) => {
+        const { message } = error.message;
+        // console.log(message);
+        Swal.fire({
+          icon: "error",
+          title: "Failed",
+          text: error,
+          showCancelButton: false,
+        });
+      });
+  };
 
   return (
     <div className="h-screen flex mx-auto space-x-10 bg-black">
@@ -28,14 +82,14 @@ const Login: FC = () => {
           Sign In
         </h1>
         <div className="">
-          <form>
+          <form onSubmit={(event) => handleLogin(event)}>
             <div className="w-[70%] flex flex-col gap-8 md:gap-12">
               <Input
                 placeholder="Enter Email"
                 id="input-email"
                 type="email"
                 onChange={(event) =>
-                  setObjSubmit({ ...objSUbmit, email: event.target.value })
+                  setObjSubmit({ ...objSubmit, email: event.target.value })
                 }
               />
               <Input
@@ -43,7 +97,7 @@ const Login: FC = () => {
                 id="input-password"
                 type="password"
                 onChange={(event) =>
-                  setObjSubmit({ ...objSUbmit, password: event.target.value })
+                  setObjSubmit({ ...objSubmit, password: event.target.value })
                 }
               />
               <div className="my-5 md:my-10">

@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import {
   BiMenu,
@@ -14,12 +14,38 @@ import {
   BiLogIn,
   BiUserPlus,
 } from "react-icons/bi";
+import { useCookies } from "react-cookie";
+import Swal from "sweetalert2";
 
 export const Navbar: FC = () => {
   const [login, setLogin] = useState<boolean>(true);
+  const [cookie, , removeCookie] = useCookies(["tkn", "uname"]);
+  const navigate = useNavigate();
+  const checkToken = cookie.tkn;
+
+  const handleLogout = () => {
+    Swal.fire({
+      icon: "warning",
+      title: "Are you Sure to Log out",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Logout",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        removeCookie("tkn");
+        removeCookie("uname");
+        Swal.fire("Logout", "Thanks for coming", "success").then((result) => {
+          if (result.isConfirmed) {
+            navigate("/");
+          }
+        });
+      }
+    });
+  };
 
   useEffect(() => {
-    setLogin(true);
+    // setLogin(false);
   }, []);
 
   return (
@@ -59,7 +85,7 @@ export const Navbar: FC = () => {
                     </div>
                   </div>
                 </Link>
-                {login ? (
+                {checkToken ? (
                   <div className="hidden sm:block sm:ml-6">
                     <div className="flex space-x-4">
                       <Link
@@ -125,7 +151,10 @@ export const Navbar: FC = () => {
                                 </Link>
                               </Menu.Item>
                               <Menu.Item>
-                                <button className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-black hover:bg-gray-200">
+                                <button
+                                  className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-black hover:bg-gray-200"
+                                  onClick={() => handleLogout()}
+                                >
                                   <BiLogOut />
                                   Log out
                                 </button>
