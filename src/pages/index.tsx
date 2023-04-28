@@ -1,12 +1,65 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "../components/Layout";
 import { Input } from "../components/Input";
 import { BiSearchAlt } from "react-icons/bi";
 import { ButtonAction } from "../components/Button";
 import { Card } from "../components/Card";
+import axios from "axios";
+import Swal from "sweetalert2";
+
+interface DataType {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  address: string;
+  detail: string;
+  date: string;
+  time: string;
+  location: string;
+  qty: number;
+  duration: number;
+  ticket: string;
+  price: number;
+  image: any;
+  hosted_by: string;
+  participants: string;
+}
 
 const Home: FC = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [datas, setDatas] = useState<DataType[]>([]);
+  const [csrf, setCsrf] = useState<string>("");
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
+    axios
+      .get(`/events`)
+      .then((response) => {
+        const { data } = response.data;
+        setDatas(data.data);
+        setCsrf(data.csrf);
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Failed",
+          text: error,
+          showCancelButton: false,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  console.log(datas);
+  console.log(csrf);
+
   const handleSeacrh = () => {
     alert("oke");
   };
@@ -65,10 +118,42 @@ const Home: FC = () => {
           </div>
         </div>
         <div className="bg-white w-full pt-32 px-16 sm:px-10 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
+          {datas.map((e) => {
+            const date = new Date(e.date);
+            const optionsHeader = {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour12: false,
+            } as Intl.DateTimeFormatOptions;
+            const options = {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour12: false,
+            } as Intl.DateTimeFormatOptions;
+            const dateStringHeader = date.toLocaleDateString(
+              "en-US",
+              optionsHeader
+            );
+            const dateString = date.toLocaleDateString("en-US", options);
+            const timeString = date.toLocaleTimeString(); // format: 5:17:02 PM
+            return (
+              <Card
+                key={e.id}
+                image={e.image === "" ? e.image : `/header2.jpg`}
+                name={e.name}
+                dateHeader={dateStringHeader}
+                date={dateString}
+                time={timeString}
+                location={e.location}
+                participants={e.participants}
+                hosted_by={e.hosted_by}
+                id={e.id}
+              />
+            );
+          })}
         </div>
         <div className="bg-white h-20 flex justify-center items-center border-2 border-black">
           <h1 className="text-xl text-black font-semibold">Pagination</h1>

@@ -1,54 +1,73 @@
 import { FC, ReactNode } from "react";
 import { Disclosure } from "@headlessui/react";
 import { BiTime, BiMap, BiMicrophone } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ButtonAction, ButtonCheckout } from "./Button";
 
 interface Props {
-  date: ReactNode;
-  time: ReactNode;
+  image: string;
+  name: string;
+  dateHeader: string;
+  date: string;
+  time: string;
+  location: string;
+  hosted_by: string;
+  participants: string;
+  id: number;
+  goTo: string;
 }
 
 export const Card: FC<Partial<Props>> = (props) => {
-  const { date, time } = props;
+  const {
+    date,
+    time,
+    id,
+    dateHeader,
+    location,
+    hosted_by,
+    participants,
+    name,
+  } = props;
 
   return (
     <div className="bg-black p-5 rounded-3xl hover:scale-105 hover:-translate-y-1 transition ease-in-out delay-150 drop-shadow-md hover:drop-shadow-xl  duration-300">
       <div className="flex justify-between mb-5">
         <div>
-          <h1 className="text-white">{"13 APR"}</h1>
+          <h1 className="text-white">{dateHeader}</h1>
         </div>
         <div>
-          <h1 className="text-white">{"17:17 WIB"}</h1>
+          <h1 className="text-white">{time}</h1>
         </div>
       </div>
       <div className="mb-5">
-        <Link to={`/detail-event/:id`}>
+        <Link to={`/detail-event/${id}`}>
           <img src="/header3.jpg" alt="image-card" className="rounded-3xl" />
         </Link>
       </div>
-      <Link to={"/detail-event/:id"}>
+      <Link to={`/detail-event/${id}`}>
         <div className="bg-gray-800 p-5 mb-5 flex flex-col gap-4 rounded-3xl">
-          <h1 className="text-xl font-semibold">{"Title Conference"}</h1>
+          <h1 className="text-xl font-semibold">{name}</h1>
           <div className="flex flex-col gap-2">
             <div className="flex space-x-2 items-center">
               <BiTime className="text-orange-500 text-xl" />
               <div>
-                <h1>{"2023-04-13 17:17:02"}</h1>
+                <h1>
+                  {date} {time}
+                </h1>
               </div>
             </div>
             <div className="flex space-x-2 items-center">
               <BiMap className="text-orange-500 text-xl" />
-              <h1>{"Senayan"}</h1>
+              <h1>{location}</h1>
             </div>
             <div className="flex space-x-2 items-center">
               <BiMicrophone className="text-orange-500 text-xl" />
-              <h1>{"IndoxPloit"}</h1>
+              <h1>{hosted_by}</h1>
             </div>
           </div>
         </div>
       </Link>
-      <div>participants = {"10"}</div>
+      <div>participants = {participants}</div>
     </div>
   );
 };
@@ -180,49 +199,72 @@ export const PaymentMethode: FC<Partial<Payment>> = (props) => {
 
 interface DataCard {
   onClick: React.MouseEventHandler<Element>;
+  image: string;
+  name: string;
+  dateHeader: string;
+  date: string;
+  time: string;
+  location: string;
+  hosted_by: string;
+  participants: string;
+  id: number;
+  goTo: string;
 }
 
 export const CardEdit: FC<Partial<DataCard>> = (props) => {
-  const { onClick } = props;
+  const navigate = useNavigate();
+  const {
+    onClick,
+    image,
+    name,
+    dateHeader,
+    date,
+    time,
+    location,
+    hosted_by,
+    participants,
+    goTo,
+  } = props;
+
   return (
     <div className="bg-black p-5 rounded-3xl hover:scale-105 hover:-translate-y-1 transition ease-in-out delay-150 drop-shadow-md hover:drop-shadow-xl  duration-300">
       <div className="flex justify-between mb-5">
         <div>
-          <h1 className="text-white">{"13 APR"}</h1>
+          <h1 className="text-white">{dateHeader}</h1>
         </div>
         <div>
-          <h1 className="text-white">{"17:17 WIB"}</h1>
+          <h1 className="text-white">{time}</h1>
         </div>
       </div>
       <div className="mb-5">
-        <Link to={`/detail-event/:id`}>
-          <img src="/header3.jpg" alt="image-card" className="rounded-3xl" />
-        </Link>
+        <img src={image} alt="image-card" className="rounded-3xl" />
       </div>
-      <Link to={"/detail-event/:id"}>
-        <div className="bg-gray-800 p-5 mb-5 flex flex-col gap-4 rounded-3xl">
-          <h1 className="text-xl font-semibold">{"Title Conference"}</h1>
-          <div className="flex flex-col gap-2">
-            <div className="flex space-x-2 items-center">
-              <BiTime className="text-orange-500 text-xl" />
-              <div>
-                <h1>{"2023-04-13 17:17:02"}</h1>
-              </div>
-            </div>
-            <div className="flex space-x-2 items-center">
-              <BiMap className="text-orange-500 text-xl" />
-              <h1>{"Senayan"}</h1>
-            </div>
-            <div className="flex space-x-2 items-center">
-              <BiMicrophone className="text-orange-500 text-xl" />
-              <h1>{"IndoxPloit"}</h1>
+
+      <div className="bg-gray-800 p-5 mb-5 flex flex-col gap-4 rounded-3xl">
+        <h1 className="text-xl font-semibold">{name}</h1>
+        <div className="flex flex-col gap-2">
+          <div className="flex space-x-2 items-center">
+            <BiTime className="text-orange-500 text-xl" />
+            <div>
+              <h1>
+                {date} {time}
+              </h1>
             </div>
           </div>
+          <div className="flex space-x-2 items-center">
+            <BiMap className="text-orange-500 text-xl" />
+            <h1>{location}</h1>
+          </div>
+          <div className="flex space-x-2 items-center">
+            <BiMicrophone className="text-orange-500 text-xl" />
+            <h1>{hosted_by}</h1>
+          </div>
         </div>
-      </Link>
-      <div>participants = {"10"}</div>
+      </div>
+
+      <div>participants = {participants}</div>
       <div className="py-5 flex flex-col justify-center ">
-        <ButtonAction label="Edit" onClick={onClick} />
+        <ButtonAction label="Edit" onClick={() => navigate(`${goTo}`)} />
       </div>
     </div>
   );
