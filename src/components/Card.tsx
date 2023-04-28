@@ -86,7 +86,7 @@ export const CardAttandance: FC<Partial<DataAttandance>> = (props) => {
           <img
             src={image}
             alt="image-card"
-            className="rounded-full border-2 drop-shadow-lg border-black w-28"
+            className="rounded-full border-2 drop-shadow-lg border-black"
           />
         </Link>
       </div>
@@ -132,7 +132,7 @@ export const CardComment: FC<Partial<DataComment>> = (props) => {
 
 interface DataTicket {
   ticket: string;
-  price: string;
+  price: number;
   onClick: React.MouseEventHandler<Element>;
 }
 
