@@ -158,19 +158,28 @@ export const CardTicket: FC<Partial<DataTicket>> = (props) => {
 };
 
 interface DataCheckout {
-  ticket: string;
-  price: string;
+  Event: string;
+  Ticket: string;
+  Price: string;
+  Qty: number;
+  SubTotal: number;
 }
 
 export const CardCart: FC<Partial<DataCheckout>> = (props) => {
-  const { ticket, price } = props;
+  const { Event, Ticket, Price, Qty, SubTotal } = props;
   return (
-    <div className="flex justify-between bg-white text-black sm:text-xl font-semibold px-5 pt-5 pb-10 rounded-3xl">
-      <div>
-        <h1>{ticket}</h1>
+    <div className="grid grid-cols-4 bg-white text-black sm:text-xl font-semibold px-5 pt-5 pb-10 rounded-3xl">
+      <div className="flex justify-center">
+        <h1>{Event}</h1>
       </div>
-      <div>
-        <h1>{price}</h1>
+      <div className="flex justify-center">
+        <h1>{Price}</h1>
+      </div>
+      <div className="flex justify-center">
+        <h1>{Qty}</h1>
+      </div>
+      <div className="flex justify-center">
+        <h1>{SubTotal}</h1>
       </div>
     </div>
   );
