@@ -10,6 +10,7 @@ import DetailTransaction from "../pages/DetailTransaction";
 import Profile from "../pages/Profile";
 import Event from "../pages/Event";
 import MyPdf from "../pages/PDF";
+import EditEvent from "../pages/EditEvent";
 
 axios.defaults.baseURL = "https://virtserver.swaggerhub.com/ropel12/tes/1.0.0";
 
@@ -30,6 +31,10 @@ const Router = () => {
     {
       path: "/add-event",
       element: <AddEvent />,
+    },
+    {
+      path: "/edit-event/:id",
+      element: <EditEvent />,
     },
     {
       path: "/cart",
