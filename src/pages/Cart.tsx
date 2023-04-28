@@ -6,6 +6,8 @@ import { MdArrowForwardIos, MdCheck } from "react-icons/md";
 import { ButtonCheckout } from "../components/Button";
 import CountdownTimer from "../functions/timer";
 import { count } from "console";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 interface Option {
   id: string;
@@ -36,6 +38,22 @@ const options: Option[] = [
   },
 ];
 
+interface DataCartType {
+  event_id: number;
+  type_id: number;
+  type_name: string;
+  type_price: string;
+  qty: number;
+  sub_total: number;
+}
+
+interface Data {
+  type_name: string;
+  type_price: number;
+  qty: number;
+  sub_total: number;
+}
+
 const classNames = (...classes: string[]) => {
   return classes.filter(Boolean).join(" ");
 };
@@ -43,10 +61,39 @@ const classNames = (...classes: string[]) => {
 const Cart: FC = () => {
   const [selectedOption, setSelectedOption] = useState<Option>(options[0]);
   const [isOpen, setIsOpen] = useState(false);
+  const [datas, setDatas] = useState<Partial<DataCartType[]>>([]);
   const [showTimer, setShowTimer] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const count = 5000;
-  const displayCount = count / 1000;
+  // const count = 5000;
+  // const displayCount = count / 1000;
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
+    axios
+      .get(`transactions/cart`)
+      .then((response) => {
+        const { data } = response.data;
+        setDatas(data);
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Failed",
+          text: error,
+          showCancelButton: false,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  console.log(datas);
+  console.log(selectedOption);
 
   const closeModal = () => {
     setIsOpen(false);
@@ -75,8 +122,31 @@ const Cart: FC = () => {
     <Layout>
       <div className="h-full grid grid-cols-1 md:grid-cols-2">
         <div className="p-10 flex flex-col gap-5">
-          <CardCart ticket={"VIP"} price={"RP 150.000"} />
-          <CardCart ticket={"Reguler"} price={"RP 100.000"} />
+          <div>
+            <div className="grid grid-cols-4 items-center bg-gray-800 text-white text-md md:text-xl font-semibold h-16 px-5 rounded-3xl">
+              <div className="flex justify-center">
+                <h1>Event</h1>
+              </div>
+              <div className="flex justify-center">
+                <h1>Price</h1>
+              </div>
+              <div className="flex justify-center">
+                <h1>Qty</h1>
+              </div>
+              <div className="flex justify-center">
+                <h1>Sub Total</h1>
+              </div>
+            </div>
+          </div>
+          {datas &&
+            datas.map((e) => (
+              <CardCart
+                Event={e && e.type_name}
+                Price={e && e.type_price}
+                Qty={e && e.qty}
+                SubTotal={e && e.sub_total}
+              />
+            ))}
         </div>
         <div className="bg-white rounded-l-3xl p-10">
           <div className="top-16">
@@ -253,12 +323,12 @@ const Cart: FC = () => {
                       </button>
                       <div className="text-black flex space-x-3 items-center ">
                         <h1>Pay before :</h1>
-                        {showTimer && (
+                        {/* {showTimer && (
                           <CountdownTimer
                             duration={displayCount}
                             onComplete={handleTimerComplete}
                           />
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </Dialog.Panel>
