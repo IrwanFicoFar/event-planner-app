@@ -172,14 +172,14 @@ export const CardCart: FC<Partial<DataCheckout>> = (props) => {
       <div className="flex justify-center">
         <h1>{Event}</h1>
       </div>
-      <div className="flex justify-center">
-        <h1>{Price}</h1>
+      <div className="flex justify-end">
+        <h1>Rp {Price}</h1>
       </div>
       <div className="flex justify-center">
         <h1>{Qty}</h1>
       </div>
-      <div className="flex justify-center">
-        <h1>{SubTotal}</h1>
+      <div className="flex justify-end">
+        <h1>Rp {SubTotal}</h1>
       </div>
     </div>
   );

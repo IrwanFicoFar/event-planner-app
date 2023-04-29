@@ -62,6 +62,8 @@ const Cart: FC = () => {
   const [selectedOption, setSelectedOption] = useState<Option>(options[0]);
   const [isOpen, setIsOpen] = useState(false);
   const [datas, setDatas] = useState<Partial<DataCartType[]>>([]);
+  const [total, setTotal] = useState<number>();
+  const [formattedNum, setFormattedNum] = useState("");
   const [showTimer, setShowTimer] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -77,7 +79,9 @@ const Cart: FC = () => {
       .get(`transactions/cart`)
       .then((response) => {
         const { data } = response.data;
-        setDatas(data);
+        console.log(data.total);
+        setDatas(data.data);
+        setTotal(data.total);
       })
       .catch((error) => {
         Swal.fire({
@@ -92,8 +96,8 @@ const Cart: FC = () => {
       });
   };
 
-  console.log(datas);
-  console.log(selectedOption);
+  // console.log(datas);
+  // console.log(selectedOption);
 
   const closeModal = () => {
     setIsOpen(false);
@@ -112,12 +116,6 @@ const Cart: FC = () => {
     setShowTimer(true);
   };
 
-  const handleTimerComplete = () => {
-    setShowTimer(false);
-    alert("Time out, please back to checkout again");
-    closeModal();
-  };
-
   return (
     <Layout>
       <div className="h-full grid grid-cols-1 md:grid-cols-2">
@@ -125,7 +123,7 @@ const Cart: FC = () => {
           <div>
             <div className="grid grid-cols-4 items-center bg-gray-800 text-white text-md md:text-xl font-semibold h-16 px-5 rounded-3xl">
               <div className="flex justify-center">
-                <h1>Event</h1>
+                <h1>Ticket</h1>
               </div>
               <div className="flex justify-center">
                 <h1>Price</h1>
@@ -240,7 +238,7 @@ const Cart: FC = () => {
             <h1 className="text-xl font-semibold">Detail order</h1>
             <div className="flex justify-between py-10">
               <h1 className="text-xl font-semibold">Total</h1>
-              <h1 className="text-xl font-semibold">{"Rp 250.000"}</h1>
+              <h1 className="text-xl font-semibold">Rp {total}</h1>
             </div>
             <div className=" flex flex-col">
               <ButtonCheckout
