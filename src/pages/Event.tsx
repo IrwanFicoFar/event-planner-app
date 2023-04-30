@@ -29,17 +29,18 @@ interface EventAdd {
 }
 
 const Event: FC = () => {
-  const [isOpen, setIsOpen] = useState(true);
-  const [objSubmit, setObjSubmit] = useState<Partial<EventAdd>>({});
   const [data, setData] = useState<EventAdd[]>([]);
+  const [dataHistory, setDataHistory] = useState<EventAdd[]>([]);
   // const [image, setImage] = useState<Partial<EventAdd>>({});
   const [csrf, setCsrf] = useState<string>("");
+  const [csrfHistory, setCsrfHistory] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
 
   document.title = `My Event | Event Management`;
 
   useEffect(() => {
     fetchData();
+    fetchDataHistory();
   }, []);
 
   const fetchData = () => {
@@ -63,40 +64,29 @@ const Event: FC = () => {
       });
   };
 
-  console.log(data);
-  console.log(csrf);
-
-  const closeModal = () => {
-    setIsOpen(false);
+  const fetchDataHistory = () => {
+    axios
+      .get(`users/history`)
+      .then((response) => {
+        const { data } = response.data;
+        setDataHistory(data.data);
+        setCsrfHistory(data.csrf);
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Failed",
+          text: error,
+          showCancelButton: false,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
-  const openModal = () => {
-    setIsOpen(true);
-  };
-
-  const handleEditEvent = () => {
-    alert("handle edit");
-  };
-
-  const handleChange = (
-    value: string | File | number,
-    key: keyof typeof objSubmit
-  ) => {
-    console.log(value);
-    let temp = { ...objSubmit };
-    if (value === null) {
-      temp[key] = null;
-    } else {
-      temp[key] = value;
-    }
-    setObjSubmit(temp);
-  };
-
-  const handleSubmit = () => {
-    // setObjSubmit(objSubmit.concat(type));
-    console.log(objSubmit);
-    alert("submit");
-  };
+  console.log(dataHistory);
+  console.log(csrfHistory);
 
   return (
     <Layout>
@@ -113,7 +103,7 @@ const Event: FC = () => {
         ) : (
           <div>
             <div className="bg-white w-full pt-32 px-16 sm:px-10 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
-              {data.map((e) => {
+              {data.map((e: EventAdd) => {
                 const date = new Date(e.date);
                 const optionsHeader = {
                   year: "numeric",
@@ -146,9 +136,6 @@ const Event: FC = () => {
                     participants={e.participants}
                     hosted_by={e.hosted_by}
                     goTo={`/edit-event/${e.id}`}
-                    onClick={() => {
-                      openModal();
-                    }}
                   />
                 );
               })}
@@ -161,10 +148,44 @@ const Event: FC = () => {
               </div>
             </div>
             <div className="bg-gray-300 w-full pt-32 px-16 sm:px-10 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
-              <Card />
-              <Card />
-              <Card />
-              <Card />
+              {dataHistory.map((e: EventAdd | undefined) => {
+                if (!e) {
+                  return null; // or some other value to represent undefined elements
+                }
+                const date = new Date(e.date);
+                const optionsHeader = {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour12: false,
+                } as Intl.DateTimeFormatOptions;
+                const options = {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour12: false,
+                } as Intl.DateTimeFormatOptions;
+                const dateStringHeader = date.toLocaleDateString(
+                  "en-US",
+                  optionsHeader
+                );
+                const dateString = date.toLocaleDateString("en-US", options);
+                const timeString = date.toLocaleTimeString();
+                return (
+                  <Card
+                    key={e.id}
+                    image={e.image === "" ? e.image : `/header2.jpg`}
+                    name={e.name}
+                    dateHeader={dateStringHeader}
+                    date={dateString}
+                    time={timeString}
+                    location={e.location}
+                    participants={e.participants}
+                    hosted_by={e.hosted_by}
+                  />
+                );
+              })}
             </div>
           </div>
         )}
