@@ -62,6 +62,8 @@ const Cart: FC = () => {
   const [invoice, setInvoice] = useState("");
   const navigate = useNavigate();
 
+  document.title = `Cart | Transactions Management`;
+
   useEffect(() => {
     fetchData();
   }, []);

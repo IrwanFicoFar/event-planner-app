@@ -32,6 +32,8 @@ const Home: FC = () => {
   const [datas, setDatas] = useState<DataType[]>([]);
   const [csrf, setCsrf] = useState<string>("");
 
+  document.title = `Event Planner App | index management`;
+
   useEffect(() => {
     fetchData();
   }, []);

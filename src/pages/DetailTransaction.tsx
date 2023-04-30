@@ -59,6 +59,8 @@ const DetailTransaction: FC = () => {
   const [eventName, setEventName] = useState<string>("");
   const [status, setStatus] = useState<string>("");
 
+  document.title = `Detail | Transactions Management`;
+
   useEffect(() => {
     fetchDataEvent();
   }, []);
