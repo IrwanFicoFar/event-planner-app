@@ -96,7 +96,7 @@ export const Navbar: FC = () => {
                         Cart
                       </Link>
                       <Link
-                        to="/detail-transaction"
+                        to={`/detail-transaction/`}
                         className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium"
                       >
                         <BiMessageSquareDetail />

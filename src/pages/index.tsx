@@ -117,47 +117,54 @@ const Home: FC = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white w-full pt-32 px-16 sm:px-10 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
-          {datas.map((e) => {
-            const date = new Date(e.date);
-            const optionsHeader = {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              hour12: false,
-            } as Intl.DateTimeFormatOptions;
-            const options = {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              hour12: false,
-            } as Intl.DateTimeFormatOptions;
-            const dateStringHeader = date.toLocaleDateString(
-              "en-US",
-              optionsHeader
-            );
-            const dateString = date.toLocaleDateString("en-US", options);
-            const timeString = date.toLocaleTimeString(); // format: 5:17:02 PM
-            return (
-              <Card
-                key={e.id}
-                image={e.image === "" ? e.image : `/header2.jpg`}
-                name={e.name}
-                dateHeader={dateStringHeader}
-                date={dateString}
-                time={timeString}
-                location={e.location}
-                participants={e.participants}
-                hosted_by={e.hosted_by}
-                id={e.id}
-              />
-            );
-          })}
-        </div>
-        <div className="bg-white h-20 flex justify-center items-center border-2 border-black">
-          <h1 className="text-xl text-black font-semibold">Pagination</h1>
-        </div>
+
+        {loading ? (
+          <div className="h-screen text-black bg-white font-bold text-3xl flex justify-center pt-24">
+            Loading...
+          </div>
+        ) : (
+          <div className="bg-white w-full pt-32 px-16 sm:px-10 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
+            {datas.map((e) => {
+              const date = new Date(e.date);
+              const optionsHeader = {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour12: false,
+              } as Intl.DateTimeFormatOptions;
+              const options = {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour12: false,
+              } as Intl.DateTimeFormatOptions;
+              const dateStringHeader = date.toLocaleDateString(
+                "en-US",
+                optionsHeader
+              );
+              const dateString = date.toLocaleDateString("en-US", options);
+              const timeString = date.toLocaleTimeString(); // format: 5:17:02 PM
+              return (
+                <Card
+                  key={e.id}
+                  image={e.image === "" ? e.image : `/header2.jpg`}
+                  name={e.name}
+                  dateHeader={dateStringHeader}
+                  date={dateString}
+                  time={timeString}
+                  location={e.location}
+                  participants={e.participants}
+                  hosted_by={e.hosted_by}
+                  id={e.id}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
+      <div className="bg-white h-20 flex justify-center items-center border-2 border-black">
+        <h1 className="text-xl text-black font-semibold">Pagination</h1>
       </div>
     </Layout>
   );

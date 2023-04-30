@@ -1,4 +1,11 @@
-import { FC, Fragment, useEffect, useState, ReactNode } from "react";
+import {
+  FC,
+  Fragment,
+  useEffect,
+  useState,
+  ReactNode,
+  useContext,
+} from "react";
 import { Layout } from "../components/Layout";
 import { ButtonAction, ButtonCheckout } from "../components/Button";
 import { Dialog, Listbox, Transition } from "@headlessui/react";
@@ -7,7 +14,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { CardModalTicket } from "../components/Card";
-// import "../styles/print.css";
+import { useCookies } from "react-cookie";
 
 interface DataInvoice {
   total: string;
@@ -26,11 +33,9 @@ interface DataInvoice {
   ];
 }
 
-interface selectedData {
-  name: ReactNode;
-  price: number;
-  qty: number;
-  sub_total: number;
+interface DataEvent {
+  event_name: string;
+  invoice: string;
 }
 
 interface DataTicket {
@@ -46,25 +51,24 @@ const DetailTransaction: FC = () => {
   const [ticketIsOpen, setTicketIsOpen] = useState(false);
   const [csrf, setCsrf] = useState<string>("");
   const [csrfTicket, setCsrfTicket] = useState<string>("");
+  const [dataEvent, setDataEvent] = useState<DataEvent[]>([]);
   const [datas, setDatas] = useState<Partial<DataInvoice>>({});
   const [datasTicket, setDatasTicket] = useState<Partial<DataTicket[]>>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedData, setSelectedData] = useState<Partial<selectedData>>({});
-
-  const navigate = useNavigate();
+  const [invoice, setInvoice] = useState<string>("");
+  const [eventName, setEventName] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
 
   useEffect(() => {
-    fetchInvoice();
-    fetchTicket();
+    fetchDataEvent();
   }, []);
 
-  const fetchInvoice = () => {
+  const fetchDataEvent = () => {
     axios
-      .get(`/transactions/{invoice}`)
+      .get(`/users/transactions`)
       .then((response) => {
         const { data } = response.data;
-        setDatas(data.data);
-        setCsrf(data.csrf);
+        setDataEvent(data.data);
       })
       .catch((error) => {
         Swal.fire({
@@ -77,33 +81,79 @@ const DetailTransaction: FC = () => {
       .finally(() => setLoading(false));
   };
 
-  const fetchTicket = () => {
-    axios
-      .get(`/tickets/{invoice}`)
-      .then((response) => {
-        const { data } = response.data;
-        setDatasTicket(data.data);
-        setCsrfTicket(data.csrf);
-      })
-      .catch((error) => {
-        Swal.fire({
-          icon: "error",
-          title: "Failed",
-          text: error,
-          showCancelButton: false,
+  const handleInvoiceModal = (invoice: string) => {
+    if (invoice !== "") {
+      console.log(invoice);
+      axios
+        .get(`/transactions/{${invoice}}`)
+        .then((response) => {
+          const { data } = response.data;
+          setDatas(data.data);
+          setCsrf(data.csrf);
+          setStatus(data.data.status);
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: "error",
+            title: "Failed",
+            text: error,
+            showCancelButton: false,
+          });
+        })
+        .finally(() => {
+          openModal();
+          setLoading(false);
         });
-      })
-      .finally(() => setLoading(false));
+    }
   };
 
-  // console.log
-
-  const handleInvoiceModal = () => {
-    openModal();
-  };
-
-  const handleTicketModal = () => {
-    setTicketIsOpen(true);
+  const handleTicketModal = (invoice: string) => {
+    if (invoice !== "") {
+      console.log(invoice);
+      axios
+        .get(`/transactions/{${invoice}}`)
+        .then((response) => {
+          const { data } = response.data;
+          setStatus(data.data.status);
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: "error",
+            title: "Failed",
+            text: error,
+            showCancelButton: false,
+          });
+        })
+        .finally(() => {
+          if (status === "unpaid" || status === "") {
+            Swal.fire({
+              icon: "info",
+              title: "please pay first",
+              showCancelButton: false,
+            });
+          } else {
+            axios
+              .get(`/tickets/${invoice}`)
+              .then((response) => {
+                const { data } = response.data;
+                setDatasTicket(data.data);
+                setCsrfTicket(data.csrf);
+              })
+              .catch((error) => {
+                Swal.fire({
+                  icon: "error",
+                  title: "Failed",
+                  text: error,
+                  showCancelButton: false,
+                });
+              })
+              .finally(() => {
+                openModalTicket();
+                setLoading(false);
+              });
+          }
+        });
+    }
   };
 
   const closeModal = () => {
@@ -112,6 +162,10 @@ const DetailTransaction: FC = () => {
 
   const openModal = () => {
     setIsOpen(true);
+  };
+
+  const openModalTicket = () => {
+    setTicketIsOpen(true);
   };
 
   const closeModalTicket = () => {
@@ -174,56 +228,46 @@ const DetailTransaction: FC = () => {
         <div className="h-screen bg-white py-10 px-3 md:px-20">
           <div className="grid grid-cols-3 text-white text-lg md:text-2xl font-semibold bg-black py-8 rounded-3xl my-5">
             <div className="flex justify-center">
+              <h1>Event</h1>
+            </div>
+            <div className="flex justify-center">
+              <h1>Invoice</h1>
+            </div>
+            <div className="flex justify-center">
               <h1>Ticket</h1>
             </div>
-            <div className="flex justify-center">
-              <h1>Qty</h1>
-            </div>
-            <div className="flex justify-center">
-              <h1>See Ticket</h1>
-            </div>
           </div>
-          {datas &&
-            datas.item_details &&
-            datas.item_details.map((e, index) => (
+          {dataEvent &&
+            dataEvent.map((e: DataEvent, index: number) => (
               <div
                 key={index}
-                className="grid grid-cols-3 text-black md:text-xl font-semibold bg-gray-200 py-5 items-center rounded-3xl my-5"
+                className="grid grid-cols-3 text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
               >
                 <div className="flex justify-center">
-                  <h1>{e.name}</h1>
+                  <h1>{e.event_name}</h1>
                 </div>
                 <div className="flex justify-center">
-                  {e.qty}
-                  <div className="mx-1">{e.qty <= 1 ? "pc" : "pcs"}</div>
+                  <ButtonCheckout
+                    id="1"
+                    label="Invoice"
+                    onClick={() => {
+                      setEventName(e.event_name);
+                      setInvoice(e.invoice);
+                      handleInvoiceModal(e.invoice);
+                    }}
+                  />
                 </div>
                 <div className="flex justify-center">
-                  {datas.status === "paid" ? (
-                    <ButtonCheckout
-                      id="1"
-                      label="Ticket"
-                      onClick={() => {
-                        setSelectedData(e);
-                        handleTicketModal();
-                      }}
-                    />
-                  ) : (
-                    <div>Pay to have ticket</div>
-                  )}
+                  <ButtonCheckout
+                    id="1"
+                    label="Ticket"
+                    onClick={() => {
+                      handleTicketModal(e.invoice);
+                    }}
+                  />
                 </div>
               </div>
             ))}
-          <div className="grid grid-cols-3 text-black md:text-xl font-semibold py-5 items-center rounded-3xl my-5">
-            <div className="flex justify-center"></div>
-            <div className="flex justify-center">Detail Transaction : </div>
-            <div className="flex justify-center">
-              <ButtonAction
-                id="1"
-                label="klick here"
-                onClick={() => handleInvoiceModal()}
-              />
-            </div>
-          </div>
         </div>
       )}
 
@@ -261,10 +305,14 @@ const DetailTransaction: FC = () => {
                       <div className="mt-14 flex flex-col justify-center items-center  font-medium">
                         <h1 className="text-white text-xl">INVOICE</h1>
                         <h1 className="text-gray-500 italic text-md">
-                          {"(NO: INV232323232 )"}
+                          (NO: {invoice})
                         </h1>
                       </div>
-                      <div className="grid grid-cols-3 px-10 mt-10 font-semibold">
+                      <div className="mt-14 pl-10 flex items-center space-x-3 font-medium">
+                        <h1 className="text-white text-xl">EVENT NAME : </h1>
+                        <h1 className="text-gray-500 text-xl">{eventName}</h1>
+                      </div>
+                      <div className="grid grid-cols-3 px-10 mt-5 font-semibold">
                         <div>
                           <h1 className="text-gray-500">AMOUNT PAID</h1>
                           <h1>Rp {datas && datas.total}</h1>
@@ -464,10 +512,8 @@ const DetailTransaction: FC = () => {
                                 option
                               );
                               timeString = date.toLocaleTimeString();
-                            }
-                            return (
-                              <div>
-                                {e && e.ticket_type === selectedData.name ? (
+                              return (
+                                <div>
                                   <CardModalTicket
                                     type={e.ticket_type}
                                     name={e.event_name}
@@ -476,11 +522,9 @@ const DetailTransaction: FC = () => {
                                     location={e.location}
                                     hosted_by={e.hosted_by}
                                   />
-                                ) : (
-                                  <></>
-                                )}
-                              </div>
-                            );
+                                </div>
+                              );
+                            }
                           })}
                       </div>
                       <div className="flex justify-between px-10 py-10">
