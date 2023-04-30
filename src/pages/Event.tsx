@@ -131,7 +131,7 @@ const Event: FC = () => {
                   optionsHeader
                 );
                 const dateString = date.toLocaleDateString("en-US", options);
-                const timeString = date.toLocaleTimeString(); // format: 5:17:02 PM
+                const timeString = date.toLocaleTimeString();
                 return (
                   <CardEdit
                     key={e.id}

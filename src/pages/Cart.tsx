@@ -1,13 +1,15 @@
-import { FC, Fragment, useState, useEffect } from "react";
+import { FC, Fragment, useState, useEffect, createContext } from "react";
 import { Layout } from "../components/Layout";
 import { CardCart, PaymentMethode } from "../components/Card";
 import { Dialog, Listbox, Transition } from "@headlessui/react";
 import { MdArrowForwardIos, MdCheck } from "react-icons/md";
 import { ButtonCheckout } from "../components/Button";
-import CountdownTimer from "../functions/timer";
-import { count } from "console";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
+
+export const InvoiceContext = createContext("");
 
 interface Option {
   id: string;
@@ -18,23 +20,23 @@ interface Option {
 const options: Option[] = [
   {
     id: "1",
-    name: "Bank BCA",
+    name: "bca",
     image: "bca.png",
   },
   {
     id: "2",
-    name: "Bank Mandiri",
+    name: "mandiri",
     image: "Mandiri_logo.png",
   },
   {
     id: "3",
-    name: "Indomaret",
+    name: "indomaret",
     image: "indomaret.png",
   },
   {
     id: "4",
-    name: "Alfamaret",
-    image: "alfamaret.png",
+    name: "gopay",
+    image: "gopay.png",
   },
 ];
 
@@ -47,13 +49,6 @@ interface DataCartType {
   sub_total: number;
 }
 
-interface Data {
-  type_name: string;
-  type_price: number;
-  qty: number;
-  sub_total: number;
-}
-
 const classNames = (...classes: string[]) => {
   return classes.filter(Boolean).join(" ");
 };
@@ -62,11 +57,10 @@ const Cart: FC = () => {
   const [selectedOption, setSelectedOption] = useState<Option>(options[0]);
   const [isOpen, setIsOpen] = useState(false);
   const [datas, setDatas] = useState<Partial<DataCartType[]>>([]);
-  const [showTimer, setShowTimer] = useState(false);
+  const [total, setTotal] = useState<number>();
   const [loading, setLoading] = useState<boolean>(true);
-
-  // const count = 5000;
-  // const displayCount = count / 1000;
+  const [invoice, setInvoice] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -77,7 +71,8 @@ const Cart: FC = () => {
       .get(`transactions/cart`)
       .then((response) => {
         const { data } = response.data;
-        setDatas(data);
+        setDatas(data.data);
+        setTotal(data.total);
       })
       .catch((error) => {
         Swal.fire({
@@ -92,9 +87,6 @@ const Cart: FC = () => {
       });
   };
 
-  console.log(datas);
-  console.log(selectedOption);
-
   const closeModal = () => {
     setIsOpen(false);
   };
@@ -104,50 +96,76 @@ const Cart: FC = () => {
   };
 
   const handleCheckout = () => {
-    alert("success pay");
-    closeModal();
+    axios
+      .post(`/transactions/checkout`, {
+        event_id: datas?.[0]?.event_id,
+        payment_methode: selectedOption,
+        items_detail: datas,
+      })
+      .then((response) => {
+        const { message, code, data } = response.data;
+        setInvoice(data.invoice);
+        Swal.fire({
+          icon: "success",
+          title: code,
+          text: message,
+          showCancelButton: false,
+          showConfirmButton: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            openModal();
+          }
+        });
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Failed",
+          text: error,
+          showCancelButton: false,
+        });
+      })
+      .finally(() => {});
   };
 
-  const handleStartTimer = () => {
-    setShowTimer(true);
-  };
-
-  const handleTimerComplete = () => {
-    setShowTimer(false);
-    alert("Time out, please back to checkout again");
-    closeModal();
-  };
-
+  console.log(invoice);
   return (
     <Layout>
       <div className="h-full grid grid-cols-1 md:grid-cols-2">
-        <div className="p-10 flex flex-col gap-5">
-          <div>
-            <div className="grid grid-cols-4 items-center bg-gray-800 text-white text-md md:text-xl font-semibold h-16 px-5 rounded-3xl">
-              <div className="flex justify-center">
-                <h1>Event</h1>
-              </div>
-              <div className="flex justify-center">
-                <h1>Price</h1>
-              </div>
-              <div className="flex justify-center">
-                <h1>Qty</h1>
-              </div>
-              <div className="flex justify-center">
-                <h1>Sub Total</h1>
+        {loading ? (
+          <div className=" text-white bg-black font-bold text-3xl flex justify-center pt-24">
+            Loading...
+          </div>
+        ) : (
+          <div className="p-10 flex flex-col gap-5">
+            <div>
+              <div className="grid grid-cols-4 items-center bg-gray-800 text-white text-md md:text-xl font-semibold h-16 px-5 rounded-3xl">
+                <div className="flex justify-center">
+                  <h1>Ticket</h1>
+                </div>
+                <div className="flex justify-center">
+                  <h1>Price</h1>
+                </div>
+                <div className="flex justify-center">
+                  <h1>Qty</h1>
+                </div>
+                <div className="flex justify-center">
+                  <h1>Sub Total</h1>
+                </div>
               </div>
             </div>
+            {datas &&
+              datas.map((e) => (
+                <CardCart
+                  key={e && e.type_id}
+                  Event={e && e.type_name}
+                  Price={e && e.type_price}
+                  Qty={e && e.qty}
+                  SubTotal={e && e.sub_total}
+                />
+              ))}
           </div>
-          {datas &&
-            datas.map((e) => (
-              <CardCart
-                Event={e && e.type_name}
-                Price={e && e.type_price}
-                Qty={e && e.qty}
-                SubTotal={e && e.sub_total}
-              />
-            ))}
-        </div>
+        )}
         <div className="bg-white rounded-l-3xl p-10">
           <div className="top-16">
             <Listbox value={selectedOption} onChange={setSelectedOption}>
@@ -240,14 +258,13 @@ const Cart: FC = () => {
             <h1 className="text-xl font-semibold">Detail order</h1>
             <div className="flex justify-between py-10">
               <h1 className="text-xl font-semibold">Total</h1>
-              <h1 className="text-xl font-semibold">{"Rp 250.000"}</h1>
+              <h1 className="text-xl font-semibold">Rp {total}</h1>
             </div>
             <div className=" flex flex-col">
               <ButtonCheckout
                 label="Checkout "
                 onClick={() => {
-                  handleStartTimer();
-                  openModal();
+                  handleCheckout();
                 }}
               />
             </div>
@@ -283,9 +300,10 @@ const Cart: FC = () => {
                   <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                     <Dialog.Title
                       as="h3"
-                      className="text-lg font-semibold flex justify-center leading-6 text-gray-900 py-5"
+                      className="flex flex-col text-lg font-semibold items-center justify-center leading-6 text-gray-900 py-5"
                     >
-                      Detail Transaction
+                      <h1>Transaction</h1>
+                      <h1 className="italic text-gray-500">(NO:{invoice})</h1>
                     </Dialog.Title>
                     <div className="mt-2 text-black">
                       <div className="grid grid-cols-2">
@@ -299,15 +317,13 @@ const Cart: FC = () => {
                           <div className="flex flex-col sm:flex-row justify-between py-5 ">
                             <h1 className="md:text-xl font-semibold">Total</h1>
                             <h1 className="md:text-xl font-semibold">
-                              {"Rp 250.000"}
+                              {total}
                             </h1>
                           </div>
                           <div className=" flex flex-col">
                             <ButtonCheckout
-                              label="Pay Now"
-                              onClick={() => {
-                                handleCheckout();
-                              }}
+                              label="Detail Transactions"
+                              onClick={() => navigate(`/detail-transaction`)}
                             />
                           </div>
                         </div>

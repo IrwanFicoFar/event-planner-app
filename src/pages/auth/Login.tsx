@@ -52,7 +52,7 @@ const Login: FC = () => {
         }).then((result) => {
           if (result.isConfirmed) {
             setCookie("tkn", data.Token);
-            setCookie("uname", data.Token); // sementara uname pake token dlu aja
+            // setCookie("uname", data.Token); // sementara uname pake token dlu aja
             navigate("/");
           }
         });
