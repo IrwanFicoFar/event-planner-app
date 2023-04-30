@@ -278,3 +278,41 @@ export const CardEdit: FC<Partial<DataCard>> = (props) => {
     </div>
   );
 };
+
+interface DataModalTicket {
+  type: string;
+  name: string;
+  date: string;
+  time: string;
+  location: string;
+  hosted_by: string;
+}
+
+export const CardModalTicket: FC<DataModalTicket> = (props) => {
+  const { type, name, date, time, location, hosted_by } = props;
+  return (
+    <div className={`rounded-2xl bg-teal-500 p-4 flex border-2 my-5`}>
+      <div className=" rounded-2xl my-16 -rotate-90 text-black text-3xl font-semibold w-[10%] mr-2 flex justify-center">
+        {type}
+      </div>
+      <div className="bg-white w-[100%] border-2  rounded-2xl text-black p-5 flex flex-col justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold mb-1">{name}</h1>
+          <div className="font-semibold flex space-x-2">
+            <BiTime className="text-orange-500 text-xl" />
+            <div>
+              {date} at {time}
+            </div>
+          </div>
+          <div className="font-semibold flex space-x-2">
+            <BiMap className="text-orange-500 text-xl" />
+            <div>{location}</div>
+          </div>
+        </div>
+        <div>
+          <p className="font-semibold">Hosted By: {hosted_by}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
