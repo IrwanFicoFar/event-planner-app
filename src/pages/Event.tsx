@@ -36,6 +36,8 @@ const Event: FC = () => {
   const [csrf, setCsrf] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
 
+  document.title = `My Event | Event Management`;
+
   useEffect(() => {
     fetchData();
   }, []);

@@ -1,7 +1,10 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, FormEvent, MouseEvent } from "react";
 import { Layout } from "../components/Layout";
 import { Input, TextArea } from "../components/Input";
 import { ButtonAction } from "../components/Button";
+import Swal from "sweetalert2";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface EventAdd {
   id: string;
@@ -13,17 +16,17 @@ interface EventAdd {
   date: string;
   time: string;
   location: string;
-  qty: number;
+  quota: number;
   duration: number;
   ticket: string;
   price: number;
   image: any;
-  hosted: string;
+  hosted_by: string;
 }
 
 interface dataTicket {
-  addTicket: string;
-  price: number;
+  type_name: string;
+  type_price: string;
 }
 
 const AddEvent: FC = () => {
@@ -32,35 +35,29 @@ const AddEvent: FC = () => {
   const [type, setType] = useState<dataTicket[]>([]);
   const [displayAddTicket, setDisplayAddTicket] = useState<string>("");
   const [ticket, setTicket] = useState<dataTicket>({
-    addTicket: "",
-    price: 0,
+    type_name: "",
+    type_price: "",
   });
 
-  // console.log(type);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setDisplayAddTicket("");
   }, [type]);
 
-  const handleAddTicket = () => {
-    setDisplayAddTicket("");
-    if (ticket.addTicket === "") {
-      alert("ticket empty, please fill");
-      return;
+  const handleAddTicket = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    if (ticket.type_name === "") {
+      Swal.fire({
+        icon: "warning",
+        title: "ticket empty, fill please ",
+        showCancelButton: false,
+      });
     } else {
       setType(type.concat(ticket));
-      setTicket({
-        addTicket: "",
-        price: 0,
-      });
     }
   };
-  console.log(displayAddTicket);
-
-  const handleSubmit = () => {
-    // setObjSubmit(objSubmit.concat(type));
-    console.log(objSubmit);
-  };
+  console.log(type);
 
   const handleChange = (
     value: string | File | number,
@@ -76,7 +73,28 @@ const AddEvent: FC = () => {
     setObjSubmit(temp);
   };
 
-  console.log(objSubmit);
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    axios
+      .post("/events", {
+        objSubmit,
+        type,
+      })
+      .then((response) => {
+        const { code, message } = response.data;
+        Swal.fire({
+          icon: "success",
+          title: code,
+          text: message,
+          showCancelButton: false,
+          showConfirmButton: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/");
+          }
+        });
+      });
+  };
 
   return (
     <Layout>
@@ -120,7 +138,7 @@ const AddEvent: FC = () => {
               </div>
             </div>
           </div>
-          <form>
+          <form onSubmit={(event) => handleSubmit(event)}>
             <div className="flex flex-col gap-3 sm:gap-6 md:gap-8 px-5 sm:px-10 md:px-16 lg:px-18 xl:px-20  py-10 ms:py-16 md:py-20">
               <Input
                 placeholder="Name"
@@ -132,7 +150,9 @@ const AddEvent: FC = () => {
                 placeholder=""
                 id="input-host"
                 defaultValue={"hosted by"}
-                onChange={(event) => handleChange(event.target.value, "hosted")}
+                onChange={(event) =>
+                  handleChange(event.target.value, "hosted_by")
+                }
               />
               <TextArea
                 placeholder="Detail"
@@ -153,7 +173,9 @@ const AddEvent: FC = () => {
                   id="input-qty"
                   // defaultValue={"Kuota"}
                   type="number"
-                  onChange={(event) => handleChange(event.target.value, "qty")}
+                  onChange={(event) =>
+                    handleChange(event.target.value, "quota")
+                  }
                 />
                 <Input
                   placeholder="Duration"
@@ -162,25 +184,6 @@ const AddEvent: FC = () => {
                   type="number"
                   onChange={(event) =>
                     handleChange(event.target.value, "duration")
-                  }
-                />
-              </div>
-              <div className="flex space-x-4">
-                <Input
-                  placeholder="Add Ticket"
-                  id="input-ticket"
-                  type="text"
-                  // defaultValue={`${displayAddTicket}`}
-                  onChange={(event) =>
-                    handleChange(event.target.value, "ticket")
-                  }
-                />
-                <Input
-                  placeholder="Price"
-                  id="input-price"
-                  type="number"
-                  onChange={(event) =>
-                    handleChange(event.target.value, "price")
                   }
                 />
               </div>
@@ -193,9 +196,43 @@ const AddEvent: FC = () => {
                   handleChange(event.target.value, "location")
                 }
               />
-
+              <div className="flex space-x-4">
+                <Input
+                  placeholder="Add Ticket"
+                  id="input-ticket"
+                  type="text"
+                  // defaultValue={`${displayAddTicket}`}
+                  onChange={(event) =>
+                    setTicket({ ...ticket, type_name: event.target.value })
+                  }
+                />
+                <Input
+                  placeholder="Price"
+                  id="input-price"
+                  type="number"
+                  onChange={(event) =>
+                    setTicket({ ...ticket, type_price: event.target.value })
+                  }
+                />
+                <ButtonAction
+                  label="Submit"
+                  onClick={(event) => handleAddTicket(event)}
+                />
+              </div>
+              <div>
+                {type.map((e) => (
+                  <div className="grid grid-cols-3 gap-5">
+                    <div className="bg-orange-200 text-black text-lg py-2 px-3 my-2 font-semibold rounded-xl">
+                      {e.type_name}
+                    </div>
+                    <div className="bg-orange-200 text-black text-lg py-2 px-3 my-2 font-semibold rounded-xl">
+                      {e.type_price}
+                    </div>
+                  </div>
+                ))}
+              </div>
               <div className="flex flex-col py-5 sm:py-10  md:py-16 lg:py-20">
-                <ButtonAction label="Submit" onClick={() => handleSubmit()} />
+                <ButtonAction label="Submit" type="submit" />
               </div>
             </div>
           </form>
