@@ -238,7 +238,10 @@ export const Navbar: FC = () => {
                   <BiCalendarCheck />
                   Event
                 </Link>
-                <button className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700">
+                <button
+                  className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
+                  onClick={() => handleLogout()}
+                >
                   <BiLogOut />
                   Log out
                 </button>

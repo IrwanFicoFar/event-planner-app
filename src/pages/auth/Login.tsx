@@ -46,24 +46,21 @@ const Login: FC = () => {
       })
       .then((response) => {
         const { data, message, code } = response.data;
-        console.log(data.Token);
+        console.log(data.token);
+        setCookie("tkn", data.token);
         Swal.fire({
+          position: "top-right",
           icon: "success",
           title: code,
           text: message,
-          showConfirmButton: true,
+          showConfirmButton: false,
           showCancelButton: false,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            setCookie("tkn", data.Token);
-            // setCookie("uname", data.Token); // sementara uname pake token dlu aja
-            navigate("/");
-          }
+          timer: 1500,
         });
+        navigate("/");
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        console.log(error);
         Swal.fire({
           icon: "error",
           title: code,
