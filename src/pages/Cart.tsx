@@ -174,7 +174,7 @@ const Cart: FC = () => {
               {({ open }) => (
                 <>
                   <div className="relative">
-                    <Listbox.Button className="flex items-center justify-between relative w-full py-2 bg-white text-black rounded-3xl border-4 border-black shadow-md  focus:outline-none sm:text-sm">
+                    <Listbox.Button className="flex items-center justify-between relative w-full py-2 bg-white hover:bg-orange-400 text-black rounded-3xl border-4 border-black shadow-md duration-300  focus:outline-none sm:text-sm">
                       <span className="flex items-center sm:text-xl font-semibold">
                         <PaymentMethode
                           id={selectedOption.id}
@@ -206,7 +206,7 @@ const Cart: FC = () => {
                             className={({ active }) =>
                               classNames(
                                 active
-                                  ? "text-black text-xl bg-gray-100"
+                                  ? "text-black text-xl bg-orange-200"
                                   : "text-gray-900",
                                 "cursor-default select-none relative py-3 sm:py-7 pl-3 pr-9"
                               )
@@ -334,7 +334,7 @@ const Cart: FC = () => {
                     <div className="mt-4 flex justify-between">
                       <button
                         type="button"
-                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        className="bg-red-600 hover:bg-blue-500 hover:-translate-y-1 duration-300 py-3 px-10 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold "
                         onClick={closeModal}
                       >
                         close

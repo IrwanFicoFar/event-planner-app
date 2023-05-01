@@ -365,7 +365,7 @@ const DetailTransaction: FC = () => {
                               {datas.payment_method === "gopay" ? (
                                 <button
                                   type="button"
-                                  className="w-full bg-orange-500 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
+                                  className="w-full bg-orange-500 hover:bg-@028090 hover:-translate-y-1 duration-300 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
                                   onClick={handlePayGopay}
                                 >
                                   Pay Now
@@ -373,7 +373,7 @@ const DetailTransaction: FC = () => {
                               ) : datas.payment_method === "bca" ? (
                                 <button
                                   type="button"
-                                  className="w-full  bg-orange-500 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
+                                  className="w-full  bg-orange-500 hover:bg-@028090 hover:-translate-y-1 duration-300 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
                                   onClick={handlePayBca}
                                 >
                                   Pay Now
@@ -381,7 +381,7 @@ const DetailTransaction: FC = () => {
                               ) : datas.payment_method === "mandiri" ? (
                                 <button
                                   type="button"
-                                  className="w-full  bg-orange-500 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
+                                  className="w-full  bg-orange-500 hover:bg-@028090 hover:-translate-y-1 duration-300 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
                                   onClick={handlePayMandiri}
                                 >
                                   Pay Now
@@ -389,7 +389,7 @@ const DetailTransaction: FC = () => {
                               ) : datas.payment_method === "indomaret" ? (
                                 <button
                                   type="button"
-                                  className=" w-full bg-orange-500 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
+                                  className=" w-full bg-orange-500 hover:bg-@028090 hover:-translate-y-1 duration-300 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
                                   onClick={handlePayIndomaret}
                                 >
                                   Pay Now
@@ -444,7 +444,7 @@ const DetailTransaction: FC = () => {
                       <div className="mt-4 flex justify-between px-10">
                         <button
                           type="button"
-                          className="bg-red-600 py-3 px-10 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
+                          className="bg-red-600 hover:bg-blue-500 hover:-translate-y-1 duration-300 py-3 px-10 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold "
                           onClick={closeModal}
                         >
                           close
@@ -532,7 +532,7 @@ const DetailTransaction: FC = () => {
                       <div className="flex justify-between px-10 py-10">
                         <button
                           type="button"
-                          className="bg-red-600 py-3 px-10 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold "
+                          className="bg-red-600 hover:bg-blue-500 hover:-translate-y-1 duration-300 py-3 px-10 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold "
                           onClick={closeModalTicket}
                         >
                           close

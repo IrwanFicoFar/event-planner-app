@@ -26,7 +26,7 @@ interface EventAdd {
 
 interface dataTicket {
   type_name: string;
-  type_price: string;
+  price: string;
 }
 
 const AddEvent: FC = () => {
@@ -36,7 +36,7 @@ const AddEvent: FC = () => {
   const [displayAddTicket, setDisplayAddTicket] = useState<string>("");
   const [ticket, setTicket] = useState<dataTicket>({
     type_name: "",
-    type_price: "",
+    price: "",
   });
 
   const navigate = useNavigate();
@@ -76,10 +76,18 @@ const AddEvent: FC = () => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     axios
-      .post("/events", {
-        objSubmit,
-        type,
-      })
+      .post(
+        "/events",
+        {
+          objSubmit,
+          type: type,
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
       .then((response) => {
         const { code, message } = response.data;
         Swal.fire({
@@ -211,7 +219,7 @@ const AddEvent: FC = () => {
                   id="input-price"
                   type="number"
                   onChange={(event) =>
-                    setTicket({ ...ticket, type_price: event.target.value })
+                    setTicket({ ...ticket, price: event.target.value })
                   }
                 />
                 <ButtonAction
@@ -226,7 +234,7 @@ const AddEvent: FC = () => {
                       {e.type_name}
                     </div>
                     <div className="bg-orange-200 text-black text-lg py-2 px-3 my-2 font-semibold rounded-xl">
-                      {e.type_price}
+                      {e.price}
                     </div>
                   </div>
                 ))}

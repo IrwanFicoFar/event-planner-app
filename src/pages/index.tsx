@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Layout } from "../components/Layout";
 import { Input } from "../components/Input";
 import { BiSearchAlt } from "react-icons/bi";
@@ -7,6 +7,7 @@ import { ButtonAction } from "../components/Button";
 import { Card } from "../components/Card";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useCookies } from "react-cookie";
 
 interface DataType {
   id: number;
@@ -25,12 +26,17 @@ interface DataType {
   image: any;
   hosted_by: string;
   participants: string;
+  end_date: string;
 }
 
 const Home: FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [datas, setDatas] = useState<DataType[]>([]);
   const [csrf, setCsrf] = useState<string>("");
+  const [cookie] = useCookies(["tkn"]);
+  const checToken = cookie.tkn;
+
+  const navigate = useNavigate();
 
   document.title = `Event Planner App | index management`;
 
@@ -66,6 +72,15 @@ const Home: FC = () => {
     alert("oke");
   };
 
+  const handleGoToAddEventPage = () => {
+    checToken
+      ? navigate("/add-event")
+      : Swal.fire({
+          icon: "warning",
+          title: "Login First !!",
+        });
+  };
+
   return (
     <Layout>
       <div>
@@ -96,13 +111,13 @@ const Home: FC = () => {
           <div className="bg-black relative pt-10 flex justify-center mt-10">
             {/* Search */}
             <div className="flex justify-center absolute top-0 w-[90%] sm:w-[70%] md:w-[60%] lg:w-[50%] ">
-              <div className="bg-white hover:scale-105 duration-300 grid grid-cols-2 p-4 w-full drop-shadow-lg  rounded-full items-center">
+              <div className="bg-white hover:scale-105 duration-500 grid grid-cols-2 p-4 w-full drop-shadow-lg  rounded-full items-center">
                 <div className=" rounded-l-@yes ">
-                  <Link to="/add-event">
+                  <button onClick={() => handleGoToAddEventPage()}>
                     <h1 className="text-black text-md lg:text-lg hover:text-xl md:font-semibold px-2 hover:bg-slate-200 py-2 rounded-l-3xl hover:rounded-3xl duration-300">
                       Add Event
                     </h1>
-                  </Link>
+                  </button>
                 </div>
                 <div className="bg-@F46036 rounded-@yes py-3">
                   <div className="flex">
@@ -128,6 +143,7 @@ const Home: FC = () => {
           <div className="bg-white w-full pt-32 px-16 sm:px-10 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
             {datas.map((e) => {
               const date = new Date(e.date);
+              const dateEnd = new Date(e.end_date);
               const optionsHeader = {
                 year: "numeric",
                 month: "long",
@@ -147,6 +163,11 @@ const Home: FC = () => {
               );
               const dateString = date.toLocaleDateString("en-US", options);
               const timeString = date.toLocaleTimeString(); // format: 5:17:02 PM
+              const dateEndString = dateEnd.toLocaleDateString(
+                "en-US",
+                options
+              );
+              const timeEndString = dateEnd.toLocaleTimeString();
               return (
                 <Card
                   key={e.id}
@@ -159,6 +180,8 @@ const Home: FC = () => {
                   participants={e.participants}
                   hosted_by={e.hosted_by}
                   id={e.id}
+                  dateEnd={dateEndString}
+                  timeEnd={timeEndString}
                 />
               );
             })}

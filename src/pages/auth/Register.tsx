@@ -47,7 +47,11 @@ const Register: FC = () => {
     }
     console.log(objSubmit);
     axios
-      .post("/register", objSubmit)
+      .post("/register", objSubmit, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
       .then((response) => {
         const { message, code } = response.data;
         console.log(message.data);
@@ -132,8 +136,16 @@ const Register: FC = () => {
             <h1 className="text-xl font-semibold text-white">
               have an account ?{" "}
             </h1>
-            <h1 className="text-xl font-semibold text-@028090">
+            <h1 className="text-xl font-semibold text-@028090 hover:text-orange-500 hover:-translate-y-1 duration-300">
               <Link to="/login">Sign In here !!</Link>
+            </h1>
+          </div>
+          <div className="my-5 flex flex-col md:flex-row gap-2 md:gap-5">
+            <h1 className="text-xl font-semibold text-white">
+              Back to home page ?
+            </h1>
+            <h1 className="text-xl font-semibold text-@028090 hover:text-orange-500 hover:-translate-y-1 duration-300 mb-10">
+              <Link to="/">Click Here !!</Link>
             </h1>
           </div>
         </div>

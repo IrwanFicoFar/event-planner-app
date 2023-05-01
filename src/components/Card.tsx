@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
 import { Disclosure } from "@headlessui/react";
-import { BiTime, BiMap, BiMicrophone } from "react-icons/bi";
+import { BiTime, BiMap, BiMicrophone, BiTimer } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
 import { ButtonAction, ButtonCheckout } from "./Button";
 
@@ -15,6 +15,8 @@ interface Props {
   participants: string;
   id: number;
   goTo: string;
+  dateEnd: string;
+  timeEnd: string;
 }
 
 export const Card: FC<Partial<Props>> = (props) => {
@@ -27,10 +29,12 @@ export const Card: FC<Partial<Props>> = (props) => {
     hosted_by,
     participants,
     name,
+    dateEnd,
+    timeEnd,
   } = props;
 
   return (
-    <div className="bg-black p-5 rounded-3xl hover:scale-105 hover:-translate-y-1 transition ease-in-out delay-150 drop-shadow-md hover:drop-shadow-xl  duration-300">
+    <div className="flex flex-col justify-between bg-black p-5 rounded-3xl hover:scale-105 hover:-translate-y-1 drop-shadow-md hover:drop-shadow-xl  duration-700">
       <div className="flex justify-between mb-5">
         <div>
           <h1 className="text-white">{dateHeader}</h1>
@@ -53,6 +57,14 @@ export const Card: FC<Partial<Props>> = (props) => {
               <div>
                 <h1>
                   {date} {time}
+                </h1>
+              </div>
+            </div>
+            <div className="flex space-x-2 items-center">
+              <BiTimer className="text-orange-500 text-xl" />
+              <div>
+                <h1>
+                  {dateEnd} {timeEnd}
                 </h1>
               </div>
             </div>
@@ -86,7 +98,7 @@ export const CardAttandance: FC<Partial<DataAttandance>> = (props) => {
           <img
             src={image}
             alt="image-card"
-            className="rounded-full border-2 drop-shadow-lg border-black"
+            className="rounded-full border-2 drop-shadow-lg border-black h-16 w-16 md:h-24 md:w-24"
           />
         </Link>
       </div>
@@ -113,7 +125,7 @@ export const CardComment: FC<Partial<DataComment>> = (props) => {
             <img
               src={image}
               alt="image-card"
-              className="rounded-full border-2 drop-shadow-lg border-black w-16"
+              className="rounded-full border-2 drop-shadow-lg border-black w-16 h-16"
             />
           </Link>
         </div>
@@ -218,6 +230,8 @@ interface DataCard {
   participants: string;
   id: number;
   goTo: string;
+  dateEnd: string;
+  timeEnd: string;
 }
 
 export const CardEdit: FC<Partial<DataCard>> = (props) => {
@@ -233,10 +247,12 @@ export const CardEdit: FC<Partial<DataCard>> = (props) => {
     hosted_by,
     participants,
     goTo,
+    dateEnd,
+    timeEnd,
   } = props;
 
   return (
-    <div className="bg-black p-5 rounded-3xl hover:scale-105 hover:-translate-y-1 transition ease-in-out delay-150 drop-shadow-md hover:drop-shadow-xl  duration-300">
+    <div className="flex flex-col justify-between bg-black p-5 rounded-3xl hover:scale-105 hover:-translate-y-1 transition ease-in-out delay-150 drop-shadow-md hover:drop-shadow-xl  duration-300">
       <div className="flex justify-between mb-5">
         <div>
           <h1 className="text-white">{dateHeader}</h1>
@@ -257,6 +273,14 @@ export const CardEdit: FC<Partial<DataCard>> = (props) => {
             <div>
               <h1>
                 {date} {time}
+              </h1>
+            </div>
+          </div>
+          <div className="flex space-x-2 items-center">
+            <BiTimer className="text-orange-500 text-xl" />
+            <div>
+              <h1>
+                {dateEnd} {timeEnd}
               </h1>
             </div>
           </div>

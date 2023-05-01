@@ -11,10 +11,14 @@ import Profile from "../pages/Profile";
 import Event from "../pages/Event";
 import MyPdf from "../pages/PDF";
 import EditEvent from "../pages/EditEvent";
+import { useCookies } from "react-cookie";
+import Swal from "sweetalert2";
 
 axios.defaults.baseURL = "https://virtserver.swaggerhub.com/ropel12/tes/1.0.0";
 
 const Router = () => {
+  const [cookie] = useCookies(["tkn"]);
+  const checToken = cookie.tkn;
   const router = createBrowserRouter([
     {
       path: "/",
@@ -30,7 +34,7 @@ const Router = () => {
     },
     {
       path: "/add-event",
-      element: <AddEvent />,
+      element: checToken ? <AddEvent /> : <Home />,
     },
     {
       path: "/edit-event/:id",
