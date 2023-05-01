@@ -36,6 +36,9 @@ const Home: FC = () => {
   const [cookie] = useCookies(["tkn"]);
   const checToken = cookie.tkn;
 
+  const limit = 5;
+  const page = 1;
+
   const navigate = useNavigate();
 
   document.title = `Event Planner App | index management`;
@@ -46,17 +49,22 @@ const Home: FC = () => {
 
   const fetchData = () => {
     axios
-      .get(`/events`)
+      .get(`/events?limit=${limit}&page=${page}`, {
+        headers: {
+          Authorization: `Bearer ${checToken}`,
+        },
+      })
       .then((response) => {
         const { data } = response.data;
         setDatas(data.data);
         setCsrf(data.csrf);
       })
       .catch((error) => {
+        const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: "Failed",
-          text: error,
+          title: code,
+          text: message,
           showCancelButton: false,
         });
       })
@@ -64,9 +72,6 @@ const Home: FC = () => {
         setLoading(false);
       });
   };
-
-  console.log(datas);
-  console.log(csrf);
 
   const handleSeacrh = () => {
     alert("oke");
