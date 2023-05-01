@@ -8,6 +8,7 @@ import { Input, TextArea } from "../components/Input";
 import axios from "axios";
 import { error } from "console";
 import Swal from "sweetalert2";
+import { useCookies } from "react-cookie";
 
 interface EventAdd {
   id: string;
@@ -26,6 +27,7 @@ interface EventAdd {
   image: any;
   hosted_by: string;
   participants: string;
+  end_date: string;
 }
 
 const Event: FC = () => {
@@ -105,6 +107,7 @@ const Event: FC = () => {
             <div className="bg-white w-full pt-32 px-16 sm:px-10 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
               {data.map((e: EventAdd) => {
                 const date = new Date(e.date);
+                const dateEnd = new Date(e.end_date);
                 const optionsHeader = {
                   year: "numeric",
                   month: "long",
@@ -124,6 +127,11 @@ const Event: FC = () => {
                 );
                 const dateString = date.toLocaleDateString("en-US", options);
                 const timeString = date.toLocaleTimeString();
+                const dateEndString = dateEnd.toLocaleDateString(
+                  "en-US",
+                  options
+                );
+                const timeEndString = dateEnd.toLocaleTimeString();
                 return (
                   <CardEdit
                     key={e.id}
@@ -136,6 +144,8 @@ const Event: FC = () => {
                     participants={e.participants}
                     hosted_by={e.hosted_by}
                     goTo={`/edit-event/${e.id}`}
+                    dateEnd={dateEndString}
+                    timeEnd={timeEndString}
                   />
                 );
               })}
@@ -153,6 +163,7 @@ const Event: FC = () => {
                   return null; // or some other value to represent undefined elements
                 }
                 const date = new Date(e.date);
+                const dateEnd = new Date(e.end_date);
                 const optionsHeader = {
                   year: "numeric",
                   month: "long",
@@ -172,6 +183,11 @@ const Event: FC = () => {
                 );
                 const dateString = date.toLocaleDateString("en-US", options);
                 const timeString = date.toLocaleTimeString();
+                const dateEndString = dateEnd.toLocaleDateString(
+                  "en-US",
+                  options
+                );
+                const timeEndString = dateEnd.toLocaleTimeString();
                 return (
                   <Card
                     key={e.id}
@@ -183,6 +199,8 @@ const Event: FC = () => {
                     location={e.location}
                     participants={e.participants}
                     hosted_by={e.hosted_by}
+                    dateEnd={dateEndString}
+                    timeEnd={timeEndString}
                   />
                 );
               })}

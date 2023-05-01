@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import {
   BiMenu,
@@ -35,11 +35,13 @@ export const Navbar: FC = () => {
       if (result.isConfirmed) {
         removeCookie("tkn");
         removeCookie("uname");
-        Swal.fire("Logout", "Thanks for coming", "success").then((result) => {
-          if (result.isConfirmed) {
-            navigate("/");
-          }
+        Swal.fire({
+          icon: "success",
+          title: "Succes Logout",
+          showCancelButton: false,
+          showConfirmButton: true,
         });
+        navigate("/");
       }
     });
   };
@@ -55,7 +57,7 @@ export const Navbar: FC = () => {
           <div className="mx-auto px-2 sm:px-6 lg:px-8">
             <div className="relative flex items-center justify-between h-20">
               <div className="absolute inset-y-0 right-3 flex items-center sm:hidden">
-                <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 hover:rounded-3xl duration-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <BiX className="block h-6 w-6" aria-hidden="true" />
@@ -90,14 +92,14 @@ export const Navbar: FC = () => {
                     <div className="flex space-x-4">
                       <Link
                         to="/cart"
-                        className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium"
+                        className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:rounded-3xl duration-700 py-2  text-md font-medium"
                       >
                         <BiCartAlt />
                         Cart
                       </Link>
                       <Link
                         to={`/detail-transaction/`}
-                        className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium"
+                        className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:rounded-3xl duration-700 py-2 rounded-md text-md font-medium"
                       >
                         <BiMessageSquareDetail />
                         Transactions
@@ -107,7 +109,7 @@ export const Navbar: FC = () => {
                         className="z-50 relative inline-block text-left"
                       >
                         <div>
-                          <Menu.Button className="hover:bg-gray-700 text-white px-3 py-2 rounded-md text-md font-medium flex gap-2 items-center">
+                          <Menu.Button className="hover:bg-gray-700 text-white px-3 py-2 hover:rounded-3xl duration-700 text-md font-medium flex gap-2 items-center">
                             Action
                             <BiDownArrow />
                           </Menu.Button>
@@ -121,12 +123,12 @@ export const Navbar: FC = () => {
                           leaveFrom="transform opacity-100 scale-100"
                           leaveTo="transform opacity-0 scale-95"
                         >
-                          <Menu.Items className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                          <Menu.Items className="absolute right-0 mt-2 w-56 rounded-2xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none p-3">
                             <div className="py-1">
                               <Menu.Item>
                                 <Link
                                   to="/"
-                                  className=" flex gap-2 items-center px-4  py-2 text-md font-medium text-black hover:bg-gray-200"
+                                  className=" flex gap-2 items-center px-4  py-2 text-md font-medium text-black hover:bg-gray-200 hover:rounded-2xl duration-700"
                                 >
                                   <BiHome />
                                   Home Page
@@ -135,7 +137,7 @@ export const Navbar: FC = () => {
                               <Menu.Item>
                                 <Link
                                   to="/profile"
-                                  className=" flex gap-2 items-center px-4 py-2 text-md font-medium text-black hover:bg-gray-200"
+                                  className=" flex gap-2 items-center px-4 py-2 text-md font-medium text-black hover:bg-gray-200 hover:rounded-2xl duration-700"
                                 >
                                   <BiUser />
                                   Profile
@@ -144,7 +146,7 @@ export const Navbar: FC = () => {
                               <Menu.Item>
                                 <Link
                                   to="/event"
-                                  className="flex gap-2 items-center px-4 py-2 text-md font-medium text-black hover:bg-gray-200"
+                                  className="flex gap-2 items-center px-4 py-2 text-md font-medium text-black hover:bg-gray-200 hover:rounded-2xl duration-700"
                                 >
                                   <BiCalendarCheck />
                                   Event
@@ -152,7 +154,7 @@ export const Navbar: FC = () => {
                               </Menu.Item>
                               <Menu.Item>
                                 <button
-                                  className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-black hover:bg-gray-200"
+                                  className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-black hover:bg-gray-200 hover:rounded-2xl duration-700"
                                   onClick={() => handleLogout()}
                                 >
                                   <BiLogOut />
@@ -170,14 +172,14 @@ export const Navbar: FC = () => {
                     <div className="flex space-x-4">
                       <Link
                         to="/login"
-                        className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium"
+                        className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:rounded-3xl duration-700 py-2 rounded-md text-md font-medium"
                       >
                         <BiLogIn />
                         Login
                       </Link>
                       <Link
                         to="/register"
-                        className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium"
+                        className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:rounded-3xl duration-700 py-2 rounded-md text-md font-medium"
                       >
                         <BiUserPlus className="text-xl" />
                         Register
@@ -202,41 +204,41 @@ export const Navbar: FC = () => {
             <Disclosure.Panel className="sm:hidden">
               <div className="px-2 pt-2 pb-3 space-y-1">
                 <Link
+                  to="/"
+                  className=" flex gap-2 items-center px-4  py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
+                >
+                  <BiHome />
+                  Home Page
+                </Link>
+                <Link
                   to="/cart"
-                  className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium"
+                  className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium hover:rounded-2xl duration-700"
                 >
                   <BiCartAlt />
                   Cart
                 </Link>
                 <Link
                   to="/detail-transaction"
-                  className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium"
+                  className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium hover:rounded-2xl duration-700"
                 >
                   <BiMessageSquareDetail />
                   Transactions
                 </Link>
                 <Link
-                  to="/"
-                  className=" flex gap-2 items-center px-4  py-2 text-md font-medium text-white hover:bg-gray-700"
-                >
-                  <BiHome />
-                  Home Page
-                </Link>
-                <Link
                   to="/profile"
-                  className=" flex gap-2 items-center px-4 py-2 text-md font-medium text-white hover:bg-gray-700"
+                  className=" flex gap-2 items-center px-4 py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
                 >
                   <BiUser />
                   Profile
                 </Link>
                 <Link
                   to="/event"
-                  className="flex gap-2 items-center px-4 py-2 text-md font-medium text-white hover:bg-gray-700"
+                  className="flex gap-2 items-center px-4 py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
                 >
                   <BiCalendarCheck />
                   Event
                 </Link>
-                <button className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-white hover:bg-gray-700">
+                <button className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700">
                   <BiLogOut />
                   Log out
                 </button>

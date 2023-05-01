@@ -8,6 +8,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import { types } from "util";
+import { useCookies } from "react-cookie";
 
 interface DetailDataType {
   id: number;
@@ -62,6 +63,8 @@ const DetailEvent: FC = () => {
     event_id: Number(id),
     comment: "",
   });
+  const [cookie] = useCookies(["tkn"]);
+  const checToken = cookie.tkn;
 
   useEffect(() => {
     fetchData();
@@ -89,31 +92,38 @@ const DetailEvent: FC = () => {
   };
 
   const handleAddComment = () => {
-    axios
-      .post(`/comments`, objAdd)
-      .then((response) => {
-        const { message, code } = response.data;
-        Swal.fire({
-          icon: "success",
-          title: code,
-          text: message,
-          showCancelButton: false,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            objAdd.comment = "";
-          }
-        });
-      })
-      .catch((error) => {
-        const { message } = error.message;
-        // console.log(message);
-        Swal.fire({
-          icon: "error",
-          title: "Failed",
-          text: error,
-          showCancelButton: false,
-        });
-      });
+    {
+      checToken
+        ? axios
+            .post(`/comments`, objAdd)
+            .then((response) => {
+              const { message, code } = response.data;
+              Swal.fire({
+                icon: "success",
+                title: code,
+                text: message,
+                showCancelButton: false,
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  objAdd.comment = "";
+                }
+              });
+            })
+            .catch((error) => {
+              const { message } = error.message;
+              // console.log(message);
+              Swal.fire({
+                icon: "error",
+                title: "Failed",
+                text: error,
+                showCancelButton: false,
+              });
+            })
+        : Swal.fire({
+            icon: "warning",
+            title: "Login First to Comment !!",
+          });
+    }
   };
 
   let dateStringHeader = "";
@@ -141,30 +151,36 @@ const DetailEvent: FC = () => {
   }
 
   const handleToCart = (type_id: number) => {
-    console.log(type_id);
-    axios
-      .post(`/transactions/cart`, {
-        type_id: type_id,
-      })
-      .then((response) => {
-        const { message, code } = response.data;
-        Swal.fire({
-          icon: "success",
-          title: code,
-          text: message,
-          showCancelButton: false,
-        });
-      })
-      .catch((error) => {
-        const { message } = error.message;
-        // console.log(message);
-        Swal.fire({
-          icon: "error",
-          title: "Failed",
-          text: error,
-          showCancelButton: false,
-        });
-      });
+    {
+      checToken
+        ? axios
+            .post(`/transactions/cart`, {
+              type_id: type_id,
+            })
+            .then((response) => {
+              const { message, code } = response.data;
+              Swal.fire({
+                icon: "success",
+                title: code,
+                text: message,
+                showCancelButton: false,
+              });
+            })
+            .catch((error) => {
+              const { message } = error.message;
+              // console.log(message);
+              Swal.fire({
+                icon: "error",
+                title: "Failed",
+                text: error,
+                showCancelButton: false,
+              });
+            })
+        : Swal.fire({
+            icon: "warning",
+            title: "Login First to add Ticket !!",
+          });
+    }
   };
 
   console.log(data);
@@ -290,7 +306,6 @@ const DetailEvent: FC = () => {
           <div className="bg-white rounded-bl-@yes "></div>
         </div>
       </div>
-      {/* main */}
     </Layout>
   );
 };

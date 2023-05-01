@@ -39,7 +39,11 @@ const Login: FC = () => {
     }
 
     axios
-      .post("/login", objSubmit)
+      .post("https://go-event.online/login", objSubmit, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
       .then((response) => {
         const { data, message, code } = response.data;
         console.log(data.Token);
@@ -58,12 +62,12 @@ const Login: FC = () => {
         });
       })
       .catch((error) => {
-        const { message } = error.message;
-        // console.log(message);
+        const { message, code } = error.response.data;
+        console.log(error);
         Swal.fire({
           icon: "error",
-          title: "Failed",
-          text: error,
+          title: code,
+          text: message,
           showCancelButton: false,
         });
       });
@@ -109,8 +113,16 @@ const Login: FC = () => {
             <h1 className="text-xl font-semibold text-white">
               don’t have an account ?{" "}
             </h1>
-            <h1 className="text-xl font-semibold text-@028090">
+            <h1 className="text-xl font-semibold text-@028090 hover:text-orange-500 hover:-translate-y-1 duration-300">
               <Link to="/register">Sign Up here !!</Link>
+            </h1>
+          </div>
+          <div className="my-5 flex flex-col md:flex-row gap-2 md:gap-5">
+            <h1 className="text-xl font-semibold text-white">
+              Back to home page ?
+            </h1>
+            <h1 className="text-xl font-semibold text-@028090 hover:text-orange-500 hover:-translate-y-1 duration-300">
+              <Link to="/">Click Here !!</Link>
             </h1>
           </div>
         </div>
