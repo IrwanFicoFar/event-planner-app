@@ -47,7 +47,7 @@ const Register: FC = () => {
     }
     console.log(objSubmit);
     axios
-      .post("/register", objSubmit, {
+      .post("https://go-event.online/register", objSubmit, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -68,12 +68,12 @@ const Register: FC = () => {
         });
       })
       .catch((error) => {
-        const { message } = error.message;
-        // console.log(message);
+        const { message, code } = error.response.data;
+        console.log(error);
         Swal.fire({
           icon: "error",
-          title: "Failed",
-          text: error,
+          title: code,
+          text: message,
           showCancelButton: false,
         });
       })

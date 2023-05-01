@@ -39,7 +39,7 @@ const Login: FC = () => {
     }
 
     axios
-      .post("/login", objSubmit, {
+      .post("https://go-event.online/login", objSubmit, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -62,8 +62,8 @@ const Login: FC = () => {
         });
       })
       .catch((error) => {
-        const { message, code } = error.data;
-        console.log(message);
+        const { message, code } = error.response.data;
+        console.log(error);
         Swal.fire({
           icon: "error",
           title: code,
