@@ -209,7 +209,6 @@ const AddEvent: FC = () => {
                   placeholder="Add Ticket"
                   id="input-ticket"
                   type="text"
-                  // defaultValue={`${displayAddTicket}`}
                   onChange={(event) =>
                     setTicket({ ...ticket, type_name: event.target.value })
                   }

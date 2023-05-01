@@ -8,7 +8,7 @@ import {
 } from "react";
 import { Transition, Dialog } from "@headlessui/react";
 import { TextArea, Input } from "../components/Input";
-import { ButtonAction } from "../components/Button";
+import { ButtonAction, ButtonCancelOrDelete } from "../components/Button";
 import { Layout } from "../components/Layout";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -51,6 +51,11 @@ const EditEvent: FC = () => {
     type_name: "",
     price: "",
   });
+  const [addTicket, setAddTicket] = useState<Partial<DataType>>({
+    type_id: type_id,
+    type_name: "",
+    price: "",
+  });
 
   const navigate = useNavigate();
 
@@ -61,10 +66,6 @@ const EditEvent: FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
-  useEffect(() => {
-    type;
-  }, [ticket]);
 
   const fetchData = () => {
     axios
@@ -196,8 +197,55 @@ const EditEvent: FC = () => {
       .finally(() => fetchData());
   };
 
-  // console.log(ticket);
-  console.log(type);
+  const handleDeleteTicket = () => {
+    Swal.fire({
+      icon: "question",
+      title: "Are You Sure to Deleted ticket",
+      showCancelButton: true,
+      showConfirmButton: true,
+      confirmButtonText: "Yes Deleted",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`/tickets/${type_id}`)
+          .then((response) => {
+            const { message, code } = response.data;
+            Swal.fire({
+              position: "top-end",
+              icon: "success",
+              title: "Success deleted",
+              showCancelButton: false,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          })
+          .catch((error) => {
+            const { message, code } = error.response.data;
+            console.log(error);
+            Swal.fire({
+              icon: "error",
+              title: code,
+              text: message,
+              showCancelButton: false,
+            });
+          });
+      }
+    });
+  };
+
+  const handleAddTicket = () => {
+    axios.post(
+      "/tickets",
+      {
+        addTicket,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  };
 
   const openModal = () => {
     setIsOpen(true);
@@ -206,6 +254,10 @@ const EditEvent: FC = () => {
   const closeModal = () => {
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    type;
+  }, [ticket, handleDeleteTicket()]);
 
   return (
     <Layout>
@@ -321,6 +373,37 @@ const EditEvent: FC = () => {
                     }
                   />
                   <h1 className="text-xl font-semibold text-center">Ticket</h1>
+                  <div>
+                    <Input
+                      placeholder="Add Ticket"
+                      id="input-ticket"
+                      type="text"
+                      onChange={(event) =>
+                        setAddTicket({
+                          ...addTicket,
+                          type_name: event.target.value,
+                        })
+                      }
+                    />
+                    <Input
+                      placeholder="Price"
+                      id="input-price"
+                      type="number"
+                      onChange={(event) =>
+                        setAddTicket({
+                          ...addTicket,
+                          price: event.target.value,
+                        })
+                      }
+                    />
+                    <ButtonAction
+                      label="Submit"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        handleAddTicket();
+                      }}
+                    />
+                  </div>
                   <div className="grid sm:grid-cols-2 gap-3 border-2 border-white p-5 rounded-2xl">
                     {type &&
                       type.map((e, index) => {
@@ -343,11 +426,17 @@ const EditEvent: FC = () => {
                                 openModal();
                               }}
                             />
+                            <ButtonCancelOrDelete
+                              label="Delete"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                handleDeleteTicket();
+                              }}
+                            />
                           </div>
                         );
                       })}
                   </div>
-
                   <div className="flex flex-col py-5 gap-5 sm:py-10  md:py-16 lg:py-20">
                     <ButtonAction label="Update" type="submit" />
                     <button
