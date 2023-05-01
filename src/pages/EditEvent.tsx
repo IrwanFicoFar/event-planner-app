@@ -67,6 +67,10 @@ const EditEvent: FC = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    type;
+  }, [ticket]);
+
   const fetchData = () => {
     axios
       .get(`events/${id}`)
@@ -255,10 +259,6 @@ const EditEvent: FC = () => {
     setIsOpen(false);
   };
 
-  useEffect(() => {
-    type;
-  }, [ticket, handleDeleteTicket()]);
-
   return (
     <Layout>
       {loading ? (
@@ -373,7 +373,7 @@ const EditEvent: FC = () => {
                     }
                   />
                   <h1 className="text-xl font-semibold text-center">Ticket</h1>
-                  <div>
+                  <div className="flex space-x-3">
                     <Input
                       placeholder="Add Ticket"
                       id="input-ticket"
@@ -397,7 +397,7 @@ const EditEvent: FC = () => {
                       }
                     />
                     <ButtonAction
-                      label="Submit"
+                      label="Add"
                       onClick={(event) => {
                         event.preventDefault();
                         handleAddTicket();
