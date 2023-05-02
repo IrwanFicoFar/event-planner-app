@@ -14,6 +14,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { UserEdit } from "../utils/user";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 
 const Profile: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -22,6 +23,8 @@ const Profile: FC = () => {
   const [objSubmit, setObjSubmit] = useState<Partial<UserEdit>>({});
   const [loading, setloading] = useState<boolean>(true);
   const navigate = useNavigate();
+  const [cookie] = useCookies(["tkn"]);
+  const checkToken = cookie.tkn;
 
   useEffect(() => {
     fetchData();
@@ -29,18 +32,25 @@ const Profile: FC = () => {
 
   const fetchData = () => {
     axios
-      .get(`https://go-event.online/users`)
+      .get(`https://go-event.online/users`, {
+        headers: {
+          Authorization: `Bearer ${checkToken}`,
+        },
+      })
       .then((response) => {
-        const { message, data } = response.data;
-        setDatas(data.data);
-        setCsrf(data.csrf);
+        const { data } = response.data;
+        setDatas(data);
+        // setCsrf(data.csrf);
         document.title = `${data.data.name} | User Management`;
       })
       .catch((error) => {
+        console.log(error);
+        const { message } = error.response.data;
+        const { status } = error.response;
         Swal.fire({
           icon: "error",
-          title: "Failed",
-          text: error,
+          title: status,
+          text: message,
           showCancelButton: false,
         });
       })
@@ -157,9 +167,10 @@ const Profile: FC = () => {
             className={`rounded-full border-8 border-white w-40 h-40 sm:w-56 sm:h-56 `}
           >
             <img
-              src={datas.image ? datas.image : "/avatar.jpg"}
+              src={datas.image}
+              // src={"/avatar.jpg"}
               alt=""
-              className="rounded-full"
+              className="rounded-full w-full h-full"
             />
           </div>
         </div>
