@@ -55,15 +55,18 @@ const MyEvent: FC = () => {
       })
       .then((response) => {
         const { data } = response.data;
-        console.log(response);
+        // console.log(data);
         // setData(data.data);
         // setCsrf(data.csrf);
       })
       .catch((error) => {
+        console.log(error);
+        const { message } = error.response.data;
+        const { status } = error.response;
         Swal.fire({
           icon: "error",
-          title: "Failed",
-          text: error,
+          title: status,
+          text: message,
           showCancelButton: false,
         });
       })
@@ -74,17 +77,28 @@ const MyEvent: FC = () => {
 
   const fetchDataHistory = () => {
     axios
-      .get(`users/history`)
+      .get(
+        `https://go-event.online/users/history?limit=${limit}&page=${page}`,
+        {
+          headers: {
+            Authorization: `Bearer ${checkToken}`,
+          },
+        }
+      )
       .then((response) => {
         const { data } = response.data;
-        setDataHistory(data.data);
-        setCsrfHistory(data.csrf);
+        console.log(data);
+        // setDataHistory(data.data);
+        // setCsrfHistory(data.csrf);
       })
       .catch((error) => {
+        console.log(error);
+        const { message } = error.response.data;
+        const { status } = error.response;
         Swal.fire({
           icon: "error",
-          title: "Failed",
-          text: error,
+          title: status,
+          text: message,
           showCancelButton: false,
         });
       })
