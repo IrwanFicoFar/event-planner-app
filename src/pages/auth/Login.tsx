@@ -49,7 +49,7 @@ const Login: FC = () => {
         console.log(data.token);
         setCookie("tkn", data.token);
         Swal.fire({
-          position: "top-right",
+          position: "center",
           icon: "success",
           title: code,
           text: message,

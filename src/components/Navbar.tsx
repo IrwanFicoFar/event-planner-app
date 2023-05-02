@@ -202,50 +202,69 @@ export const Navbar: FC = () => {
             leaveTo="transform opacity-0 scale-95"
           >
             <Disclosure.Panel className="sm:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1">
-                <Link
-                  to="/"
-                  className=" flex gap-2 items-center px-4  py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
-                >
-                  <BiHome />
-                  Home Page
-                </Link>
-                <Link
-                  to="/cart"
-                  className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium hover:rounded-2xl duration-700"
-                >
-                  <BiCartAlt />
-                  Cart
-                </Link>
-                <Link
-                  to="/detail-transaction"
-                  className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium hover:rounded-2xl duration-700"
-                >
-                  <BiMessageSquareDetail />
-                  Transactions
-                </Link>
-                <Link
-                  to="/profile"
-                  className=" flex gap-2 items-center px-4 py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
-                >
-                  <BiUser />
-                  Profile
-                </Link>
-                <Link
-                  to="/event"
-                  className="flex gap-2 items-center px-4 py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
-                >
-                  <BiCalendarCheck />
-                  Event
-                </Link>
-                <button
-                  className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
-                  onClick={() => handleLogout()}
-                >
-                  <BiLogOut />
-                  Log out
-                </button>
-              </div>
+              {checkToken ? (
+                <div className="px-2 pt-2 pb-3 space-y-1">
+                  <Link
+                    to="/"
+                    className=" flex gap-2 items-center px-4  py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
+                  >
+                    <BiHome />
+                    Home Page
+                  </Link>
+                  <Link
+                    to="/cart"
+                    className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium hover:rounded-2xl duration-700"
+                  >
+                    <BiCartAlt />
+                    Cart
+                  </Link>
+                  <Link
+                    to="/detail-transaction"
+                    className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium hover:rounded-2xl duration-700"
+                  >
+                    <BiMessageSquareDetail />
+                    Transactions
+                  </Link>
+                  <Link
+                    to="/profile"
+                    className=" flex gap-2 items-center px-4 py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
+                  >
+                    <BiUser />
+                    Profile
+                  </Link>
+                  <Link
+                    to="/event"
+                    className="flex gap-2 items-center px-4 py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
+                  >
+                    <BiCalendarCheck />
+                    Event
+                  </Link>
+                  <button
+                    className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
+                    onClick={() => handleLogout()}
+                  >
+                    <BiLogOut />
+                    Log out
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <Link
+                    to="/login"
+                    className=" flex gap-2 items-center px-4  py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
+                  >
+                    <BiLogIn />
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium hover:rounded-2xl duration-700"
+                  >
+                    <BiUserPlus className="text-xl" />
+                    Register
+                  </Link>
+                </div>
+              )}
             </Disclosure.Panel>
           </Transition>
         </>

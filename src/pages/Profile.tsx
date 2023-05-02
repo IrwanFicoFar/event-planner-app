@@ -14,6 +14,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { UserEdit } from "../utils/user";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 
 const Profile: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -22,6 +23,8 @@ const Profile: FC = () => {
   const [objSubmit, setObjSubmit] = useState<Partial<UserEdit>>({});
   const [loading, setloading] = useState<boolean>(true);
   const navigate = useNavigate();
+  const [cookie, , removeCookie] = useCookies(["tkn"]);
+  const checkToken = cookie.tkn;
 
   useEffect(() => {
     fetchData();
@@ -29,18 +32,26 @@ const Profile: FC = () => {
 
   const fetchData = () => {
     axios
-      .get("/users")
+      .get(`https://go-event.online/users`, {
+        headers: {
+          Authorization: `Bearer ${checkToken}`,
+        },
+      })
       .then((response) => {
-        const { message, data } = response.data;
-        setDatas(data.data);
-        setCsrf(data.csrf);
-        document.title = `${data.data.name} | User Management`;
+        const { data } = response.data;
+        setDatas(data);
+        // setCsrf(data.csrf);
+        console.log(data);
+        document.title = `${data.name} | User Management`;
       })
       .catch((error) => {
+        console.log(error);
+        const { message } = error.response.data;
+        const { status } = error.response;
         Swal.fire({
           icon: "error",
-          title: "Failed",
-          text: error,
+          title: status,
+          text: message,
           showCancelButton: false,
         });
       })
@@ -72,15 +83,15 @@ const Profile: FC = () => {
     }
 
     axios
-      .put("/users", formData, {
+      .put("https://go-event.online/users", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${csrf}`,
+          Authorization: `Bearer ${checkToken}`,
         },
       })
       .then((response) => {
-        const { message, code } = response.data;
-        // console.log(response);
+        const { message, code } = response.data && response.data;
+        console.log(response);
         Swal.fire({
           icon: "success",
           title: code,
@@ -95,11 +106,13 @@ const Profile: FC = () => {
         });
       })
       .catch((error) => {
-        // console.log(error.message);
+        console.log(error);
+        const { message } = error.response.data;
+        const { status } = error.response;
         Swal.fire({
           icon: "error",
-          title: "Failed, update at least 1",
-          text: error,
+          title: status,
+          text: message,
           showCancelButton: false,
         });
       })
@@ -118,7 +131,11 @@ const Profile: FC = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`/users`)
+          .delete(`https://go-event.online/users`, {
+            headers: {
+              Authorization: `Bearer ${checkToken}`,
+            },
+          })
           .then((response) => {
             const { message, code } = response.data;
             Swal.fire({
@@ -128,6 +145,7 @@ const Profile: FC = () => {
               showCancelButton: false,
             }).then((result) => {
               if (result.isConfirmed) {
+                removeCookie("tkn");
                 navigate("/");
               }
             });
@@ -157,9 +175,15 @@ const Profile: FC = () => {
             className={`rounded-full border-8 border-white w-40 h-40 sm:w-56 sm:h-56 `}
           >
             <img
-              src={datas.image ? datas.image : "/avatar.jpg"}
+              src={
+                datas && datas.image === "default.jpg"
+                  ? "/default.jpg"
+                  : `https://storage.googleapis.com/prj1ropel/${
+                      datas && datas.image
+                    }`
+              }
               alt=""
-              className="rounded-full"
+              className="rounded-full w-full h-full"
             />
           </div>
         </div>
@@ -224,7 +248,6 @@ const Profile: FC = () => {
           </div>
         )}
       </div>
-
       {/* modal */}
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={() => closeModal}>
@@ -257,7 +280,11 @@ const Profile: FC = () => {
                         src={
                           objSubmit.image
                             ? URL.createObjectURL(objSubmit.image)
-                            : "/avatar.jpg"
+                            : datas && datas.image === "default.jpg"
+                            ? "/default.jpg"
+                            : `https://storage.googleapis.com/prj1ropel/${
+                                datas && datas.image
+                              }`
                         }
                         alt="user-avatar"
                         className="rounded-full w-56 h-56 border-8 border-white"
