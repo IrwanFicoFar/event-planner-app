@@ -104,7 +104,7 @@ const Event: FC = () => {
           </div>
         ) : (
           <div>
-            <div className="bg-white w-full pt-32 px-16 sm:px-10 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
+            <div className="bg-white w-full pt-24 sm:pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
               {data.map((e: EventAdd) => {
                 const date = new Date(e.date);
                 const dateEnd = new Date(e.end_date);
@@ -157,7 +157,7 @@ const Event: FC = () => {
                 </h1>
               </div>
             </div>
-            <div className="bg-gray-300 w-full pt-32 px-16 sm:px-10 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
+            <div className="bg-gray-300 w-full pt-24 sm:pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
               {dataHistory.map((e: EventAdd | undefined) => {
                 if (!e) {
                   return null; // or some other value to represent undefined elements
