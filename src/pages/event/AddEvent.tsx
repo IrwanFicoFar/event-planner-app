@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import { error } from "console";
 
 interface EventAdd {
   id: string;
@@ -35,7 +36,7 @@ const AddEvent: FC = () => {
   const [objSubmit, setObjSubmit] = useState<Partial<EventAdd>>({});
   const [data, setData] = useState<Partial<EventAdd>>({});
   const [MyType, setMyType] = useState<dataTicket[]>([]);
-  const [displayAddTicket, setDisplayAddTicket] = useState<string>("");
+  // const [displayAddTicket, setDisplayAddTicket] = useState<string>("");
   const [ticket, setTicket] = useState<dataTicket>({
     type_name: "",
     price: "",
@@ -47,20 +48,33 @@ const AddEvent: FC = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setDisplayAddTicket("");
-  }, [MyType]);
+  // useEffect(() => {
+  //   setDisplayAddTicket("");
+  // }, [MyType]);
 
   const handleAddTicket = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    if (ticket.type_name === "") {
-      Swal.fire({
-        icon: "warning",
-        title: "ticket empty, fill please ",
-        showCancelButton: false,
-      });
-    } else {
-      setMyType(MyType.concat(ticket));
+    let nameExists = false;
+    MyType.forEach((e) => {
+      if (e.type_name === ticket.type_name) {
+        nameExists = true;
+        Swal.fire({
+          icon: "warning",
+          title: "Name Cannot be the same",
+          showCancelButton: false,
+        });
+      }
+    });
+    if (!nameExists) {
+      if (ticket.type_name === "") {
+        Swal.fire({
+          icon: "warning",
+          title: "Ticket type is empty, please fill it",
+          showCancelButton: false,
+        });
+      } else {
+        setMyType(MyType.concat(ticket));
+      }
     }
   };
   console.log(MyType);
@@ -89,7 +103,6 @@ const AddEvent: FC = () => {
     } else {
       if (key === "date") {
         const date = new Date(value as string);
-        date.setUTCHours(date.getUTCHours() + 7);
         const formattedDate = date.toISOString().slice(0, 19);
         temp[key] = formattedDate;
       } else {
@@ -100,7 +113,6 @@ const AddEvent: FC = () => {
   };
 
   const join = { ...objSubmit, type };
-
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log(join);
@@ -125,6 +137,15 @@ const AddEvent: FC = () => {
             navigate("/");
           }
         });
+      })
+      .catch((error) => {
+        const { message, code } = error.response.data;
+        Swal.fire({
+          icon: "error",
+          title: code,
+          text: message,
+          showCancelButton: false,
+        });
       });
   };
 
@@ -134,6 +155,9 @@ const AddEvent: FC = () => {
   const now = new Date();
   const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
   const jakartaDate = new Date(jakartaTimestamp).toISOString().slice(0, 16);
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
   return (
     <Layout>
@@ -210,6 +234,7 @@ const AddEvent: FC = () => {
                 step="1"
                 type="datetime-local"
                 defaultValue={jakartaDate}
+                min={`${tomorrow.toISOString().slice(0, 16)}`}
                 onChange={(event) => handleChange(event.target.value, "date")}
               />
               <div className="flex space-x-3">
@@ -226,7 +251,7 @@ const AddEvent: FC = () => {
                   placeholder="Duration"
                   id="input-qty"
                   // defaultValue={"Duration"}
-                  type="number"
+                  type="float"
                   onChange={(event) =>
                     handleChange(event.target.value, "duration")
                   }
