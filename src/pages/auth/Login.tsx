@@ -46,7 +46,6 @@ const Login: FC = () => {
       })
       .then((response) => {
         const { data, message, code } = response.data;
-        console.log(data.token);
         setCookie("tkn", data.token);
         Swal.fire({
           position: "center",

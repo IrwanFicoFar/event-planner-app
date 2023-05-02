@@ -41,11 +41,9 @@ const Profile: FC = () => {
         const { data } = response.data;
         setDatas(data);
         // setCsrf(data.csrf);
-        console.log(data);
         document.title = `${data.name} | User Management`;
       })
       .catch((error) => {
-        console.log(error);
         const { message } = error.response.data;
         const { status } = error.response;
         Swal.fire({
@@ -91,7 +89,6 @@ const Profile: FC = () => {
       })
       .then((response) => {
         const { message, code } = response.data && response.data;
-        console.log(response);
         Swal.fire({
           icon: "success",
           title: code,
@@ -106,7 +103,6 @@ const Profile: FC = () => {
         });
       })
       .catch((error) => {
-        console.log(error);
         const { message } = error.response.data;
         const { status } = error.response;
         Swal.fire({
