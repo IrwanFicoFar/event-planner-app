@@ -23,7 +23,7 @@ const Profile: FC = () => {
   const [objSubmit, setObjSubmit] = useState<Partial<UserEdit>>({});
   const [loading, setloading] = useState<boolean>(true);
   const navigate = useNavigate();
-  const [cookie] = useCookies(["tkn"]);
+  const [cookie, , removeCookie] = useCookies(["tkn"]);
   const checkToken = cookie.tkn;
 
   useEffect(() => {
@@ -41,7 +41,8 @@ const Profile: FC = () => {
         const { data } = response.data;
         setDatas(data);
         // setCsrf(data.csrf);
-        document.title = `${data.data.name} | User Management`;
+        console.log(data);
+        document.title = `${data.name} | User Management`;
       })
       .catch((error) => {
         console.log(error);
@@ -82,15 +83,15 @@ const Profile: FC = () => {
     }
 
     axios
-      .put("/users", formData, {
+      .put("https://go-event.online/users", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${csrf}`,
+          Authorization: `Bearer ${checkToken}`,
         },
       })
       .then((response) => {
-        const { message, code } = response.data;
-        // console.log(response);
+        const { message, code } = response.data && response.data;
+        console.log(response);
         Swal.fire({
           icon: "success",
           title: code,
@@ -105,11 +106,13 @@ const Profile: FC = () => {
         });
       })
       .catch((error) => {
-        // console.log(error.message);
+        console.log(error);
+        const { message } = error.response.data;
+        const { status } = error.response;
         Swal.fire({
           icon: "error",
-          title: "Failed, update at least 1",
-          text: error,
+          title: status,
+          text: message,
           showCancelButton: false,
         });
       })
@@ -128,7 +131,11 @@ const Profile: FC = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`/users`)
+          .delete(`https://go-event.online/users`, {
+            headers: {
+              Authorization: `Bearer ${checkToken}`,
+            },
+          })
           .then((response) => {
             const { message, code } = response.data;
             Swal.fire({
@@ -138,6 +145,7 @@ const Profile: FC = () => {
               showCancelButton: false,
             }).then((result) => {
               if (result.isConfirmed) {
+                removeCookie("tkn");
                 navigate("/");
               }
             });
@@ -167,8 +175,13 @@ const Profile: FC = () => {
             className={`rounded-full border-8 border-white w-40 h-40 sm:w-56 sm:h-56 `}
           >
             <img
-              src={datas.image}
-              // src={"/avatar.jpg"}
+              src={
+                datas && datas.image === "default.jpg"
+                  ? "/default.jpg"
+                  : `https://storage.googleapis.com/prj1ropel/${
+                      datas && datas.image
+                    }`
+              }
               alt=""
               className="rounded-full w-full h-full"
             />
@@ -235,7 +248,6 @@ const Profile: FC = () => {
           </div>
         )}
       </div>
-
       {/* modal */}
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={() => closeModal}>
@@ -268,7 +280,11 @@ const Profile: FC = () => {
                         src={
                           objSubmit.image
                             ? URL.createObjectURL(objSubmit.image)
-                            : "/avatar.jpg"
+                            : datas && datas.image === "default.jpg"
+                            ? "/default.jpg"
+                            : `https://storage.googleapis.com/prj1ropel/${
+                                datas && datas.image
+                              }`
                         }
                         alt="user-avatar"
                         className="rounded-full w-56 h-56 border-8 border-white"
