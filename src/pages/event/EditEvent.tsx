@@ -1,15 +1,8 @@
-import {
-  FC,
-  FormEvent,
-  Fragment,
-  useEffect,
-  useState,
-  MouseEvent,
-} from "react";
+import { FC, FormEvent, Fragment, useEffect, useState } from "react";
 import { Transition, Dialog } from "@headlessui/react";
-import { TextArea, Input } from "../components/Input";
-import { ButtonAction, ButtonCancelOrDelete } from "../components/Button";
-import { Layout } from "../components/Layout";
+import { TextArea, Input } from "../../components/Input";
+import { ButtonAction, ButtonCancelOrDelete } from "../../components/Button";
+import { Layout } from "../../components/Layout";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";

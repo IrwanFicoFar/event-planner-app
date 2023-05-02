@@ -98,7 +98,7 @@ export const Navbar: FC = () => {
                         Cart
                       </Link>
                       <Link
-                        to={`/detail-transaction/`}
+                        to={`/transaction`}
                         className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:rounded-3xl duration-700 py-2 rounded-md text-md font-medium"
                       >
                         <BiMessageSquareDetail />
@@ -145,11 +145,11 @@ export const Navbar: FC = () => {
                               </Menu.Item>
                               <Menu.Item>
                                 <Link
-                                  to="/event"
+                                  to="/my-event"
                                   className="flex gap-2 items-center px-4 py-2 text-md font-medium text-black hover:bg-gray-200 hover:rounded-2xl duration-700"
                                 >
                                   <BiCalendarCheck />
-                                  Event
+                                  My Event
                                 </Link>
                               </Menu.Item>
                               <Menu.Item>
@@ -219,7 +219,7 @@ export const Navbar: FC = () => {
                     Cart
                   </Link>
                   <Link
-                    to="/detail-transaction"
+                    to="/transaction"
                     className="flex gap-2 items-center px-4 text-white hover:bg-gray-700 hover:text-white py-2 rounded-md text-md font-medium hover:rounded-2xl duration-700"
                   >
                     <BiMessageSquareDetail />
@@ -233,11 +233,11 @@ export const Navbar: FC = () => {
                     Profile
                   </Link>
                   <Link
-                    to="/event"
+                    to="/my-event"
                     className="flex gap-2 items-center px-4 py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"
                   >
                     <BiCalendarCheck />
-                    Event
+                    My Event
                   </Link>
                   <button
                     className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-white hover:bg-gray-700 hover:rounded-2xl duration-700"

@@ -140,7 +140,7 @@ const Profile: FC = () => {
             const { message, code } = response.data;
             Swal.fire({
               icon: "info",
-              title: "Success Deleted!",
+              title: code,
               text: message,
               showCancelButton: false,
             }).then((result) => {

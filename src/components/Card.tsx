@@ -48,7 +48,7 @@ export const Card: FC<Partial<Props>> = (props) => {
           <img src="/header3.jpg" alt="image-card" className="rounded-3xl" />
         </Link>
       </div>
-      <Link to={`/detail-event/${id}`}>
+      <Link to={`/event/${id}`}>
         <div className="bg-gray-800 p-5 mb-5 flex flex-col gap-4 rounded-3xl">
           <h1 className="text-xl font-semibold">{name}</h1>
           <div className="flex flex-col gap-2">
@@ -121,7 +121,7 @@ export const CardComment: FC<Partial<DataComment>> = (props) => {
     <div className="flex">
       <div className="bg-white rounded-2xl py-2 w-24 px-3">
         <div className=" flex justify-center items-center pt-2">
-          <Link to={`detail-event/:id`}>
+          <Link to={`event/:id`}>
             <img
               src={image}
               alt="image-card"
