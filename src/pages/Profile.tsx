@@ -6,15 +6,16 @@ import {
   useEffect,
   FormEvent,
 } from "react";
-import { Layout } from "../components/Layout";
-import { ButtonAction, ButtonCancelOrDelete } from "../components/Button";
-import { Dialog, Transition } from "@headlessui/react";
-import { Input } from "../components/Input";
-import axios from "axios";
-import Swal from "sweetalert2";
-import { UserEdit } from "../utils/user";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import Swal from "sweetalert2";
+import axios from "axios";
+
+import { ButtonAction, ButtonCancelOrDelete } from "../components/Button";
+import { Dialog, Transition } from "@headlessui/react";
+import { Layout } from "../components/Layout";
+import { Input } from "../components/Input";
+import { UserEdit } from "../utils/user";
 
 const Profile: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -41,11 +42,9 @@ const Profile: FC = () => {
         const { data } = response.data;
         setDatas(data);
         // setCsrf(data.csrf);
-        console.log(data);
         document.title = `${data.name} | User Management`;
       })
       .catch((error) => {
-        console.log(error);
         const { message } = error.response.data;
         const { status } = error.response;
         Swal.fire({
@@ -91,7 +90,6 @@ const Profile: FC = () => {
       })
       .then((response) => {
         const { message, code } = response.data && response.data;
-        console.log(response);
         Swal.fire({
           icon: "success",
           title: code,
@@ -106,7 +104,6 @@ const Profile: FC = () => {
         });
       })
       .catch((error) => {
-        console.log(error);
         const { message } = error.response.data;
         const { status } = error.response;
         Swal.fire({

@@ -1,28 +1,22 @@
 import { FC, useEffect, useState, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Input } from "../../components/Input";
-import { ButtonSubmit } from "../../components/Button";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-interface objSubmitType {
-  name: string;
-  email: string;
-  password: string;
-  address: string;
-}
+import { ButtonSubmit } from "../../components/Button";
+import { objRegisterType } from "../../utils/user";
+import { Input } from "../../components/Input";
 
 const Register: FC = () => {
-  const [inputValue, setInputValue] = useState<string>("");
-  const [objSubmit, setObjSubmit] = useState<objSubmitType>({
+  const [objSubmit, setObjSubmit] = useState<objRegisterType>({
     name: "",
     email: "",
     password: "",
     address: "",
   });
   const [isEmpty, setIsEmpty] = useState<boolean>(true);
-
   const navigate = useNavigate();
+
   document.title = `Register | User Management`;
 
   useEffect(() => {
@@ -45,7 +39,6 @@ const Register: FC = () => {
       });
       return;
     }
-    console.log(objSubmit);
     axios
       .post("https://go-event.online/register", objSubmit, {
         headers: {
@@ -54,7 +47,6 @@ const Register: FC = () => {
       })
       .then((response) => {
         const { message, code } = response.data;
-        console.log(message.data);
         Swal.fire({
           icon: "success",
           title: code,
@@ -69,7 +61,6 @@ const Register: FC = () => {
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        console.log(error);
         Swal.fire({
           icon: "error",
           title: code,
