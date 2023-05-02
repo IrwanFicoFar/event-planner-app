@@ -37,6 +37,11 @@ const Event: FC = () => {
   const [csrf, setCsrf] = useState<string>("");
   const [csrfHistory, setCsrfHistory] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [cookie] = useCookies(["tkn"]);
+  const checkToken = cookie.tkn;
+
+  const limit = 4;
+  const page = 1;
 
   document.title = `My Event | Event Management`;
 
@@ -47,11 +52,16 @@ const Event: FC = () => {
 
   const fetchData = () => {
     axios
-      .get(`users/events`)
+      .get(`https://go-event.online/users/events?limit=${limit}&page=${page}`, {
+        headers: {
+          Authorization: `Bearer ${checkToken}`,
+        },
+      })
       .then((response) => {
         const { data } = response.data;
-        setData(data.data);
-        setCsrf(data.csrf);
+        console.log(response);
+        // setData(data.data);
+        // setCsrf(data.csrf);
       })
       .catch((error) => {
         Swal.fire({
