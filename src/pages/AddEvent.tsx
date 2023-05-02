@@ -5,6 +5,7 @@ import { ButtonAction } from "../components/Button";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 
 interface EventAdd {
   id: string;
@@ -12,7 +13,7 @@ interface EventAdd {
   email: string | undefined;
   password: string | undefined;
   address: string | undefined;
-  detail: string;
+  details: string;
   date: string;
   time: string;
   location: string;
@@ -22,6 +23,7 @@ interface EventAdd {
   price: number;
   image: any;
   hosted_by: string;
+  type_name: string;
 }
 
 interface dataTicket {
@@ -32,18 +34,22 @@ interface dataTicket {
 const AddEvent: FC = () => {
   const [objSubmit, setObjSubmit] = useState<Partial<EventAdd>>({});
   const [data, setData] = useState<Partial<EventAdd>>({});
-  const [type, setType] = useState<dataTicket[]>([]);
+  const [MyType, setMyType] = useState<dataTicket[]>([]);
   const [displayAddTicket, setDisplayAddTicket] = useState<string>("");
   const [ticket, setTicket] = useState<dataTicket>({
     type_name: "",
     price: "",
   });
+  const [cookie] = useCookies(["tkn"]);
+  const checkToken = cookie.tkn;
+  const type = MyType.toString();
+  const [types, setTypes] = useState<Partial<EventAdd[]>>([]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     setDisplayAddTicket("");
-  }, [type]);
+  }, [MyType]);
 
   const handleAddTicket = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -54,42 +60,60 @@ const AddEvent: FC = () => {
         showCancelButton: false,
       });
     } else {
-      setType(type.concat(ticket));
+      setMyType(MyType.concat(ticket));
     }
   };
-  console.log(type);
+  console.log(MyType);
+
+  // const handleChange = (
+  //   value: string | File | number,
+  //   key: keyof typeof objSubmit
+  // ) => {
+  //   console.log(value);
+  //   let temp = { ...objSubmit };
+  //   if (value === null) {
+  //     temp[key] = null;
+  //   } else {
+  //     temp[key] = value;
+  //   }
+  //   setObjSubmit(temp);
+  // };
 
   const handleChange = (
-    value: string | File | number,
+    value: string | File | number | null,
     key: keyof typeof objSubmit
   ) => {
-    console.log(value);
     let temp = { ...objSubmit };
     if (value === null) {
       temp[key] = null;
     } else {
-      temp[key] = value;
+      if (key === "date") {
+        const date = new Date(value as string);
+        date.setUTCHours(date.getUTCHours() + 7);
+        const formattedDate = date.toISOString().slice(0, 19);
+        temp[key] = formattedDate;
+      } else {
+        temp[key] = value;
+      }
     }
     setObjSubmit(temp);
   };
 
+  const join = { ...objSubmit, type };
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    console.log(join);
     axios
-      .post(
-        "/events",
-        {
-          objSubmit,
-          type: type,
+      .post("https://go-event.online/events", join, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${checkToken}`,
         },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
+      })
       .then((response) => {
-        const { code, message } = response.data;
+        const { message, code } = response.data;
+        console.log(message.data);
         Swal.fire({
           icon: "success",
           title: code,
@@ -103,6 +127,13 @@ const AddEvent: FC = () => {
         });
       });
   };
+
+  console.log(objSubmit);
+
+  const jakartaOffset = 7 * 60; // UTC offset for Jakarta timezone in minutes
+  const now = new Date();
+  const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
+  const jakartaDate = new Date(jakartaTimestamp).toISOString().slice(0, 16);
 
   return (
     <Layout>
@@ -146,7 +177,10 @@ const AddEvent: FC = () => {
               </div>
             </div>
           </div>
-          <form onSubmit={(event) => handleSubmit(event)}>
+          <form
+            encType="multipart/form-data"
+            onSubmit={(event) => handleSubmit(event)}
+          >
             <div className="flex flex-col gap-3 sm:gap-6 md:gap-8 px-5 sm:px-10 md:px-16 lg:px-18 xl:px-20  py-10 ms:py-16 md:py-20">
               <Input
                 placeholder="Name"
@@ -155,9 +189,9 @@ const AddEvent: FC = () => {
                 onChange={(event) => handleChange(event.target.value, "name")}
               />
               <Input
-                placeholder=""
+                placeholder="Hosted By"
                 id="input-host"
-                defaultValue={"hosted by"}
+                // defaultValue={"hosted by"}
                 onChange={(event) =>
                   handleChange(event.target.value, "hosted_by")
                 }
@@ -166,13 +200,16 @@ const AddEvent: FC = () => {
                 placeholder="Detail"
                 id="input-textarea"
                 // defaultValue={"detail"}
-                onChange={(event) => handleChange(event.target.value, "detail")}
+                onChange={(event) =>
+                  handleChange(event.target.value, "details")
+                }
               />
               <Input
-                placeholder="Location"
-                id="input-location"
+                placeholder="input date and time"
+                id="input-date"
                 step="1"
                 type="datetime-local"
+                defaultValue={jakartaDate}
                 onChange={(event) => handleChange(event.target.value, "date")}
               />
               <div className="flex space-x-3">
@@ -227,7 +264,7 @@ const AddEvent: FC = () => {
                 />
               </div>
               <div>
-                {type.map((e) => (
+                {MyType.map((e) => (
                   <div className="grid grid-cols-3 gap-5">
                     <div className="bg-orange-200 text-black text-lg py-2 px-3 my-2 font-semibold rounded-xl">
                       {e.type_name}
