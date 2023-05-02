@@ -1,20 +1,12 @@
-import {
-  FC,
-  Fragment,
-  useEffect,
-  useState,
-  ReactNode,
-  useContext,
-} from "react";
-import { Layout } from "../components/Layout";
-import { ButtonAction, ButtonCheckout } from "../components/Button";
-import { Dialog, Listbox, Transition } from "@headlessui/react";
+import { FC, Fragment, useEffect, useState, ReactNode } from "react";
+import { Layout } from "../../components/Layout";
+import { ButtonAction, ButtonCheckout } from "../../components/Button";
+import { Dialog, Transition } from "@headlessui/react";
 import { TbFileInvoice, TbDownload } from "react-icons/tb";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { CardModalTicket } from "../components/Card";
-import { useCookies } from "react-cookie";
+import { CardModalTicket } from "../../components/Card";
 
 interface DataInvoice {
   total: string;
@@ -46,7 +38,7 @@ interface DataTicket {
   ticket_type: string;
 }
 
-const DetailTransaction: FC = () => {
+const Transaction: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [ticketIsOpen, setTicketIsOpen] = useState(false);
   const [csrf, setCsrf] = useState<string>("");
@@ -554,4 +546,4 @@ const DetailTransaction: FC = () => {
   );
 };
 
-export default DetailTransaction;
+export default Transaction;

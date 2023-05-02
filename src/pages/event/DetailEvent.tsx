@@ -1,13 +1,12 @@
 import { FC, useEffect, useState } from "react";
-import { Layout } from "../components/Layout";
-import { CardAttandance, CardComment, CardTicket } from "../components/Card";
-import { Input } from "../components/Input";
-import { ButtonAction } from "../components/Button";
+import { Layout } from "../../components/Layout";
+import { CardAttandance, CardComment, CardTicket } from "../../components/Card";
+import { Input } from "../../components/Input";
+import { ButtonAction } from "../../components/Button";
 import { BiMap, BiTime, BiTimer } from "react-icons/bi";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
-import { types } from "util";
 import { useCookies } from "react-cookie";
 
 interface DetailDataType {

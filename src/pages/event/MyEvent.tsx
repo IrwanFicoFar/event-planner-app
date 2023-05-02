@@ -1,12 +1,8 @@
-import { FC, Fragment, useEffect, useState } from "react";
-import { Layout } from "../components/Layout";
-import { CardEdit } from "../components/Card";
-import { Card } from "../components/Card";
-import { Transition, Dialog } from "@headlessui/react";
-import { ButtonAction, ButtonCancelOrDelete } from "../components/Button";
-import { Input, TextArea } from "../components/Input";
+import { FC, useEffect, useState } from "react";
+import { Layout } from "../../components/Layout";
+import { CardEdit } from "../../components/Card";
+import { Card } from "../../components/Card";
 import axios from "axios";
-import { error } from "console";
 import Swal from "sweetalert2";
 import { useCookies } from "react-cookie";
 
@@ -30,7 +26,7 @@ interface EventAdd {
   end_date: string;
 }
 
-const Event: FC = () => {
+const MyEvent: FC = () => {
   const [data, setData] = useState<EventAdd[]>([]);
   const [dataHistory, setDataHistory] = useState<EventAdd[]>([]);
   // const [image, setImage] = useState<Partial<EventAdd>>({});
@@ -222,4 +218,4 @@ const Event: FC = () => {
   );
 };
 
-export default Event;
+export default MyEvent;

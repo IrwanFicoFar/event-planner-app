@@ -1,7 +1,7 @@
 import { FC, useEffect, useState, FormEvent, MouseEvent } from "react";
-import { Layout } from "../components/Layout";
-import { Input, TextArea } from "../components/Input";
-import { ButtonAction } from "../components/Button";
+import { Layout } from "../../components/Layout";
+import { Input, TextArea } from "../../components/Input";
+import { ButtonAction } from "../../components/Button";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";

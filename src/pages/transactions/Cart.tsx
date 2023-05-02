@@ -1,9 +1,9 @@
 import { FC, Fragment, useState, useEffect, createContext } from "react";
-import { Layout } from "../components/Layout";
-import { CardCart, PaymentMethode } from "../components/Card";
+import { Layout } from "../../components/Layout";
+import { CardCart, PaymentMethode } from "../../components/Card";
 import { Dialog, Listbox, Transition } from "@headlessui/react";
 import { MdArrowForwardIos, MdCheck } from "react-icons/md";
-import { ButtonCheckout } from "../components/Button";
+import { ButtonCheckout } from "../../components/Button";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -324,8 +324,8 @@ const Cart: FC = () => {
                           </div>
                           <div className=" flex flex-col">
                             <ButtonCheckout
-                              label="Detail Transactions"
-                              onClick={() => navigate(`/detail-transaction`)}
+                              label="Transactions"
+                              onClick={() => navigate(`/transaction`)}
                             />
                           </div>
                         </div>
