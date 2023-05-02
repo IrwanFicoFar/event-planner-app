@@ -1,25 +1,23 @@
 import { FC, useState, useEffect, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Input } from "../../components/Input";
-import { ButtonSubmit } from "../../components/Button";
 import { useCookies } from "react-cookie";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-interface objSubmitType {
-  email: string;
-  password: string;
-}
+import { ButtonSubmit } from "../../components/Button";
+import { objLoginType } from "../../utils/user";
+import { Input } from "../../components/Input";
 
 const Login: FC = () => {
-  const [inputValue, setInputValue] = useState<string>("");
-  const [objSubmit, setObjSubmit] = useState<objSubmitType>({
+  const [objSubmit, setObjSubmit] = useState<objLoginType>({
     email: "",
     password: "",
   });
   const [isEmpty, setIsEmpty] = useState(true);
-  const navigate = useNavigate();
   const [, setCookie] = useCookies();
+  const navigate = useNavigate();
+
+  document.title = `Login | User Management`;
 
   useEffect(() => {
     setIsEmpty(Object.values(objSubmit).every((val) => val === ""));
