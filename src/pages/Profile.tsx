@@ -29,7 +29,7 @@ const Profile: FC = () => {
 
   const fetchData = () => {
     axios
-      .get("/users")
+      .get(`https://go-event.online/users`)
       .then((response) => {
         const { message, data } = response.data;
         setDatas(data.data);
