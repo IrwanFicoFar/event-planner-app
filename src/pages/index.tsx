@@ -49,13 +49,14 @@ const Home: FC = () => {
 
   const fetchData = () => {
     axios
-      .get(`/events?limit=${limit}&page=${page}`, {
+      .get(`https://go-event.online/events?limit=${limit}&page=${page}`, {
         headers: {
           Authorization: `Bearer ${checToken}`,
         },
       })
       .then((response) => {
         const { data } = response.data;
+        console.log(data);
         setDatas(data.data);
         setCsrf(data.csrf);
       })
@@ -85,6 +86,8 @@ const Home: FC = () => {
           title: "Login First !!",
         });
   };
+
+  console.log(datas);
 
   return (
     <Layout>
@@ -176,7 +179,11 @@ const Home: FC = () => {
               return (
                 <Card
                   key={e.id}
-                  image={e.image === "" ? e.image : `/header2.jpg`}
+                  image={
+                    e.image
+                      ? `https://storage.googleapis.com/prj1ropel/${e.image}`
+                      : `/header3.jpg`
+                  }
                   name={e.name}
                   dateHeader={dateStringHeader}
                   date={dateString}

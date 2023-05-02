@@ -31,6 +31,7 @@ export const Card: FC<Partial<Props>> = (props) => {
     name,
     dateEnd,
     timeEnd,
+    image,
   } = props;
 
   return (
@@ -44,8 +45,8 @@ export const Card: FC<Partial<Props>> = (props) => {
         </div>
       </div>
       <div className="mb-5">
-        <Link to={`/detail-event/${id}`}>
-          <img src="/header3.jpg" alt="image-card" className="rounded-3xl" />
+        <Link to={`vent/${id}`}>
+          <img src={image} alt="image-card" className="rounded-3xl" />
         </Link>
       </div>
       <Link to={`/event/${id}`}>
