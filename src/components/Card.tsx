@@ -92,18 +92,18 @@ interface DataAttandance {
 export const CardAttandance: FC<Partial<DataAttandance>> = (props) => {
   const { image, name } = props;
   return (
-    <div className="bg-white rounded-2xl">
-      <div className=" flex justify-center items-center pt-5 px-3">
+    <div className="bg-white rounded-2xl h-40 w-32">
+      <div className=" flex justify-center items-center pt-5 px-3 ">
         <Link to={`detail-event/:id`}>
           <img
             src={image}
             alt="image-card"
-            className="rounded-full border-2 drop-shadow-lg border-black h-16 w-16 md:h-24 md:w-24"
+            className="rounded-full border-2 drop-shadow-lg border-black h-24 w-24 "
           />
         </Link>
       </div>
-      <div className=" flex justify-center items-center py-5">
-        <h1 className="text-black font-semibold text:xl md:text-2xl">{name}</h1>
+      <div className=" flex justify-center items-center py-2">
+        <h1 className="text-black font-semibold text:xl md:text-xl">{name}</h1>
       </div>
     </div>
   );
@@ -130,7 +130,7 @@ export const CardComment: FC<Partial<DataComment>> = (props) => {
           </Link>
         </div>
         <div className="flex justify-center items-center">
-          <h1 className="text-black font-semibold text:xl md:text-2xl ">
+          <h1 className="text-black font-semibold text:xl md:text-xl ">
             {name}
           </h1>
         </div>

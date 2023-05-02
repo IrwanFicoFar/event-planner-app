@@ -183,7 +183,6 @@ const DetailEvent: FC = () => {
   };
 
   console.log(data);
-
   return (
     <Layout>
       <div className="h-full">
@@ -254,7 +253,7 @@ const DetailEvent: FC = () => {
               <h1 className="text-xl font-semibold py-5">
                 Attandance : {data.participants?.length}
               </h1>
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-5">
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {data.participants &&
                   data.participants.map((data, index) => (
                     <CardAttandance
@@ -263,6 +262,7 @@ const DetailEvent: FC = () => {
                       name={data.name}
                     />
                   ))}
+                <CardAttandance image="/avatar.jpg" name="irwan" />
                 <CardAttandance image="/avatar.jpg" name="irwan" />
                 <CardAttandance image="/avatar.jpg" name="irwan" />
               </div>
@@ -290,16 +290,6 @@ const DetailEvent: FC = () => {
                     comment={item.comment}
                   />
                 ))}
-              <CardComment
-                image={"/avatar.jpg"}
-                name={"Wibowo"}
-                comment={"apakah event nya bagus?"}
-              />
-              <CardComment
-                image={"/avatar.jpg"}
-                name={"Alfian hadis"}
-                comment={"apakah event nya bagus?"}
-              />
             </div>
           </div>
           <div className="bg-white rounded-bl-@yes "></div>

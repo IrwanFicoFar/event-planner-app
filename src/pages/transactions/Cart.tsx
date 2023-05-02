@@ -60,7 +60,10 @@ const Cart: FC = () => {
   const [total, setTotal] = useState<number>();
   const [loading, setLoading] = useState<boolean>(true);
   const [invoice, setInvoice] = useState("");
+  const [idEvent, setIdEvent] = useState();
   const navigate = useNavigate();
+  const [cookie] = useCookies(["tkn"]);
+  const checkToken = cookie.tkn;
 
   document.title = `Cart | Transactions Management`;
 
@@ -70,17 +73,25 @@ const Cart: FC = () => {
 
   const fetchData = () => {
     axios
-      .get(`transactions/cart`)
+      .get(`https://go-event.online/transactions/cart`, {
+        headers: {
+          Authorization: `Bearer ${checkToken}`,
+        },
+      })
       .then((response) => {
+        console.log(response);
         const { data } = response.data;
         setDatas(data.data);
+        setIdEvent(data.data.event_id);
         setTotal(data.total);
       })
       .catch((error) => {
+        const { message, code } = error.response.data;
+        console.log(error);
         Swal.fire({
           icon: "error",
-          title: "Failed",
-          text: error,
+          title: code,
+          text: message,
           showCancelButton: false,
         });
       })
@@ -88,6 +99,8 @@ const Cart: FC = () => {
         setLoading(false);
       });
   };
+
+  console.log(idEvent);
 
   const closeModal = () => {
     setIsOpen(false);
@@ -97,13 +110,27 @@ const Cart: FC = () => {
     setIsOpen(true);
   };
 
+  // const objData = {
+  //   event_id: datas && datas.event_id,
+  //   payment_methode: `${selectedOption}`,
+  //   item_detail: datas,
+  // };
+
   const handleCheckout = () => {
     axios
-      .post(`/transactions/checkout`, {
-        event_id: datas?.[0]?.event_id,
-        payment_methode: selectedOption,
-        items_detail: datas,
-      })
+      .post(
+        `https://go-event.online/transactions/checkout`,
+        {
+          event_id: `${datas?.[0]?.event_id}`,
+          payment_methode: `${selectedOption}`,
+          items_detail: `${datas}`,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${checkToken}`,
+          },
+        }
+      )
       .then((response) => {
         const { message, code, data } = response.data;
         setInvoice(data.invoice);
@@ -120,17 +147,17 @@ const Cart: FC = () => {
         });
       })
       .catch((error) => {
+        const { message, code } = error.response.data;
+        console.log(error);
         Swal.fire({
           icon: "error",
-          title: "Failed",
-          text: error,
+          title: code,
+          text: message,
           showCancelButton: false,
         });
       })
       .finally(() => {});
   };
-
-  console.log(invoice);
   return (
     <Layout>
       <div className="h-full grid grid-cols-1 md:grid-cols-2">
