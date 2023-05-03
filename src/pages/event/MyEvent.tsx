@@ -126,6 +126,18 @@ const MyEvent: FC = () => {
     }
   };
 
+  const handleIncrementHistory = () => {
+    setCount(count2 + 1);
+  };
+
+  const handleDecrementHistory = () => {
+    if (count2 <= 1) {
+      setCount(1);
+    } else {
+      setCount(count2 - 1);
+    }
+  };
+
   console.log(totalPage2);
   console.log(count2);
 
@@ -193,8 +205,7 @@ const MyEvent: FC = () => {
                 );
               })}
             </div>
-            <div className="bg-white pb-10 flex justify-center items-center">
-              <h1 className="text-xl text-black font-semibold"></h1>
+            <div className="bg-white flex justify-center items-center">
               {count <= 1 ? (
                 <div className="w-36"></div>
               ) : (
@@ -272,6 +283,30 @@ const MyEvent: FC = () => {
                   />
                 );
               })}
+            </div>
+            <div className="bg-white flex justify-center items-center">
+              {count2 <= 1 ? (
+                <div className="w-36"></div>
+              ) : (
+                <div className="mx-2">
+                  <ButtonAction
+                    label="Back"
+                    onClick={() => handleDecrement()}
+                  />
+                </div>
+              )}
+              {totalPage2 === count2 ? (
+                <div className="w-36"></div>
+              ) : totalPage2 === 0 ? (
+                <div className="w-36"></div>
+              ) : (
+                <div className="mx-2 flex items-center">
+                  <ButtonAction
+                    label="Next"
+                    onClick={() => handleIncrement()}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}

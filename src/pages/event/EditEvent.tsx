@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 import { useCookies } from "react-cookie";
 
 interface EventAdd {
-  id: string;
+  id: number;
   name: string;
   email: string;
   password: string;
@@ -23,13 +23,13 @@ interface EventAdd {
   image: any;
   hosted_by: string;
   participants: string;
-  types: { type_id: number; type_name: string; price: number }[];
+  types: { id: number; type_name: string; price: number }[];
 }
 
 interface DataType {
-  type_id: Number;
+  id: number;
   type_name: string;
-  price: string;
+  price: number;
 }
 
 const EditEvent: FC = () => {
@@ -41,14 +41,14 @@ const EditEvent: FC = () => {
   const [csrf, setCsrf] = useState<string>("");
   const [type_id, setType_id] = useState<Number>();
   const [ticket, setTicket] = useState<Partial<DataType>>({
-    type_id: type_id,
+    id: type_id,
     type_name: "",
-    price: "",
+    price: 0,
   });
   const [addTicket, setAddTicket] = useState<Partial<DataType>>({
-    type_id: type_id,
+    id: type_id,
     type_name: "",
-    price: "",
+    price: 0,
   });
   const [cookie] = useCookies(["tkn"]);
   const checkToken = cookie.tkn;
@@ -58,6 +58,7 @@ const EditEvent: FC = () => {
   const params = useParams();
 
   const { id } = params;
+  console.log(type_id);
 
   useEffect(() => {
     fetchData();
@@ -105,13 +106,14 @@ const EditEvent: FC = () => {
   };
 
   const handleUpdateTicket = (Mytype: number) => {
-    setTicket({ ...ticket, type_id: Mytype });
+    console.log(Mytype);
+    setTicket({ ...ticket, id: Mytype });
   };
 
   const UpdateTicketToType = () => {
     const updatedTicket = { ...ticket };
     const updatedType = type.map((t) => {
-      if (t && t.type_id === ticket.type_id) {
+      if (t && t.id === ticket.id) {
         if (
           t.type_name === updatedTicket.type_name &&
           t.price === updatedTicket.price
@@ -135,7 +137,7 @@ const EditEvent: FC = () => {
     setType(updatedType);
     Swal.fire({
       icon: "success",
-      title: `Success update ticket ${ticket.type_id} !!`,
+      title: `Success update ticket ${ticket.id} !!`,
       showCancelButton: false,
       showConfirmButton: true,
     }).then((result) => {
@@ -155,19 +157,12 @@ const EditEvent: FC = () => {
     const join = { ...formData, type };
     console.log(join);
     axios
-      .put(
-        `https://go-event.online/events`,
-        {
-          formData,
-          type: type,
+      .put(`https://go-event.online/events`, join, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${checkToken}`,
         },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${checkToken}`,
-          },
-        }
-      )
+      })
       .then((response) => {
         const { message, code } = response.data;
         // console.log(response);
@@ -185,11 +180,11 @@ const EditEvent: FC = () => {
         });
       })
       .catch((error) => {
-        // console.log(error.message);
+        const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: "Failed, update at least 1",
-          text: error,
+          title: code,
+          text: message,
           showCancelButton: false,
         });
       })
@@ -206,7 +201,7 @@ const EditEvent: FC = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`/tickets/${type_id}`)
+          .delete(`https://go-event.online/tickets/${id}`)
           .then((response) => {
             const { message, code } = response.data;
             Swal.fire({
@@ -220,7 +215,6 @@ const EditEvent: FC = () => {
           })
           .catch((error) => {
             const { message, code } = error.response.data;
-            console.log(error);
             Swal.fire({
               icon: "error",
               title: code,
@@ -234,7 +228,7 @@ const EditEvent: FC = () => {
 
   const handleAddTicket = () => {
     axios.post(
-      "/tickets",
+      "https://go-event.online/tickets",
       {
         addTicket,
       },
@@ -310,7 +304,7 @@ const EditEvent: FC = () => {
                   </div>
                 </div>
               </div>
-              <form onSubmit={(event) => handleEditEvent(event)} id={data.id}>
+              <form onSubmit={(event) => handleEditEvent(event)}>
                 <div className=" flex flex-col gap-3 sm:gap-6 md:gap-8 px-5 sm:px-10 md:px-16 lg:px-18 xl:px-20  py-5 ms:py-10 ">
                   <Input
                     placeholder="Name"
@@ -396,7 +390,7 @@ const EditEvent: FC = () => {
                       onChange={(event) =>
                         setAddTicket({
                           ...addTicket,
-                          price: event.target.value,
+                          price: Number(event.target.value),
                         })
                       }
                     />
@@ -426,7 +420,7 @@ const EditEvent: FC = () => {
                               label="Update"
                               onClick={(event) => {
                                 event.preventDefault();
-                                handleUpdateTicket(Number(e && e.type_id));
+                                handleUpdateTicket(Number(e && e.id));
                                 openModal();
                               }}
                             />
@@ -487,7 +481,7 @@ const EditEvent: FC = () => {
                           className="flex flex-col text-lg font-semibold items-center justify-center leading-6 text-gray-900 py-5"
                         >
                           <h1>Update</h1>
-                          <div>Ticket_id: {ticket.type_id?.toString()}</div>
+                          <div>Ticket_id: {ticket.id?.toString()}</div>
                         </Dialog.Title>
                         <div className="mt-2 text-black flex flex-col gap-5 mb-5">
                           <Input
@@ -510,7 +504,7 @@ const EditEvent: FC = () => {
                             onChange={(event) =>
                               setTicket({
                                 ...ticket,
-                                price: event.target.value,
+                                price: Number(event.target.value),
                               })
                             }
                           />
