@@ -17,6 +17,7 @@ interface Props {
   goTo: string;
   dateEnd: string;
   timeEnd: string;
+  quota: number;
 }
 
 export const Card: FC<Partial<Props>> = (props) => {
@@ -32,6 +33,7 @@ export const Card: FC<Partial<Props>> = (props) => {
     dateEnd,
     timeEnd,
     image,
+    quota,
   } = props;
 
   return (
@@ -46,7 +48,7 @@ export const Card: FC<Partial<Props>> = (props) => {
       </div>
       <div className="mb-5">
         <Link to={`event/${id}`}>
-          <img src={image} alt="image-card" className="rounded-3xl" />
+          <img src={image} alt="image-card" className="rounded-3xl w-full" />
         </Link>
       </div>
       <Link to={`/event/${id}`}>
@@ -80,7 +82,15 @@ export const Card: FC<Partial<Props>> = (props) => {
           </div>
         </div>
       </Link>
-      <div>participants = {participants}</div>
+      <div className="flex gap-4 flex-col mid-lg:flex-row  mid-lg:justify-between">
+        <h1>
+          participants ={" "}
+          <span className="text-orange-500">{participants} </span>{" "}
+        </h1>
+        <h1>
+          Avail = <span className="text-orange-500">{quota}</span>
+        </h1>
+      </div>
     </div>
   );
 };
@@ -156,6 +166,7 @@ export const CardTicket: FC<Partial<DataTicket>> = (props) => {
         <div className="flex justify-center py-8">
           <h1 className="text-orange-500 lg:text-md xl:text-xl font-semibold">
             Rp {price?.toLocaleString("id-ID")}
+            {/* Rp {price} */}
           </h1>
         </div>
       </div>

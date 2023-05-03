@@ -110,12 +110,6 @@ const Cart: FC = () => {
     setIsOpen(true);
   };
 
-  // const objData = {
-  //   event_id: datas && datas.event_id,
-  //   payment_methode: `${selectedOption}`,
-  //   item_detail: datas,
-  // };
-
   const handleCheckout = () => {
     axios
       .post(

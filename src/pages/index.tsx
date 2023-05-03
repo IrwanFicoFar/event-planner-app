@@ -19,7 +19,7 @@ interface DataType {
   date: string;
   time: string;
   location: string;
-  qty: number;
+  quota: number;
   duration: number;
   ticket: string;
   price: number;
@@ -37,7 +37,7 @@ const Home: FC = () => {
   const checToken = cookie.tkn;
 
   const limit = 4;
-  const page = 1;
+  const page = 2;
 
   const navigate = useNavigate();
 
@@ -148,7 +148,7 @@ const Home: FC = () => {
             Loading...
           </div>
         ) : (
-          <div className="bg-white w-full pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
+          <div className="bg-white w-full pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-32 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
             {datas.map((e) => {
               const date = new Date(e.date);
               const dateEnd = new Date(e.end_date);
@@ -194,6 +194,7 @@ const Home: FC = () => {
                   id={e.id}
                   dateEnd={dateEndString}
                   timeEnd={timeEndString}
+                  quota={e.quota}
                 />
               );
             })}
