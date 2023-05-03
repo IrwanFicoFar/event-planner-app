@@ -81,6 +81,8 @@ const Profile: FC = () => {
       formData.append(key, objSubmit[key]);
     }
 
+    console.log(formData);
+
     axios
       .put("https://go-event.online/users", formData, {
         headers: {
@@ -209,7 +211,7 @@ const Profile: FC = () => {
                   </h1>
                 </div>
               </div>
-              <div className="flex h-16 sm:h-20 gap-8">
+              <div className="flex justify-between h-16 sm:h-20 gap-8">
                 <div className="w-40 flex items-center">
                   <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
                     Email
