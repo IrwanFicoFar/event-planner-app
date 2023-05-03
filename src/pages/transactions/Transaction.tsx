@@ -73,7 +73,7 @@ const Transaction: FC = () => {
       .then((response) => {
         console.log(response);
         // const { data } = response.data;
-        setDataEvent(data.data);
+        // setDataEvent(datas.data);
       })
       .catch((error) => {
         const { message, code } = error.response.data;
