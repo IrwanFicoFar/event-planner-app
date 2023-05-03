@@ -104,11 +104,10 @@ const Profile: FC = () => {
         });
       })
       .catch((error) => {
-        const { message } = error.response.data;
-        const { status } = error.response;
+        const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: status,
+          title: code,
           text: message,
           showCancelButton: false,
         });
@@ -148,10 +147,11 @@ const Profile: FC = () => {
             });
           })
           .catch((error) => {
+            const { message, code } = error.response.data;
             Swal.fire({
               icon: "error",
-              title: "Failed to delete user profile",
-              text: error,
+              title: code,
+              text: message,
               showCancelButton: false,
             });
           });

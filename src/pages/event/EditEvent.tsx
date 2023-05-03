@@ -6,6 +6,7 @@ import { Layout } from "../../components/Layout";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useCookies } from "react-cookie";
 
 interface EventAdd {
   id: string;
@@ -49,6 +50,8 @@ const EditEvent: FC = () => {
     type_name: "",
     price: "",
   });
+  const [cookie] = useCookies(["tkn"]);
+  const checkToken = cookie.tkn;
 
   const navigate = useNavigate();
 
@@ -66,12 +69,12 @@ const EditEvent: FC = () => {
 
   const fetchData = () => {
     axios
-      .get(`events/${id}`)
+      .get(`https://go-event.online/events/${id}`)
       .then((response) => {
         const { data } = response.data;
+        // console.log(data.data.date);
         setData(data.data);
         setType([...data.data.types]);
-        // setType(data.data.types);
         setCsrf(data.csrf);
       })
       .catch((error) => {
@@ -86,14 +89,12 @@ const EditEvent: FC = () => {
         setLoading(false);
       });
   };
-
-  // console.log(type);
+  console.log(data);
 
   const handleChange = (
     value: string | File | number,
     key: keyof typeof objSubmit
   ) => {
-    // console.log(value);
     let temp = { ...objSubmit };
     if (value === null) {
       temp[key] = null;
@@ -146,15 +147,16 @@ const EditEvent: FC = () => {
 
   const handleEditEvent = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     const formData = new FormData();
     let key: keyof typeof objSubmit;
     for (key in objSubmit) {
       formData.append(key, objSubmit[key]);
     }
+    const join = { ...formData, type };
+    console.log(join);
     axios
       .put(
-        `/events`,
+        `https://go-event.online/events`,
         {
           formData,
           type: type,
@@ -162,7 +164,7 @@ const EditEvent: FC = () => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${csrf}`,
+            Authorization: `Bearer ${checkToken}`,
           },
         }
       )
@@ -252,6 +254,14 @@ const EditEvent: FC = () => {
     setIsOpen(false);
   };
 
+  const jakartaOffset = 7 * 60; // UTC offset for Jakarta timezone in minutes
+  const now = new Date();
+  const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
+  const jakartaDate = new Date(jakartaTimestamp).toISOString().slice(0, 16);
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
   return (
     <Layout>
       {loading ? (
@@ -271,7 +281,7 @@ const EditEvent: FC = () => {
                         src={
                           objSubmit.image
                             ? URL.createObjectURL(objSubmit.image)
-                            : "/header3.jpg"
+                            : `https://storage.googleapis.com/prj1ropel/${data.image}`
                         }
                         alt="user-avatar"
                         className="rounded-2xl w-full h-auto border-1 border-black drop-shadow-lg"
@@ -327,10 +337,11 @@ const EditEvent: FC = () => {
                     }
                   />
                   <Input
-                    placeholder="Location"
-                    id="input-location"
+                    placeholder={`${data.date}`}
+                    id="input-date"
                     step="1"
-                    defaultValue={data.date}
+                    defaultValue={jakartaDate}
+                    min={`${tomorrow.toISOString().slice(0, 16)}`}
                     type="datetime-local"
                     onChange={(event) =>
                       handleChange(event.target.value, "date")
@@ -397,7 +408,7 @@ const EditEvent: FC = () => {
                       }}
                     />
                   </div>
-                  <div className="grid sm:grid-cols-2 gap-3 border-2 border-white p-5 rounded-2xl">
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3 border-2 border-white p-5 rounded-2xl">
                     {type &&
                       type.map((e, index) => {
                         return (
@@ -435,7 +446,7 @@ const EditEvent: FC = () => {
                     <button
                       type="button"
                       className="inline-flex justify-center items-center rounded-2xl border border-transparent bg-red-500 px-2 py-3 text-xl font-semibold text-white hover:bg-red-700 hover:text-white focus:outline-none "
-                      onClick={() => navigate("/event")}
+                      onClick={() => navigate("/my-event")}
                     >
                       Close
                     </button>

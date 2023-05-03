@@ -5,6 +5,7 @@ import { Card } from "../../components/Card";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useCookies } from "react-cookie";
+import { ButtonAction } from "../../components/Button";
 
 interface EventAdd {
   id: string;
@@ -35,6 +36,10 @@ const MyEvent: FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [cookie] = useCookies(["tkn"]);
   const checkToken = cookie.tkn;
+  const [count, setCount] = useState<number>(1);
+  const [totalPage, setTotalPage] = useState<number>();
+  const [count2, setCount2] = useState<number>(1);
+  const [totalPage2, setTotalPage2] = useState<number>();
 
   const limit = 4;
   const page = 1;
@@ -44,27 +49,31 @@ const MyEvent: FC = () => {
   useEffect(() => {
     fetchData();
     fetchDataHistory();
-  }, []);
+  }, [count]);
 
   const fetchData = () => {
     axios
-      .get(`https://go-event.online/users/events?limit=${limit}&page=${page}`, {
-        headers: {
-          Authorization: `Bearer ${checkToken}`,
-        },
-      })
+      .get(
+        `https://go-event.online/users/events?page=${count}&limit=${limit}&search=`,
+        {
+          headers: {
+            Authorization: `Bearer ${checkToken}`,
+          },
+        }
+      )
       .then((response) => {
         const { data } = response.data;
+        console.log(response);
         // console.log(data);
         setData(data.data);
+        setTotalPage(data.total_page);
         // setCsrf(data.csrf);
       })
       .catch((error) => {
-        const { message } = error.response.data;
-        const { status } = error.response;
+        const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: status,
+          title: code,
           text: message,
           showCancelButton: false,
         });
@@ -77,7 +86,7 @@ const MyEvent: FC = () => {
   const fetchDataHistory = () => {
     axios
       .get(
-        `https://go-event.online/users/history?limit=${limit}&page=${page}`,
+        `https://go-event.online/users/history?page=${count2}&limit=${limit}&search=`,
         {
           headers: {
             Authorization: `Bearer ${checkToken}`,
@@ -86,16 +95,16 @@ const MyEvent: FC = () => {
       )
       .then((response) => {
         const { data } = response.data;
-        console.log(data);
+        console.log(response);
         setDataHistory(data.data);
+        setTotalPage2(data.total_page);
         // setCsrfHistory(data.csrf);
       })
       .catch((error) => {
-        const { message } = error.response.data;
-        const { status } = error.response;
+        const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: status,
+          title: code,
           text: message,
           showCancelButton: false,
         });
@@ -105,8 +114,20 @@ const MyEvent: FC = () => {
       });
   };
 
-  // console.log(dataHistory);
-  // console.log(csrfHistory);
+  const handleIncrement = () => {
+    setCount(count + 1);
+  };
+
+  const handleDecrement = () => {
+    if (count <= 1) {
+      setCount(1);
+    } else {
+      setCount(count - 1);
+    }
+  };
+
+  console.log(totalPage2);
+  console.log(count2);
 
   return (
     <Layout>
@@ -153,7 +174,11 @@ const MyEvent: FC = () => {
                 return (
                   <CardEdit
                     key={e.id}
-                    image={e.image === "" ? e.image : `/header2.jpg`}
+                    image={
+                      e.image
+                        ? `https://storage.googleapis.com/prj1ropel/${e.image}`
+                        : `/header3.jpg`
+                    }
                     name={e.name}
                     dateHeader={dateStringHeader}
                     date={dateString}
@@ -168,6 +193,31 @@ const MyEvent: FC = () => {
                 );
               })}
             </div>
+            <div className="bg-white pb-10 flex justify-center items-center">
+              <h1 className="text-xl text-black font-semibold"></h1>
+              {count <= 1 ? (
+                <div className="w-36"></div>
+              ) : (
+                <div className="mx-2">
+                  <ButtonAction
+                    label="Back"
+                    onClick={() => handleDecrement()}
+                  />
+                </div>
+              )}
+              {totalPage === count ? (
+                <div className="w-36"></div>
+              ) : totalPage === 0 ? (
+                <div className="w-36"></div>
+              ) : (
+                <div className="mx-2 flex items-center">
+                  <ButtonAction
+                    label="Next"
+                    onClick={() => handleIncrement()}
+                  />
+                </div>
+              )}
+            </div>
             <div className="bg-white py-10 flex justify-center">
               <div className=" absolute w-[50%] bg-black top-42  py-6 rounded-full drop-shadow-lg flex justify-center hover:scale-105 duration-300">
                 <h1 className="text-white text-2xl font-semibold">
@@ -176,9 +226,9 @@ const MyEvent: FC = () => {
               </div>
             </div>
             <div className="bg-gray-300 w-full pt-24 sm:pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
-              {dataHistory.map((e: EventAdd | undefined) => {
+              {dataHistory.map((e) => {
                 if (!e) {
-                  return null; // or some other value to represent undefined elements
+                  return null;
                 }
                 const date = new Date(e.date);
                 const dateEnd = new Date(e.end_date);

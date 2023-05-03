@@ -10,8 +10,6 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
-export const InvoiceContext = createContext("");
-
 interface Option {
   id: string;
   name: string;
