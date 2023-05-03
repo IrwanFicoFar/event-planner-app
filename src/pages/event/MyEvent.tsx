@@ -41,7 +41,7 @@ const MyEvent: FC = () => {
   const [count2, setCount2] = useState<number>(1);
   const [totalPage2, setTotalPage2] = useState<number>();
 
-  const limit = 4;
+  const limit = 3;
   const page = 1;
 
   document.title = `My Event | Event Management`;
@@ -155,7 +155,7 @@ const MyEvent: FC = () => {
           </div>
         ) : (
           <div>
-            <div className="bg-white w-full pt-24 sm:pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
+            <div className="bg-white w-full pt-24 sm:pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-3 gap-10 2xl:gap-20 pb-20">
               {data.map((e: EventAdd) => {
                 const date = new Date(e.date);
                 const dateEnd = new Date(e.end_date);

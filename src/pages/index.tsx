@@ -52,11 +52,9 @@ const Home: FC = () => {
 
   const fetchData = () => {
     axios
-      .get(`https://go-event.online/events?limit=${limit}&page=${count}`, {
-        headers: {
-          Authorization: `Bearer ${checToken}`,
-        },
-      })
+      .get(
+        `https://go-event.online/events?page=${count}&limit=${limit}&search=`
+      )
       .then((response) => {
         const { data } = response.data;
         setTotalPage(data.total_page);
@@ -158,7 +156,6 @@ const Home: FC = () => {
             </div>
           </div>
         </div>
-
         {loading ? (
           <div className="h-screen text-black bg-white font-bold text-3xl flex justify-center pt-24">
             Loading...
