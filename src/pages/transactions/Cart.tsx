@@ -108,6 +108,7 @@ const Cart: FC = () => {
         },
       })
       .then((response) => {
+        console.log(response);
         const { data } = response.data;
         setType(data.data);
         setTotal(data.total);
@@ -336,7 +337,9 @@ const Cart: FC = () => {
             <h1 className="text-xl font-semibold">Detail order</h1>
             <div className="flex justify-between py-10">
               <h1 className="text-xl font-semibold">Total</h1>
-              <h1 className="text-xl font-semibold">Rp {total}</h1>
+              <h1 className="text-xl font-semibold">
+                Rp {total?.toLocaleString("id-ID")}
+              </h1>
             </div>
             <div className=" flex flex-col">
               <ButtonCheckout
@@ -414,7 +417,7 @@ const Cart: FC = () => {
                               <div className="flex justify-center"></div>
                               <div className="flex justify-center">Total</div>
                               <div className="flex justify-center">
-                                <h1>Rp {total}</h1>
+                                <h1>Rp {total?.toLocaleString("id-ID")}</h1>
                               </div>
                             </div>
                           </div>
@@ -493,20 +496,9 @@ const Cart: FC = () => {
                         </h1>
                       </div>
                       <div className="mt-14 pl-10 flex items-center space-x-3 font-medium">
-                        <h1 className="text-white text-xl">EVENT NAME : </h1>
                         <h1 className="text-gray-500 text-xl">{}</h1>
                       </div>
-                      <div className="grid grid-cols-3 px-10 mt-5 font-semibold">
-                        <div>
-                          <h1 className="text-gray-500">AMOUNT PAID</h1>
-                          <h1>Rp {modalInvoice?.total}</h1>
-                        </div>
-                        <div>
-                          <div>
-                            <h1 className="text-gray-500 mt-5">PAY BEFORE</h1>
-                            <h1>{modalInvoice?.expire}</h1>
-                          </div>
-                        </div>
+                      <div className="grid grid-cols-3 gap-2 px-10 mt-5 font-semibold">
                         <div className="flex flex-col gap-5">
                           <div>
                             <h1 className="text-gray-500">PAYMENT METHODE</h1>
@@ -581,6 +573,14 @@ const Cart: FC = () => {
                           ) : (
                             <></>
                           )}
+                        </div>
+                        <div className="text-center">
+                          <h1 className="text-gray-500">AMOUNT PAID</h1>
+                          <h1>Rp {modalInvoice?.total.toLocaleString("id")}</h1>
+                        </div>
+                        <div>
+                          <h1 className="text-gray-500">PAY BEFORE</h1>
+                          <h1>{modalInvoice?.expire}</h1>
                         </div>
                       </div>
                       <div className="p-10 ">
