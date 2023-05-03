@@ -7,6 +7,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { CardModalTicket } from "../../components/Card";
+import { useCookies } from "react-cookie";
 
 interface DataInvoice {
   total: string;
@@ -50,6 +51,8 @@ const Transaction: FC = () => {
   const [invoice, setInvoice] = useState<string>("");
   const [eventName, setEventName] = useState<string>("");
   const [status, setStatus] = useState<string>("");
+  const [cookie] = useCookies(["tkn"]);
+  const checkToken = cookie.tkn;
 
   document.title = `List | Transactions Management`;
 
@@ -59,16 +62,26 @@ const Transaction: FC = () => {
 
   const fetchDataEvent = () => {
     axios
-      .get(`/users/transactions`)
+      .get(
+        `https://go-event.online/users/transactions?status=unpaid||status=paid`,
+        {
+          headers: {
+            Authorization: `Bearer ${checkToken}`,
+          },
+        }
+      )
       .then((response) => {
-        const { data } = response.data;
+        console.log(response);
+        // const { data } = response.data;
         setDataEvent(data.data);
       })
       .catch((error) => {
+        const { message, code } = error.response.data;
+        console.log(error);
         Swal.fire({
           icon: "error",
-          title: "Failed",
-          text: error,
+          title: code,
+          text: message,
           showCancelButton: false,
         });
       })

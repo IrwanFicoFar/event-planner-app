@@ -156,12 +156,12 @@ const DetailEvent: FC = () => {
     timeString = Newdate.toLocaleTimeString(); // format: 5:17:02 PM
   }
 
-  const handleToCart = (type_id: number) => {
+  const handleToCart = (id: number) => {
     {
       checToken
         ? axios
             .post(`/transactions/cart`, {
-              type_id: type_id,
+              type_id: id,
             })
             .then((response) => {
               const { message, code } = response.data;
@@ -189,7 +189,6 @@ const DetailEvent: FC = () => {
   };
 
   console.log(data);
-
   return (
     <Layout>
       <div className="h-full">
@@ -205,7 +204,7 @@ const DetailEvent: FC = () => {
               />
             </div>
             <h1 className="text-xl sm:text-2xl font-semibold text-orange-500 py-5 pr-5 flex justify-end">
-              {data.quota} {data.quota && data.quota < 2 ? "left" : "lefts"}
+              {data.quota} left
             </h1>
             <p className="text-lg">{data.details}</p>
             <h1 className="text-xl font-semibold py-10">

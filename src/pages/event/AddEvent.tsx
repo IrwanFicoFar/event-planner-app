@@ -27,7 +27,7 @@ interface EventAdd {
 
 interface dataTicket {
   type_name: string;
-  price: string;
+  price: number;
 }
 
 const AddEvent: FC = () => {
@@ -36,7 +36,7 @@ const AddEvent: FC = () => {
   const [MyType, setMyType] = useState<dataTicket[]>([]);
   const [ticket, setTicket] = useState<dataTicket>({
     type_name: "",
-    price: "",
+    price: 0,
   });
   const [cookie] = useCookies(["tkn"]);
   const checkToken = cookie.tkn;
@@ -257,7 +257,7 @@ const AddEvent: FC = () => {
                   id="input-price"
                   type="number"
                   onChange={(event) =>
-                    setTicket({ ...ticket, price: event.target.value })
+                    setTicket({ ...ticket, price: Number(event.target.value) })
                   }
                 />
                 <ButtonAction
