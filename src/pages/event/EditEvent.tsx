@@ -6,9 +6,10 @@ import { Layout } from "../../components/Layout";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useCookies } from "react-cookie";
 
 interface EventAdd {
-  id: string;
+  id: number;
   name: string;
   email: string;
   password: string;
@@ -22,56 +23,64 @@ interface EventAdd {
   image: any;
   hosted_by: string;
   participants: string;
-  types: { type_id: number; type_name: string; price: number }[];
+  types: { id: number; type_name: string; price: number }[];
 }
 
-interface DataType {
-  type_id: Number;
+interface DataEditTicketType {
+  id: Number;
   type_name: string;
-  price: string;
+  price: number;
+}
+
+interface DataAddTicketType {
+  event_id: Number;
+  type_name: string;
+  price: number;
 }
 
 const EditEvent: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [objSubmit, setObjSubmit] = useState<Partial<EventAdd>>({});
   const [data, setData] = useState<Partial<EventAdd>>({});
-  const [type, setType] = useState<Partial<DataType[]>>([]);
+  const [MyType, setMyType] = useState<Partial<DataEditTicketType[]>>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [csrf, setCsrf] = useState<string>("");
   const [type_id, setType_id] = useState<Number>();
-  const [ticket, setTicket] = useState<Partial<DataType>>({
-    type_id: type_id,
+  const params = useParams();
+  const { id } = params;
+  const [ticket, setTicket] = useState<Partial<DataEditTicketType>>({
+    id: type_id,
     type_name: "",
-    price: "",
+    price: 0,
   });
-  const [addTicket, setAddTicket] = useState<Partial<DataType>>({
-    type_id: type_id,
+  const [addTicket, setAddTicket] = useState<Partial<DataAddTicketType>>({
+    event_id: Number(id),
     type_name: "",
-    price: "",
+    price: 0,
   });
+  const [cookie] = useCookies(["tkn"]);
+  const checkToken = cookie.tkn;
 
   const navigate = useNavigate();
 
-  const params = useParams();
-
-  const { id } = params;
+  // console.log(type_id);
 
   useEffect(() => {
     fetchData();
   }, []);
 
   useEffect(() => {
-    type;
+    MyType;
   }, [ticket]);
 
   const fetchData = () => {
     axios
-      .get(`events/${id}`)
+      .get(`https://go-event.online/events/${id}`)
       .then((response) => {
         const { data } = response.data;
+        // console.log(data.data.date);
         setData(data.data);
-        setType([...data.data.types]);
-        // setType(data.data.types);
+        setMyType([...data.data.types]);
         setCsrf(data.csrf);
       })
       .catch((error) => {
@@ -86,14 +95,13 @@ const EditEvent: FC = () => {
         setLoading(false);
       });
   };
-
-  // console.log(type);
+  // console.log(data);
+  // console.log(objSubmit);
 
   const handleChange = (
     value: string | File | number,
     key: keyof typeof objSubmit
   ) => {
-    // console.log(value);
     let temp = { ...objSubmit };
     if (value === null) {
       temp[key] = null;
@@ -104,13 +112,14 @@ const EditEvent: FC = () => {
   };
 
   const handleUpdateTicket = (Mytype: number) => {
-    setTicket({ ...ticket, type_id: Mytype });
+    // console.log(Mytype);
+    setTicket({ ...ticket, id: Mytype });
   };
 
   const UpdateTicketToType = () => {
     const updatedTicket = { ...ticket };
-    const updatedType = type.map((t) => {
-      if (t && t.type_id === ticket.type_id) {
+    const updatedType = MyType.map((t) => {
+      if (t && t.id === ticket.id) {
         if (
           t.type_name === updatedTicket.type_name &&
           t.price === updatedTicket.price
@@ -131,10 +140,10 @@ const EditEvent: FC = () => {
       }
     });
 
-    setType(updatedType);
+    setMyType(updatedType);
     Swal.fire({
       icon: "success",
-      title: `Success update ticket ${ticket.type_id} !!`,
+      title: `Success update ticket ${ticket.id} !!`,
       showCancelButton: false,
       showConfirmButton: true,
     }).then((result) => {
@@ -146,26 +155,25 @@ const EditEvent: FC = () => {
 
   const handleEditEvent = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     const formData = new FormData();
     let key: keyof typeof objSubmit;
     for (key in objSubmit) {
       formData.append(key, objSubmit[key]);
     }
+
+    console.log(formData);
+
+    const type = JSON.stringify(MyType);
+
+    const join = { ...objSubmit, id: Number(id), type };
+    console.log(join);
     axios
-      .put(
-        `/events`,
-        {
-          formData,
-          type: type,
+      .put(`https://go-event.online/events`, join, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${checkToken}`,
         },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${csrf}`,
-          },
-        }
-      )
+      })
       .then((response) => {
         const { message, code } = response.data;
         // console.log(response);
@@ -183,42 +191,50 @@ const EditEvent: FC = () => {
         });
       })
       .catch((error) => {
-        // console.log(error.message);
+        const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: "Failed, update at least 1",
-          text: error,
+          title: code,
+          text: message,
           showCancelButton: false,
         });
       })
       .finally(() => fetchData());
   };
 
-  const handleDeleteTicket = () => {
+  const handleDeleteEvent = () => {
+    console.log(id);
     Swal.fire({
-      icon: "question",
-      title: "Are You Sure to Deleted ticket",
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
       showCancelButton: true,
-      showConfirmButton: true,
-      confirmButtonText: "Yes Deleted",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`/tickets/${type_id}`)
+          .delete(`https://go-event.online/events/${id}`, {
+            headers: {
+              Authorization: `Bearer ${checkToken}`,
+            },
+          })
           .then((response) => {
             const { message, code } = response.data;
             Swal.fire({
-              position: "top-end",
-              icon: "success",
-              title: "Success deleted",
+              icon: "info",
+              title: code,
+              text: message,
               showCancelButton: false,
-              showConfirmButton: false,
-              timer: 1500,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                navigate("/my-event");
+              }
             });
           })
           .catch((error) => {
             const { message, code } = error.response.data;
-            console.log(error);
             Swal.fire({
               icon: "error",
               title: code,
@@ -230,18 +246,92 @@ const EditEvent: FC = () => {
     });
   };
 
-  const handleAddTicket = () => {
-    axios.post(
-      "/tickets",
-      {
-        addTicket,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+  const handleDeleteTicket = (id: number) => {
+    Swal.fire({
+      icon: "question",
+      title: "Are You Sure to Deleted ticket",
+      showCancelButton: true,
+      showConfirmButton: true,
+      confirmButtonText: "Yes Deleted",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`https://go-event.online/tickets/${id}`, {
+            headers: {
+              Authorization: `Bearer ${checkToken}`,
+            },
+          })
+          .then((response) => {
+            const { message, code } = response.data && response.data;
+            Swal.fire({
+              icon: "success",
+              title: code,
+              text: message,
+              showCancelButton: false,
+              showConfirmButton: true,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                setIsOpen(false);
+                fetchData();
+              }
+            });
+          })
+          .catch((error) => {
+            const { message, code } = error.response.data;
+            Swal.fire({
+              icon: "error",
+              title: code,
+              text: message,
+              showCancelButton: false,
+            });
+          });
       }
-    );
+    });
+  };
+
+  // console.log(addTicket);
+
+  const handleAddTicket = () => {
+    axios
+      .post(
+        "https://go-event.online/tickets",
+        {
+          addTicket,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${checkToken}`,
+          },
+        }
+      )
+      .then((response) => {
+        const { message, code } = response.data;
+        Swal.fire({
+          icon: "success",
+          title: code,
+          text: message,
+          showCancelButton: false,
+          showConfirmButton: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setAddTicket({});
+            fetchData();
+          }
+        });
+      })
+      .catch((error) => {
+        const { message, code } = error.response.data;
+        Swal.fire({
+          icon: "error",
+          title: code,
+          text: message,
+          showCancelButton: false,
+        });
+      })
+      .finally(() => {
+        fetchData();
+      });
   };
 
   const openModal = () => {
@@ -251,6 +341,15 @@ const EditEvent: FC = () => {
   const closeModal = () => {
     setIsOpen(false);
   };
+
+  const jakartaOffset = 7 * 60; // UTC offset for Jakarta timezone in minutes
+  const now = new Date();
+  const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
+  const jakartaDate = new Date(jakartaTimestamp).toISOString().slice(0, 16);
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  console.log(data);
 
   return (
     <Layout>
@@ -271,7 +370,7 @@ const EditEvent: FC = () => {
                         src={
                           objSubmit.image
                             ? URL.createObjectURL(objSubmit.image)
-                            : "/header3.jpg"
+                            : `https://storage.googleapis.com/prj1ropel/${data.image}`
                         }
                         alt="user-avatar"
                         className="rounded-2xl w-full h-auto border-1 border-black drop-shadow-lg"
@@ -300,7 +399,7 @@ const EditEvent: FC = () => {
                   </div>
                 </div>
               </div>
-              <form onSubmit={(event) => handleEditEvent(event)} id={data.id}>
+              <form onSubmit={(event) => handleEditEvent(event)}>
                 <div className=" flex flex-col gap-3 sm:gap-6 md:gap-8 px-5 sm:px-10 md:px-16 lg:px-18 xl:px-20  py-5 ms:py-10 ">
                   <Input
                     placeholder="Name"
@@ -327,10 +426,11 @@ const EditEvent: FC = () => {
                     }
                   />
                   <Input
-                    placeholder="Location"
-                    id="input-location"
+                    placeholder={`${data.date}`}
+                    id="input-date"
                     step="1"
-                    defaultValue={data.date}
+                    defaultValue={jakartaDate}
+                    min={`${tomorrow.toISOString().slice(0, 16)}`}
                     type="datetime-local"
                     onChange={(event) =>
                       handleChange(event.target.value, "date")
@@ -385,7 +485,7 @@ const EditEvent: FC = () => {
                       onChange={(event) =>
                         setAddTicket({
                           ...addTicket,
-                          price: event.target.value,
+                          price: Number(event.target.value),
                         })
                       }
                     />
@@ -397,9 +497,9 @@ const EditEvent: FC = () => {
                       }}
                     />
                   </div>
-                  <div className="grid sm:grid-cols-2 gap-3 border-2 border-white p-5 rounded-2xl">
-                    {type &&
-                      type.map((e, index) => {
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3 border-2 border-white p-5 rounded-2xl">
+                    {MyType &&
+                      MyType.map((e, index) => {
                         return (
                           <div
                             key={index}
@@ -415,7 +515,7 @@ const EditEvent: FC = () => {
                               label="Update"
                               onClick={(event) => {
                                 event.preventDefault();
-                                handleUpdateTicket(Number(e && e.type_id));
+                                handleUpdateTicket(Number(e && e.id));
                                 openModal();
                               }}
                             />
@@ -423,7 +523,7 @@ const EditEvent: FC = () => {
                               label="Delete"
                               onClick={(event) => {
                                 event.preventDefault();
-                                handleDeleteTicket();
+                                handleDeleteTicket(Number(e && e.id));
                               }}
                             />
                           </div>
@@ -432,12 +532,19 @@ const EditEvent: FC = () => {
                   </div>
                   <div className="flex flex-col py-5 gap-5 sm:py-10  md:py-16 lg:py-20">
                     <ButtonAction label="Update" type="submit" />
+                    <ButtonCancelOrDelete
+                      label="Deleted"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        handleDeleteEvent();
+                      }}
+                    />
                     <button
                       type="button"
-                      className="inline-flex justify-center items-center rounded-2xl border border-transparent bg-red-500 px-2 py-3 text-xl font-semibold text-white hover:bg-red-700 hover:text-white focus:outline-none "
-                      onClick={() => navigate("/event")}
+                      className="inline-flex justify-center items-center rounded-2xl border border-transparent bg-orange-500 px-2 py-3 text-xl font-semibold text-white hover:bg-orange-700 hover:text-white focus:outline-none "
+                      onClick={() => navigate("/my-event")}
                     >
-                      Close
+                      Back to My Event
                     </button>
                   </div>
                 </div>
@@ -476,7 +583,7 @@ const EditEvent: FC = () => {
                           className="flex flex-col text-lg font-semibold items-center justify-center leading-6 text-gray-900 py-5"
                         >
                           <h1>Update</h1>
-                          <div>Ticket_id: {ticket.type_id?.toString()}</div>
+                          <div>Ticket_id: {ticket.id?.toString()}</div>
                         </Dialog.Title>
                         <div className="mt-2 text-black flex flex-col gap-5 mb-5">
                           <Input
@@ -499,7 +606,7 @@ const EditEvent: FC = () => {
                             onChange={(event) =>
                               setTicket({
                                 ...ticket,
-                                price: event.target.value,
+                                price: Number(event.target.value),
                               })
                             }
                           />

@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Layout } from "../components/Layout";
 import { Input } from "../components/Input";
-import { BiSearchAlt } from "react-icons/bi";
+import { BiSearchAlt, BiArrowFromLeft } from "react-icons/bi";
 import { ButtonAction } from "../components/Button";
 import { Card } from "../components/Card";
 import axios from "axios";
@@ -48,18 +48,18 @@ const Home: FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [count]);
 
   const fetchData = () => {
     axios
-      .get(`https://go-event.online/events?limit=${limit}&page=${page}`, {
+      .get(`https://go-event.online/events?limit=${limit}&page=${count}`, {
         headers: {
           Authorization: `Bearer ${checToken}`,
         },
       })
       .then((response) => {
         const { data } = response.data;
-        console.log(data);
+        setTotalPage(data.total_page);
         setDatas(data.data);
         setCsrf(data.csrf);
       })
@@ -90,7 +90,20 @@ const Home: FC = () => {
         });
   };
 
-  console.log(datas);
+  const handleIncrement = () => {
+    setCount(count + 1);
+  };
+
+  const handleDecrement = () => {
+    if (count <= 1) {
+      setCount(1);
+    } else {
+      setCount(count - 1);
+    }
+  };
+
+  console.log(count);
+  console.log(totalPage);
 
   return (
     <Layout>
@@ -151,7 +164,7 @@ const Home: FC = () => {
             Loading...
           </div>
         ) : (
-          <div className="bg-white w-full pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-32 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
+          <div className="bg-white w-full pt-24 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-32 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-10">
             {datas.map((e) => {
               const date = new Date(e.date);
               const dateEnd = new Date(e.end_date);
@@ -204,8 +217,24 @@ const Home: FC = () => {
           </div>
         )}
       </div>
-      <div className="bg-white h-20 flex justify-center items-center border-2 border-black">
-        <h1 className="text-xl text-black font-semibold">Pagination</h1>
+      <div className="bg-white pb-10 flex justify-center items-center">
+        <h1 className="text-xl text-black font-semibold"></h1>
+        {count <= 1 ? (
+          <div className="w-36"></div>
+        ) : (
+          <div className="mx-2">
+            <ButtonAction label="Back" onClick={() => handleDecrement()} />
+          </div>
+        )}
+        {totalPage === count ? (
+          <div className="w-36"></div>
+        ) : totalPage === 0 ? (
+          <div className="w-36"></div>
+        ) : (
+          <div className="mx-2 flex items-center">
+            <ButtonAction label="Next" onClick={() => handleIncrement()} />
+          </div>
+        )}
       </div>
     </Layout>
   );

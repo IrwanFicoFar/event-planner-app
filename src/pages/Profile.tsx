@@ -81,6 +81,8 @@ const Profile: FC = () => {
       formData.append(key, objSubmit[key]);
     }
 
+    console.log(formData);
+
     axios
       .put("https://go-event.online/users", formData, {
         headers: {
@@ -104,11 +106,10 @@ const Profile: FC = () => {
         });
       })
       .catch((error) => {
-        const { message } = error.response.data;
-        const { status } = error.response;
+        const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: status,
+          title: code,
           text: message,
           showCancelButton: false,
         });
@@ -148,10 +149,11 @@ const Profile: FC = () => {
             });
           })
           .catch((error) => {
+            const { message, code } = error.response.data;
             Swal.fire({
               icon: "error",
-              title: "Failed to delete user profile",
-              text: error,
+              title: code,
+              text: message,
               showCancelButton: false,
             });
           });
@@ -209,7 +211,7 @@ const Profile: FC = () => {
                   </h1>
                 </div>
               </div>
-              <div className="flex h-16 sm:h-20 gap-8">
+              <div className="flex justify-between h-16 sm:h-20 gap-8">
                 <div className="w-40 flex items-center">
                   <h1 className="text-lg sm:text-xl md:text-2xl font-semibold">
                     Email

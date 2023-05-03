@@ -192,14 +192,14 @@ export const CardCart: FC<Partial<DataCheckout>> = (props) => {
       <div className="flex justify-center">
         <h1>{Event}</h1>
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-center">
         <h1>Rp {Price?.toLocaleString("id-ID")}</h1>
       </div>
       <div className="flex justify-center">
         <h1>{Qty}</h1>
       </div>
-      <div className="flex justify-end">
-        <h1>Rp {SubTotal}</h1>
+      <div className="flex justify-center">
+        <h1>Rp {SubTotal?.toLocaleString("id-ID")}</h1>
       </div>
     </div>
   );
@@ -219,7 +219,7 @@ export const CardSummary: FC<Partial<DataCheckout>> = (props) => {
         <h1>{Qty}</h1>
       </div>
       <div className="flex justify-center">
-        <h1>Rp {SubTotal}</h1>
+        <h1>Rp {SubTotal?.toLocaleString("id-ID")}</h1>
       </div>
     </div>
   );
@@ -292,7 +292,6 @@ export const CardEdit: FC<Partial<DataCard>> = (props) => {
       <div className="mb-5">
         <img src={image} alt="image-card" className="rounded-3xl" />
       </div>
-
       <div className="bg-gray-800 p-5 mb-5 flex flex-col gap-4 rounded-3xl">
         <h1 className="text-xl font-semibold">{name}</h1>
         <div className="flex flex-col gap-2">
@@ -322,7 +321,6 @@ export const CardEdit: FC<Partial<DataCard>> = (props) => {
           </div>
         </div>
       </div>
-
       <div>participants = {participants}</div>
       <div className="py-5 flex flex-col justify-center ">
         <ButtonAction label="Edit" onClick={() => navigate(`${goTo}`)} />
