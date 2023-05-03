@@ -45,6 +45,7 @@ const Transaction: FC = () => {
   const [csrf, setCsrf] = useState<string>("");
   const [csrfTicket, setCsrfTicket] = useState<string>("");
   const [dataEvent, setDataEvent] = useState<DataEvent[]>([]);
+  const [dataEventPaid, setDataEventPaid] = useState<DataEvent[]>([]);
   const [datas, setDatas] = useState<Partial<DataInvoice>>({});
   const [datasTicket, setDatasTicket] = useState<Partial<DataTicket[]>>([]);
   const [loading, setLoading] = useState(true);
@@ -57,10 +58,34 @@ const Transaction: FC = () => {
   document.title = `List | Transactions Management`;
 
   useEffect(() => {
-    fetchDataEvent();
+    fetchDataEventPending();
+    fetchDataEventPaid();
   }, []);
 
-  const fetchDataEvent = () => {
+  const fetchDataEventPending = () => {
+    axios
+      .get(`https://go-event.online/users/transactions?status=pending`, {
+        headers: {
+          Authorization: `Bearer ${checkToken}`,
+        },
+      })
+      .then((response) => {
+        const { data } = response.data;
+        setDataEvent(data.data);
+      })
+      .catch((error) => {
+        const { message, code } = error.response.data;
+        Swal.fire({
+          icon: "error",
+          title: code,
+          text: message,
+          showCancelButton: false,
+        });
+      })
+      .finally(() => setLoading(false));
+  };
+
+  const fetchDataEventPaid = () => {
     axios
       .get(`https://go-event.online/users/transactions?status=paid`, {
         headers: {
@@ -69,7 +94,7 @@ const Transaction: FC = () => {
       })
       .then((response) => {
         const { data } = response.data;
-        setDataEvent(data.data);
+        setDataEventPaid(data.data);
       })
       .catch((error) => {
         const { message, code } = error.response.data;
@@ -127,47 +152,48 @@ const Transaction: FC = () => {
           console.log(data.data.status);
           setStatus(data.data.status);
         })
-        .catch((error) => {
-          const { message, code } = error.response.data;
-          Swal.fire({
-            icon: "error",
-            title: code,
-            text: message,
-            showCancelButton: false,
-          });
-        })
         .finally(() => {
-          if (status === "unpaid" || status === "" || status === "pending") {
+          if (status === "cancel") {
+            Swal.fire({
+              icon: "info",
+              title: "expired",
+              showCancelButton: false,
+            });
+            return;
+          }
+          if (status !== "paid") {
             Swal.fire({
               icon: "info",
               title: "please pay first",
               showCancelButton: false,
             });
-          } else {
-            axios
-              .get(`https://go-event.online/tickets/${invoice}`, {
-                headers: {
-                  Authorization: `Bearer ${checkToken}`,
-                },
-              })
-              .then((response) => {
-                const { data } = response.data;
-                setDatasTicket(data.data);
-                setCsrfTicket(data.csrf);
-              })
-              .catch((error) => {
-                Swal.fire({
-                  icon: "error",
-                  title: "Failed",
-                  text: error,
-                  showCancelButton: false,
-                });
-              })
-              .finally(() => {
-                openModalTicket();
-                setLoading(false);
-              });
+            return;
           }
+
+          axios
+            .get(`https://go-event.online/tickets/${invoice}`, {
+              headers: {
+                Authorization: `Bearer ${checkToken}`,
+              },
+            })
+            .then((response) => {
+              const { data } = response.data;
+              setDatasTicket(data.data);
+              setCsrfTicket(data.csrf);
+            })
+            .catch((error) => {
+              const { message, code } = error.response.data;
+              Swal.fire({
+                icon: "error",
+                title: code,
+                text: message,
+                showCancelButton: false,
+              });
+            })
+            .finally(() => {
+              openModalTicket();
+              setLoading(false);
+            });
         });
     }
   };
@@ -242,48 +268,97 @@ const Transaction: FC = () => {
         </div>
       ) : (
         <div className="h-full bg-white py-10 px-3 md:px-20">
-          <div className="grid grid-cols-3 text-white text-lg md:text-2xl font-semibold bg-black py-8 rounded-3xl my-5">
-            <div className="flex justify-center">
-              <h1>Event</h1>
+          <div className="bg-gray-300 p-5 rounded-3xl">
+            <div className="text-lg md:text-2xl font-semibold bg-orange-500 py-8 rounded-3xl my-5 px-5 flex w-[50%]">
+              <h1 className="text-white text-lg md:text-2xl font-semibold">
+                Pending
+              </h1>
             </div>
-            <div className="flex justify-center">
-              <h1>Invoice</h1>
+            <div className="grid grid-cols-3 text-white text-lg md:text-2xl font-semibold bg-black py-8 rounded-3xl my-5">
+              <div className="flex justify-center">
+                <h1>Event</h1>
+              </div>
+              <div className="flex justify-center">
+                <h1>Invoice</h1>
+              </div>
+              <div className="flex justify-center">
+                <h1>Ticket</h1>
+              </div>
             </div>
-            <div className="flex justify-center">
-              <h1>Ticket</h1>
-            </div>
+            {dataEvent &&
+              dataEvent.map((e: DataEvent, index: number) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-2 sm:grid-cols-3 text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
+                >
+                  <div className="col-span-2 sm:col-span-1 flex justify-center">
+                    <h1>{e.event_name}</h1>
+                  </div>
+                  <div className="flex justify-center">
+                    <ButtonCheckout
+                      id="1"
+                      label="Invoice"
+                      onClick={() => {
+                        setEventName(e.event_name);
+                        setInvoice(e.invoice);
+                        handleInvoiceModal(e.invoice);
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
           </div>
-          {dataEvent &&
-            dataEvent.map((e: DataEvent, index: number) => (
-              <div
-                key={index}
-                className="grid grid-cols-3 text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
-              >
+          <div className="bg-gray-300 p-5 rounded-3xl mt-24">
+            <div>
+              <div className=" text-lg md:text-2xl font-semibold bg-orange-500 py-8 rounded-3xl my-5 px-5 flex w-[50%]">
+                <h1 className="text-white text-lg md:text-2xl font-semibold">
+                  Success Paid
+                </h1>
+              </div>
+              <div className="grid grid-cols-3 text-white text-lg md:text-2xl font-semibold bg-black py-8 rounded-3xl my-5">
                 <div className="flex justify-center">
-                  <h1>{e.event_name}</h1>
+                  <h1>Event</h1>
                 </div>
                 <div className="flex justify-center">
-                  <ButtonCheckout
-                    id="1"
-                    label="Invoice"
-                    onClick={() => {
-                      setEventName(e.event_name);
-                      setInvoice(e.invoice);
-                      handleInvoiceModal(e.invoice);
-                    }}
-                  />
+                  <h1>Invoice</h1>
                 </div>
                 <div className="flex justify-center">
-                  <ButtonCheckout
-                    id="1"
-                    label="Ticket"
-                    onClick={() => {
-                      handleTicketModal(e.invoice);
-                    }}
-                  />
+                  <h1>Ticket</h1>
                 </div>
               </div>
-            ))}
+              {dataEventPaid &&
+                dataEventPaid.map((e: DataEvent, index: number) => (
+                  <div
+                    key={index}
+                    className="p-5 grid grid-cols-2 sm:grid-cols-3 gap-5 md:gap-0  text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
+                  >
+                    <div className="flex justify-center col-span-2 sm:col-span-1">
+                      <h1>{e.event_name}</h1>
+                    </div>
+                    <div className="flex justify-center">
+                      <ButtonCheckout
+                        id="1"
+                        label="Invoice"
+                        onClick={() => {
+                          setEventName(e.event_name);
+                          setInvoice(e.invoice);
+                          handleInvoiceModal(e.invoice);
+                        }}
+                      />
+                    </div>
+                    <div className="flex justify-center">
+                      <ButtonCheckout
+                        id="1"
+                        label="Ticket"
+                        onClick={() => {
+                          handleTicketModal(e.invoice);
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
         </div>
       )}
 
@@ -462,7 +537,9 @@ const Transaction: FC = () => {
                         <button
                           type="button"
                           className="bg-red-600 hover:bg-blue-500 hover:-translate-y-1 duration-300 py-3 px-10 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold "
-                          onClick={closeModal}
+                          onClick={() => {
+                            closeModal();
+                          }}
                         >
                           close
                         </button>

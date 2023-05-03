@@ -574,7 +574,9 @@ const Cart: FC = () => {
                         </div>
                         <div className="text-center">
                           <h1 className="text-gray-500">AMOUNT PAID</h1>
-                          <h1>Rp {modalInvoice?.total.toLocaleString("id")}</h1>
+                          <h1>
+                            Rp {modalInvoice?.total?.toLocaleString("id")}
+                          </h1>
                         </div>
                         <div>
                           <h1 className="text-gray-500">PAY BEFORE</h1>
@@ -626,7 +628,14 @@ const Cart: FC = () => {
           </Dialog>
         </Transition>
       </div>
-      {/* <div>
+    </Layout>
+  );
+};
+
+export default Cart;
+
+{
+  /* <div>
         <Transition appear show={isOpen} as={Fragment}>
           <Dialog as="div" className="relative z-10" onClose={closeModal}>
             <Transition.Child
@@ -712,12 +721,5 @@ const Cart: FC = () => {
             </div>
           </Dialog>
         </Transition>
-      </div>{" "} */}
-    </Layout>
-  );
-};
-
-export default Cart;
-
-{
+      </div>{" "} */
 }
