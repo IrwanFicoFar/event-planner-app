@@ -1,12 +1,12 @@
 import { FC, useEffect, useState, FormEvent, MouseEvent } from "react";
-import { Layout } from "../../components/Layout";
-import { Input, TextArea } from "../../components/Input";
-import { ButtonAction } from "../../components/Button";
 import Swal from "sweetalert2";
 import axios from "axios";
+
+import { Input, TextArea } from "../../components/Input";
+import { ButtonAction } from "../../components/Button";
+import { Layout } from "../../components/Layout";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { error } from "console";
 
 interface EventAdd {
   id: string;
@@ -21,10 +21,8 @@ interface EventAdd {
   quota: number;
   duration: number;
   ticket: string;
-  price: number;
   image: any;
   hosted_by: string;
-  type_name: string;
 }
 
 interface dataTicket {
@@ -36,21 +34,14 @@ const AddEvent: FC = () => {
   const [objSubmit, setObjSubmit] = useState<Partial<EventAdd>>({});
   const [data, setData] = useState<Partial<EventAdd>>({});
   const [MyType, setMyType] = useState<dataTicket[]>([]);
-  // const [displayAddTicket, setDisplayAddTicket] = useState<string>("");
   const [ticket, setTicket] = useState<dataTicket>({
     type_name: "",
     price: "",
   });
   const [cookie] = useCookies(["tkn"]);
   const checkToken = cookie.tkn;
-  const type = MyType.toString();
-  const [types, setTypes] = useState<Partial<EventAdd[]>>([]);
 
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   setDisplayAddTicket("");
-  // }, [MyType]);
 
   const handleAddTicket = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -77,21 +68,6 @@ const AddEvent: FC = () => {
       }
     }
   };
-  console.log(MyType);
-
-  // const handleChange = (
-  //   value: string | File | number,
-  //   key: keyof typeof objSubmit
-  // ) => {
-  //   console.log(value);
-  //   let temp = { ...objSubmit };
-  //   if (value === null) {
-  //     temp[key] = null;
-  //   } else {
-  //     temp[key] = value;
-  //   }
-  //   setObjSubmit(temp);
-  // };
 
   const handleChange = (
     value: string | File | number | null,
@@ -112,9 +88,10 @@ const AddEvent: FC = () => {
     setObjSubmit(temp);
   };
 
-  const join = { ...objSubmit, type };
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const type = JSON.stringify(MyType);
+    const join = { ...objSubmit, type };
     console.log(join);
     axios
       .post("https://go-event.online/events", join, {
