@@ -1,8 +1,9 @@
 import { FC, Fragment, useState, useEffect, createContext } from "react";
 import { Layout } from "../../components/Layout";
-import { CardCart, PaymentMethode } from "../../components/Card";
+import { CardCart, PaymentMethode, CardSummary } from "../../components/Card";
 import { Dialog, Listbox, Transition } from "@headlessui/react";
 import { MdArrowForwardIos, MdCheck } from "react-icons/md";
+import { TbFileInvoice } from "react-icons/tb";
 import { ButtonCheckout } from "../../components/Button";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -20,33 +21,60 @@ interface Option {
 const options: Option[] = [
   {
     id: "1",
-    name: "bca",
+    name: "BCA",
     image: "bca.png",
   },
   {
     id: "2",
-    name: "mandiri",
+    name: "MANDIRI",
     image: "Mandiri_logo.png",
   },
   {
     id: "3",
-    name: "indomaret",
+    name: "INDOMARET",
     image: "indomaret.png",
   },
   {
     id: "4",
-    name: "gopay",
+    name: "GOPAY",
     image: "gopay.png",
   },
 ];
+
+const payBca = () => {
+  window.open("https://simulator.sandbox.midtrans.com/bca/va/index");
+};
 
 interface DataCartType {
   event_id: number;
   type_id: number;
   type_name: string;
-  type_price: string;
+  type_price: number;
   qty: number;
   sub_total: number;
+}
+
+interface dataCheckoutType {
+  event_id: number;
+  payment_methode: string;
+  items_detail: [
+    {
+      event_id: number;
+      type_id: number;
+      type_name: string;
+      type_price: number;
+      qty: number;
+      sub_total: number;
+    }
+  ];
+}
+
+interface ModalInvoiceType {
+  total: number;
+  expire: string;
+  payment_method: string;
+  invoice: string;
+  payment_code: string;
 }
 
 const classNames = (...classes: string[]) => {
@@ -56,14 +84,15 @@ const classNames = (...classes: string[]) => {
 const Cart: FC = () => {
   const [selectedOption, setSelectedOption] = useState<Option>(options[0]);
   const [isOpen, setIsOpen] = useState(false);
-  const [datas, setDatas] = useState<Partial<DataCartType[]>>([]);
   const [total, setTotal] = useState<number>();
   const [loading, setLoading] = useState<boolean>(true);
   const [invoice, setInvoice] = useState("");
-  const [idEvent, setIdEvent] = useState();
+  const [type, setType] = useState<DataCartType[]>([]);
   const navigate = useNavigate();
   const [cookie] = useCookies(["tkn"]);
   const checkToken = cookie.tkn;
+  const [modalInvoice, setModalInvoice] = useState<ModalInvoiceType>();
+  const [openModalInvoice, setOpenModalInvoice] = useState<boolean>(false);
 
   document.title = `Cart | Transactions Management`;
 
@@ -79,10 +108,8 @@ const Cart: FC = () => {
         },
       })
       .then((response) => {
-        console.log(response);
         const { data } = response.data;
-        setDatas(data.data);
-        setIdEvent(data.data.event_id);
+        setType(data.data);
         setTotal(data.total);
       })
       .catch((error) => {
@@ -100,7 +127,7 @@ const Cart: FC = () => {
       });
   };
 
-  console.log(idEvent);
+  console.log(type);
 
   const closeModal = () => {
     setIsOpen(false);
@@ -111,46 +138,74 @@ const Cart: FC = () => {
   };
 
   const handleCheckout = () => {
-    axios
-      .post(
-        `https://go-event.online/transactions/checkout`,
-        {
-          event_id: `${datas?.[0]?.event_id}`,
-          payment_methode: `${selectedOption}`,
-          items_detail: `${datas}`,
-        },
-        {
+    const event_id = type[0].event_id;
+    const data = {
+      event_id: event_id,
+      payment_type: `${selectedOption.name.toLowerCase()}`,
+      items_detail: type,
+    };
+    console.log(data);
+    if (event_id === undefined) {
+      Swal.fire({
+        icon: "warning",
+        text: "add ticket please !!",
+        showCancelButton: false,
+      });
+    } else {
+      axios
+        .post(`https://go-event.online/transactions/checkout`, data, {
           headers: {
             Authorization: `Bearer ${checkToken}`,
           },
-        }
-      )
-      .then((response) => {
-        const { message, code, data } = response.data;
-        setInvoice(data.invoice);
-        Swal.fire({
-          icon: "success",
-          title: code,
-          text: message,
-          showCancelButton: false,
-          showConfirmButton: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            openModal();
-          }
-        });
-      })
-      .catch((error) => {
-        const { message, code } = error.response.data;
-        console.log(error);
-        Swal.fire({
-          icon: "error",
-          title: code,
-          text: message,
-          showCancelButton: false,
-        });
-      })
-      .finally(() => {});
+        })
+        .then((response) => {
+          const { message, code, data } = response.data;
+          setModalInvoice(data.data);
+          setInvoice(data.data.invoice);
+          console.log(response);
+          Swal.fire({
+            icon: "success",
+            title: code,
+            text: message,
+            showCancelButton: false,
+            showConfirmButton: true,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              closeModal();
+              setOpenModalInvoice(true);
+            }
+          });
+        })
+        .catch((error) => {
+          const { message, code } = error.response.data;
+          console.log(error);
+          Swal.fire({
+            icon: "error",
+            title: code,
+            text: message,
+            showCancelButton: false,
+          });
+        })
+        .finally(() => {});
+    }
+  };
+
+  const handlePayGopay = () => {
+    window.open("https://simulator.sandbox.midtrans.com/qris/index");
+  };
+
+  const handlePayBca = () => {
+    window.open("https://simulator.sandbox.midtrans.com/bca/va/index");
+  };
+
+  const handlePayMandiri = () => {
+    window.open(
+      "https://simulator.sandbox.midtrans.com/openapi/va/index?bank=mandiri"
+    );
+  };
+
+  const handlePayIndomaret = () => {
+    window.open("https://simulator.sandbox.midtrans.com/indomaret/index");
   };
   return (
     <Layout>
@@ -177,8 +232,8 @@ const Cart: FC = () => {
                 </div>
               </div>
             </div>
-            {datas &&
-              datas.map((e) => (
+            {type &&
+              type.map((e) => (
                 <CardCart
                   key={e && e.type_id}
                   Event={e && e.type_name}
@@ -287,15 +342,293 @@ const Cart: FC = () => {
               <ButtonCheckout
                 label="Checkout "
                 onClick={() => {
-                  handleCheckout();
+                  openModal();
                 }}
               />
             </div>
           </div>
         </div>
       </div>
-      {/* Modal */}
+      {/* Modal proccess*/}
       <div>
+        <Transition appear show={isOpen} as={Fragment}>
+          <Dialog as="div" className="relative z-10" onClose={closeModal}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black bg-opacity-25" />
+            </Transition.Child>
+            <div className="fixed inset-0 overflow-y-auto">
+              <div className="flex min-h-full items-center justify-center p-4 text-center">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 scale-95"
+                  enterTo="opacity-100 scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 scale-100"
+                  leaveTo="opacity-0 scale-95"
+                >
+                  <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                    <div className="mt-2 text-black">
+                      <div className="grid grid-cols-2">
+                        <div className="flex flex-col col-span-2">
+                          <h1 className="text-xl font-semibold">Summary</h1>
+                          <div className="bg-gray-300 rounded-t-3xl rounded-b-3xl my-5">
+                            <div>
+                              <div className="grid grid-cols-4 items-center bg-gray-800 text-white text-md md:text-xl font-semibold h-16 px-5 rounded-3xl">
+                                <div className="flex justify-center">
+                                  <h1>Ticket</h1>
+                                </div>
+                                <div className="flex justify-center">
+                                  <h1>Price</h1>
+                                </div>
+                                <div className="flex justify-center">
+                                  <h1>Qty</h1>
+                                </div>
+                                <div className="flex justify-center">
+                                  <h1>Sub Total</h1>
+                                </div>
+                              </div>
+                            </div>
+                            {type &&
+                              type.map((e) => (
+                                <div>
+                                  <CardSummary
+                                    key={e && e.type_id}
+                                    Event={e && e.type_name}
+                                    Price={e && e.type_price}
+                                    Qty={e && e.qty}
+                                    SubTotal={e && e.sub_total}
+                                  />
+                                </div>
+                              ))}
+                            <div className="grid grid-cols-4 text-black sm:text-xl font-semibold px-5 mt-3 py-2 border-b-4 border-gray-800 rounded-b-3xl">
+                              <div className="flex justify-center"></div>
+                              <div className="flex justify-center"></div>
+                              <div className="flex justify-center">Total</div>
+                              <div className="flex justify-center">
+                                <h1>Rp {total}</h1>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex flex-col justify-around p-5 bg-gray-200 rounded-3xl mr-2">
+                          <h1 className="font-semibold">Payment Methode</h1>
+                          <img src={selectedOption.image} alt="" />
+                        </div>
+                        <div className="bg-black rounded-3xl p-5 text-white flex flex-col justify-between ml-2">
+                          <div className="flex flex-col sm:flex-row pb-5 ">
+                            <h1 className="md:text-xl font-semibold">
+                              all data is right ?
+                            </h1>
+                          </div>
+                          <div className=" flex flex-col gap-5">
+                            <ButtonCheckout
+                              label="Proccess"
+                              onClick={() => handleCheckout()}
+                            />
+                            <button
+                              type="button"
+                              className="bg-red-600 hover:bg-blue-500 hover:-translate-y-1 duration-300 py-2 px-10 inline-flex justify-center items-center rounded-2xl  text-white font-semibold "
+                              onClick={() => {
+                                closeModal();
+                              }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex justify-between"></div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition>
+      </div>
+      {/* Modal after proccess*/}{" "}
+      <div>
+        <Transition appear show={openModalInvoice} as={Fragment}>
+          <Dialog as="div" className="relative z-10" onClose={closeModal}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black bg-opacity-25" />
+            </Transition.Child>
+            <div className="fixed inset-0 overflow-y-auto print-section">
+              <div className="flex min-h-full items-center justify-center p-4 text-center">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 scale-95"
+                  enterTo="opacity-100 scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 scale-100"
+                  leaveTo="opacity-0 scale-95"
+                >
+                  <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-b-2xl bg-black pb-6 text-left align-middle shadow-xl transition-all border-white border-2 ">
+                    <div className="">
+                      <div className="static bg-white h-20 rounded-b-full flex justify-center items-end">
+                        <TbFileInvoice className="absolute top-11 overflow-visible  text-7xl p-3 rounded-full border-4 border-white bg-black" />
+                      </div>
+                      <div className="mt-14 flex flex-col justify-center items-center  font-medium">
+                        <h1 className="text-white text-xl">INVOICE</h1>
+                        <h1 className="text-gray-500 italic text-md">
+                          (NO: {invoice})
+                        </h1>
+                      </div>
+                      <div className="mt-14 pl-10 flex items-center space-x-3 font-medium">
+                        <h1 className="text-white text-xl">EVENT NAME : </h1>
+                        <h1 className="text-gray-500 text-xl">{}</h1>
+                      </div>
+                      <div className="grid grid-cols-3 px-10 mt-5 font-semibold">
+                        <div>
+                          <h1 className="text-gray-500">AMOUNT PAID</h1>
+                          <h1>Rp {modalInvoice?.total}</h1>
+                        </div>
+                        <div>
+                          <div>
+                            <h1 className="text-gray-500 mt-5">PAY BEFORE</h1>
+                            <h1>{modalInvoice?.expire}</h1>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-5">
+                          <div>
+                            <h1 className="text-gray-500">PAYMENT METHODE</h1>
+                            <h1>{modalInvoice?.payment_method}</h1>
+                          </div>
+                          <div>
+                            <h1 className="text-gray-500">PAYMENT CODE</h1>
+                            {modalInvoice?.payment_method === "gopay" ? (
+                              <div>
+                                <h1>
+                                  <img
+                                    src="https://api.sandbox.midtrans.com/v2/gopay/f597999d-75e7-4c58-894a-afe87ba525c8/qr-code"
+                                    alt=""
+                                    className="w-24"
+                                  />
+                                </h1>
+                                <h1>{modalInvoice?.payment_code}</h1>
+                              </div>
+                            ) : (
+                              <div className="flex flex-col">
+                                <h1>Virtual Account</h1>
+                                <h1 className="text-gray-500">
+                                  {modalInvoice?.payment_code}
+                                </h1>
+                              </div>
+                            )}
+                          </div>
+                          {modalInvoice?.payment_method === "gopay" ? (
+                            <button
+                              type="button"
+                              className="w-full bg-orange-500 hover:bg-@028090 hover:-translate-y-1 duration-300 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
+                              onClick={() => {
+                                handlePayGopay();
+                                navigate("/transaction");
+                              }}
+                            >
+                              Pay Now
+                            </button>
+                          ) : modalInvoice?.payment_method === "bca" ? (
+                            <button
+                              type="button"
+                              className="w-full  bg-orange-500 hover:bg-@028090 hover:-translate-y-1 duration-300 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
+                              onClick={() => {
+                                handlePayBca();
+                                navigate("/transaction");
+                              }}
+                            >
+                              Pay Now
+                            </button>
+                          ) : modalInvoice?.payment_method === "mandiri" ? (
+                            <button
+                              type="button"
+                              className="w-full  bg-orange-500 hover:bg-@028090 hover:-translate-y-1 duration-300 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
+                              onClick={() => {
+                                handlePayMandiri();
+                                navigate("/transaction");
+                              }}
+                            >
+                              Pay Now
+                            </button>
+                          ) : modalInvoice?.payment_method === "indomaret" ? (
+                            <button
+                              type="button"
+                              className=" w-full bg-orange-500 hover:bg-@028090 hover:-translate-y-1 duration-300 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
+                              onClick={() => {
+                                handlePayIndomaret();
+                                navigate("/transaction");
+                              }}
+                            >
+                              Pay Now
+                            </button>
+                          ) : (
+                            <></>
+                          )}
+                        </div>
+                      </div>
+                      <div className="p-10 ">
+                        <h1>SUMMARY</h1>
+                        <div className="rounded-2xl border-2 border-white p-5">
+                          <table className="w-full">
+                            {type?.map((e) => (
+                              <tr className="border-2 text-center">
+                                <th>{e.type_name}</th>
+                                <td>{e.type_price}</td>
+                                <td className="flex justify-center">
+                                  {e.qty}
+                                  <div className="mx-1">
+                                    {e.qty <= 1 ? "pc" : "pcs"}
+                                  </div>{" "}
+                                </td>
+                                <td>Rp {e.sub_total}</td>
+                              </tr>
+                            ))}
+                            <tr className="border-2 text-center">
+                              <th></th>
+                              <td></td>
+                              <td>Total</td>
+                              <td>Rp {total}</td>
+                            </tr>
+                          </table>
+                        </div>
+                      </div>
+                      <div className="mt-4 flex justify-between px-10">
+                        <button
+                          type="button"
+                          className="bg-red-600 hover:bg-blue-500 hover:-translate-y-1 duration-300 py-3 px-10 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold "
+                          onClick={() => {
+                            navigate("/");
+                          }}
+                        >
+                          close
+                        </button>
+                      </div>
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition>
+      </div>
+      {/* <div>
         <Transition appear show={isOpen} as={Fragment}>
           <Dialog as="div" className="relative z-10" onClose={closeModal}>
             <Transition.Child
@@ -345,8 +678,8 @@ const Cart: FC = () => {
                           </div>
                           <div className=" flex flex-col">
                             <ButtonCheckout
-                              label="Transactions"
-                              onClick={() => navigate(`/transaction`)}
+                              label="Pay Now"
+                              onClick={() => payBca()}
                             />
                           </div>
                         </div>
@@ -356,18 +689,23 @@ const Cart: FC = () => {
                       <button
                         type="button"
                         className="bg-red-600 hover:bg-blue-500 hover:-translate-y-1 duration-300 py-3 px-10 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold "
-                        onClick={closeModal}
+                        onClick={() => {
+                          closeModal();
+                        }}
                       >
-                        close
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="bg-red-600 hover:bg-blue-500 hover:-translate-y-1 duration-300 py-3 px-10 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold "
+                        onClick={() => {
+                          navigate(`/transaction`);
+                        }}
+                      >
+                        List transaction
                       </button>
                       <div className="text-black flex space-x-3 items-center ">
-                        <h1>Pay before :</h1>
-                        {/* {showTimer && (
-                          <CountdownTimer
-                            duration={displayCount}
-                            onComplete={handleTimerComplete}
-                          />
-                        )} */}
+                        <h1>Pay before : {} </h1>
                       </div>
                     </div>
                   </Dialog.Panel>
@@ -376,9 +714,12 @@ const Cart: FC = () => {
             </div>
           </Dialog>
         </Transition>
-      </div>
+      </div>{" "} */}
     </Layout>
   );
 };
 
 export default Cart;
+
+{
+}

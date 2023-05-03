@@ -76,7 +76,6 @@ const DetailEvent: FC = () => {
       .get(`https://go-event.online/events/${id}`)
       .then((response) => {
         const { data } = response.data;
-        // console.log(data.data);
         setData(data.data);
         setCsrf(data.csrf);
       })
@@ -95,7 +94,6 @@ const DetailEvent: FC = () => {
   };
 
   const handleAddComment = () => {
-    console.log(objAdd);
     {
       checToken
         ? axios
@@ -198,7 +196,6 @@ const DetailEvent: FC = () => {
     }
   };
 
-  console.log(data);
   return (
     <Layout>
       <div className="h-full">
