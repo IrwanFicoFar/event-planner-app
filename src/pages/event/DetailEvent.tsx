@@ -8,6 +8,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import { type } from "os";
 
 interface DetailDataType {
   id: number;
@@ -33,7 +34,7 @@ interface DetailDataType {
   ];
   types: [
     {
-      type_id: number;
+      id: number;
       type_name: string;
       price: number;
     }
@@ -62,6 +63,7 @@ const DetailEvent: FC = () => {
     event_id: Number(id),
     comment: "",
   });
+
   const [cookie] = useCookies(["tkn"]);
   const checToken = cookie.tkn;
 
@@ -160,9 +162,17 @@ const DetailEvent: FC = () => {
     {
       checToken
         ? axios
-            .post(`/transactions/cart`, {
-              type_id: id,
-            })
+            .post(
+              `https://go-event.online/transactions/cart`,
+              {
+                type_id: id,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${checToken}`,
+                },
+              }
+            )
             .then((response) => {
               const { message, code } = response.data;
               Swal.fire({
@@ -173,11 +183,11 @@ const DetailEvent: FC = () => {
               });
             })
             .catch((error) => {
-              const { message } = error.message;
+              const { message, code } = error.response.data;
               Swal.fire({
                 icon: "error",
-                title: "Failed",
-                text: error,
+                title: code,
+                text: message,
                 showCancelButton: false,
               });
             })
@@ -249,10 +259,12 @@ const DetailEvent: FC = () => {
                 {data.types &&
                   data.types.map((type) => (
                     <CardTicket
-                      key={type.type_id}
+                      key={type.id}
                       ticket={type.type_name}
                       price={type.price}
-                      onClick={() => handleToCart(type.type_id)}
+                      onClick={() => {
+                        handleToCart(type.id);
+                      }}
                     />
                   ))}
               </div>

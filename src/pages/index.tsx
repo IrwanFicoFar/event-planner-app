@@ -37,7 +37,7 @@ const Home: FC = () => {
   const checToken = cookie.tkn;
 
   const limit = 4;
-  const page = 1;
+  const page = 2;
 
   const navigate = useNavigate();
 
