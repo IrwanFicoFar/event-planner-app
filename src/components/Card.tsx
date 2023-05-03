@@ -45,7 +45,7 @@ export const Card: FC<Partial<Props>> = (props) => {
         </div>
       </div>
       <div className="mb-5">
-        <Link to={`vent/${id}`}>
+        <Link to={`event/${id}`}>
           <img src={image} alt="image-card" className="rounded-3xl" />
         </Link>
       </div>
@@ -95,13 +95,11 @@ export const CardAttandance: FC<Partial<DataAttandance>> = (props) => {
   return (
     <div className="bg-white rounded-2xl h-40 w-32">
       <div className=" flex justify-center items-center pt-5 px-3 ">
-        <Link to={`detail-event/:id`}>
-          <img
-            src={image}
-            alt="image-card"
-            className="rounded-full border-2 drop-shadow-lg border-black h-24 w-24 "
-          />
-        </Link>
+        <img
+          src={image}
+          alt="image-card"
+          className="rounded-full border-2 drop-shadow-lg border-black h-24 w-24 "
+        />
       </div>
       <div className=" flex justify-center items-center py-2">
         <h1 className="text-black font-semibold text:xl md:text-xl">{name}</h1>
@@ -122,13 +120,11 @@ export const CardComment: FC<Partial<DataComment>> = (props) => {
     <div className="flex">
       <div className="bg-white rounded-2xl py-2 w-24 px-3">
         <div className=" flex justify-center items-center pt-2">
-          <Link to={`event/:id`}>
-            <img
-              src={image}
-              alt="image-card"
-              className="rounded-full border-2 drop-shadow-lg border-black w-16 h-16"
-            />
-          </Link>
+          <img
+            src={image}
+            alt="image-card"
+            className="rounded-full border-2 drop-shadow-lg border-black w-16 h-16"
+          />
         </div>
         <div className="flex justify-center items-center">
           <h1 className="text-black font-semibold text:xl md:text-xl ">
@@ -159,7 +155,7 @@ export const CardTicket: FC<Partial<DataTicket>> = (props) => {
         </div>
         <div className="flex justify-center py-8">
           <h1 className="text-orange-500 lg:text-md xl:text-xl font-semibold">
-            {price}
+            Rp {price?.toLocaleString("id-ID")}
           </h1>
         </div>
       </div>
@@ -173,7 +169,7 @@ export const CardTicket: FC<Partial<DataTicket>> = (props) => {
 interface DataCheckout {
   Event: string;
   Ticket: string;
-  Price: string;
+  Price: number;
   Qty: number;
   SubTotal: number;
 }
@@ -186,7 +182,7 @@ export const CardCart: FC<Partial<DataCheckout>> = (props) => {
         <h1>{Event}</h1>
       </div>
       <div className="flex justify-end">
-        <h1>Rp {Price}</h1>
+        <h1>Rp {Price?.toLocaleString("id-ID")}</h1>
       </div>
       <div className="flex justify-center">
         <h1>{Qty}</h1>
