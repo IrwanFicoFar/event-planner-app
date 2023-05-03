@@ -71,17 +71,19 @@ const DetailEvent: FC = () => {
 
   const fetchData = () => {
     axios
-      .get(`/events/${id}`)
+      .get(`https://go-event.online/events/${id}`)
       .then((response) => {
         const { data } = response.data;
+        // console.log(data.data);
         setData(data.data);
         setCsrf(data.csrf);
       })
       .catch((error) => {
+        const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: "Failed",
-          text: error,
+          title: code,
+          text: message,
           showCancelButton: false,
         });
       })
@@ -91,10 +93,15 @@ const DetailEvent: FC = () => {
   };
 
   const handleAddComment = () => {
+    console.log(objAdd);
     {
       checToken
         ? axios
-            .post(`/comments`, objAdd)
+            .post(`https://go-event.online/comments`, objAdd, {
+              headers: {
+                Authorization: `Bearer ${checToken}`,
+              },
+            })
             .then((response) => {
               const { message, code } = response.data;
               Swal.fire({
@@ -109,14 +116,16 @@ const DetailEvent: FC = () => {
               });
             })
             .catch((error) => {
-              const { message } = error.message;
-              // console.log(message);
+              const { message, code } = error.response.data;
               Swal.fire({
                 icon: "error",
-                title: "Failed",
-                text: error,
+                title: code,
+                text: message,
                 showCancelButton: false,
               });
+            })
+            .finally(() => {
+              fetchData();
             })
         : Swal.fire({
             icon: "warning",
@@ -125,7 +134,6 @@ const DetailEvent: FC = () => {
     }
   };
 
-  let dateStringHeader = "";
   let dateString = "";
   let timeString = "";
 
@@ -144,7 +152,6 @@ const DetailEvent: FC = () => {
       day: "numeric",
       hour12: false,
     } as Intl.DateTimeFormatOptions;
-    dateStringHeader = Newdate.toLocaleDateString("en-US", optionsHeader);
     dateString = Newdate.toLocaleDateString("en-US", options);
     timeString = Newdate.toLocaleTimeString(); // format: 5:17:02 PM
   }
@@ -167,7 +174,6 @@ const DetailEvent: FC = () => {
             })
             .catch((error) => {
               const { message } = error.message;
-              // console.log(message);
               Swal.fire({
                 icon: "error",
                 title: "Failed",
@@ -183,16 +189,23 @@ const DetailEvent: FC = () => {
   };
 
   console.log(data);
+
   return (
     <Layout>
       <div className="h-full">
         <div className="grid lg:grid-cols-2 ">
           <div className="p-10">
-            <div
-              className={`bg-[url('/header3.jpg')] bg-center bg-cover rounded-3xl h-96`}
-            ></div>
+            <div className="rounded-3xl flex justify-center">
+              <img
+                src={`https://storage.googleapis.com/prj1ropel/${
+                  data && data.image
+                }`}
+                alt=""
+                className="w-full rounded-3xl"
+              />
+            </div>
             <h1 className="text-xl sm:text-2xl font-semibold text-orange-500 py-5 pr-5 flex justify-end">
-              5 left
+              {data.quota} {data.quota && data.quota < 2 ? "left" : "lefts"}
             </h1>
             <p className="text-lg">{data.details}</p>
             <h1 className="text-xl font-semibold py-10">
@@ -262,9 +275,9 @@ const DetailEvent: FC = () => {
                       name={data.name}
                     />
                   ))}
-                <CardAttandance image="/avatar.jpg" name="irwan" />
-                <CardAttandance image="/avatar.jpg" name="irwan" />
-                <CardAttandance image="/avatar.jpg" name="irwan" />
+                <CardAttandance image="/default.jpg" name="kosong" />
+                <CardAttandance image="/default.jpg" name="kosong" />
+                <CardAttandance image="/default.jpg" name="kosong" />
               </div>
             </div>
             <div className="py-10">
@@ -285,7 +298,7 @@ const DetailEvent: FC = () => {
               {data.comments &&
                 data.comments.map((item) => (
                   <CardComment
-                    image={`/${item.image}`}
+                    image={`https://storage.googleapis.com/prj1ropel/${item.image}`}
                     name={item.name}
                     comment={item.comment}
                   />
