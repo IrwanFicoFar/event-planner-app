@@ -180,7 +180,7 @@ export const CardTicket: FC<Partial<DataTicket>> = (props) => {
 interface DataCheckout {
   Event: string;
   Ticket: string;
-  Price: string;
+  Price: number;
   Qty: number;
   SubTotal: number;
 }
@@ -193,12 +193,32 @@ export const CardCart: FC<Partial<DataCheckout>> = (props) => {
         <h1>{Event}</h1>
       </div>
       <div className="flex justify-end">
-        <h1>Rp {Number(Price)?.toLocaleString("id-ID")}</h1>
+        <h1>Rp {Price?.toLocaleString("id-ID")}</h1>
       </div>
       <div className="flex justify-center">
         <h1>{Qty}</h1>
       </div>
       <div className="flex justify-end">
+        <h1>Rp {SubTotal}</h1>
+      </div>
+    </div>
+  );
+};
+
+export const CardSummary: FC<Partial<DataCheckout>> = (props) => {
+  const { Event, Ticket, Price, Qty, SubTotal } = props;
+  return (
+    <div className="grid grid-cols-4 text-black sm:text-xl font-semibold px-5 mt-3 py-2 border-b-4 border-gray-800 rounded-b-3xl">
+      <div className="flex justify-center">
+        <h1>{Event}</h1>
+      </div>
+      <div className="flex justify-center">
+        <h1>Rp {Price?.toLocaleString("id-ID")}</h1>
+      </div>
+      <div className="flex justify-center">
+        <h1>{Qty}</h1>
+      </div>
+      <div className="flex justify-center">
         <h1>Rp {SubTotal}</h1>
       </div>
     </div>
@@ -324,8 +344,8 @@ export const CardModalTicket: FC<DataModalTicket> = (props) => {
   const { type, name, date, time, location, hosted_by } = props;
   return (
     <div className={`rounded-2xl bg-teal-500 p-4 flex border-2 my-5`}>
-      <div className=" rounded-2xl my-16 -rotate-90 text-black text-3xl font-semibold w-[10%] mr-2 flex justify-center">
-        {type}
+      <div className=" rounded-2xl items-center text-black text-3xl font-semibold mr-2 flex justify-center">
+        <h1 className="-rotate-90 flex">{type}</h1>
       </div>
       <div className="bg-white w-[100%] border-2  rounded-2xl text-black p-5 flex flex-col justify-between">
         <div>

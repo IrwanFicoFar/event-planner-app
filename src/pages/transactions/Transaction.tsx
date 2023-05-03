@@ -62,22 +62,17 @@ const Transaction: FC = () => {
 
   const fetchDataEvent = () => {
     axios
-      .get(
-        `https://go-event.online/users/transactions?status=unpaid||status=paid`,
-        {
-          headers: {
-            Authorization: `Bearer ${checkToken}`,
-          },
-        }
-      )
+      .get(`https://go-event.online/users/transactions?status=paid`, {
+        headers: {
+          Authorization: `Bearer ${checkToken}`,
+        },
+      })
       .then((response) => {
-        console.log(response);
-        // const { data } = response.data;
-        // setDataEvent(datas.data);
+        const { data } = response.data;
+        setDataEvent(data.data);
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        console.log(error);
         Swal.fire({
           icon: "error",
           title: code,
@@ -90,9 +85,12 @@ const Transaction: FC = () => {
 
   const handleInvoiceModal = (invoice: string) => {
     if (invoice !== "") {
-      console.log(invoice);
       axios
-        .get(`/transactions/{${invoice}}`)
+        .get(`https://go-event.online/transactions/${invoice}`, {
+          headers: {
+            Authorization: `Bearer ${checkToken}`,
+          },
+        })
         .then((response) => {
           const { data } = response.data;
           setDatas(data.data);
@@ -100,10 +98,11 @@ const Transaction: FC = () => {
           setStatus(data.data.status);
         })
         .catch((error) => {
+          const { message, code } = error.response.data;
           Swal.fire({
             icon: "error",
-            title: "Failed",
-            text: error,
+            title: code,
+            text: message,
             showCancelButton: false,
           });
         })
@@ -118,21 +117,27 @@ const Transaction: FC = () => {
     if (invoice !== "") {
       console.log(invoice);
       axios
-        .get(`/transactions/{${invoice}}`)
+        .get(`https://go-event.online/transactions/${invoice}`, {
+          headers: {
+            Authorization: `Bearer ${checkToken}`,
+          },
+        })
         .then((response) => {
           const { data } = response.data;
+          console.log(data.data.status);
           setStatus(data.data.status);
         })
         .catch((error) => {
+          const { message, code } = error.response.data;
           Swal.fire({
             icon: "error",
-            title: "Failed",
-            text: error,
+            title: code,
+            text: message,
             showCancelButton: false,
           });
         })
         .finally(() => {
-          if (status === "unpaid" || status === "") {
+          if (status === "unpaid" || status === "" || status === "pending") {
             Swal.fire({
               icon: "info",
               title: "please pay first",
@@ -140,7 +145,11 @@ const Transaction: FC = () => {
             });
           } else {
             axios
-              .get(`/tickets/${invoice}`)
+              .get(`https://go-event.online/tickets/${invoice}`, {
+                headers: {
+                  Authorization: `Bearer ${checkToken}`,
+                },
+              })
               .then((response) => {
                 const { data } = response.data;
                 setDatasTicket(data.data);
@@ -232,7 +241,7 @@ const Transaction: FC = () => {
           Loading...
         </div>
       ) : (
-        <div className="h-screen bg-white py-10 px-3 md:px-20">
+        <div className="h-full bg-white py-10 px-3 md:px-20">
           <div className="grid grid-cols-3 text-white text-lg md:text-2xl font-semibold bg-black py-8 rounded-3xl my-5">
             <div className="flex justify-center">
               <h1>Event</h1>
@@ -331,9 +340,18 @@ const Transaction: FC = () => {
                             <h1>at {localTimeStr}</h1>
                           </div>
                           <div>
-                            <h1 className="text-gray-500 mt-5">EXPIRED</h1>
-                            <h1>{localDateStrExp}</h1>
-                            <h1>at {localTimeStrExp}</h1>
+                            <h1 className="text-gray-500 mt-5">
+                              {datas.status === "paid" ? "" : "EXPIRED"}
+                            </h1>
+                            <h1>
+                              {datas.status === "paid" ? "" : localDateStrExp}
+                            </h1>
+                            <h1>
+                              {" "}
+                              {datas.status === "paid"
+                                ? ""
+                                : `at ${localTimeStrExp}`}
+                            </h1>
                           </div>
                         </div>
                         <div className="flex flex-col gap-5">
@@ -346,26 +364,32 @@ const Transaction: FC = () => {
                             <h1>{datas.status}</h1>
                           </div>
                           <div>
-                            {datas.payment_method === "gopay" ? (
+                            {datas.status !== "paid" ? (
                               <div>
-                                <h1>
-                                  <img
-                                    src="https://api.sandbox.midtrans.com/v2/gopay/f597999d-75e7-4c58-894a-afe87ba525c8/qr-code"
-                                    alt=""
-                                    className="w-24"
-                                  />
-                                </h1>
+                                {datas.payment_method === "gopay" ? (
+                                  <div>
+                                    <h1>
+                                      <img
+                                        src="https://api.sandbox.midtrans.com/v2/gopay/f597999d-75e7-4c58-894a-afe87ba525c8/qr-code"
+                                        alt=""
+                                        className="w-24"
+                                      />
+                                    </h1>
+                                  </div>
+                                ) : (
+                                  <div className="flex flex-col">
+                                    <h1>Virtual Account</h1>
+                                    <h1 className="text-gray-500">
+                                      {datas.payment_code}
+                                    </h1>
+                                  </div>
+                                )}
                               </div>
                             ) : (
-                              <div className="flex flex-col">
-                                <h1>Virtual Account</h1>
-                                <h1 className="text-gray-500">
-                                  {datas.payment_code}
-                                </h1>
-                              </div>
+                              <></>
                             )}
                           </div>
-                          {datas.status === "unpaid" ? (
+                          {datas.status === "pending" ? (
                             <div>
                               {datas.payment_method === "gopay" ? (
                                 <button
@@ -434,18 +458,6 @@ const Transaction: FC = () => {
                           </table>
                         </div>
                       </div>
-                      {/* <div className="flex justify-end px-10">
-                        <button className="flex space-x-2 bg-@028090 px-3 py-2 rounded-3xl">
-                          <Link
-                            to="/pdf"
-                            target="_blank"
-                            className="flex space-x-3 px-3"
-                          >
-                            <TbDownload className="text-2xl" />
-                            <h1>pdf</h1>
-                          </Link>
-                        </button>
-                      </div> */}
                       <div className="mt-4 flex justify-between px-10">
                         <button
                           type="button"

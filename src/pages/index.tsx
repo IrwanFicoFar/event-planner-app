@@ -34,6 +34,9 @@ const Home: FC = () => {
   const [datas, setDatas] = useState<DataType[]>([]);
   const [csrf, setCsrf] = useState<string>("");
   const [cookie] = useCookies(["tkn"]);
+  const [totalPage, setTotalPage] = useState<number>();
+  const [count, setCount] = useState<number>(1);
+  // const [limit, setLimit] = useState<number>(1);
   const checToken = cookie.tkn;
 
   const limit = 4;

@@ -56,11 +56,10 @@ const MyEvent: FC = () => {
       .then((response) => {
         const { data } = response.data;
         // console.log(data);
-        // setData(data.data);
+        setData(data.data);
         // setCsrf(data.csrf);
       })
       .catch((error) => {
-        console.log(error);
         const { message } = error.response.data;
         const { status } = error.response;
         Swal.fire({
@@ -88,11 +87,10 @@ const MyEvent: FC = () => {
       .then((response) => {
         const { data } = response.data;
         console.log(data);
-        // setDataHistory(data.data);
+        setDataHistory(data.data);
         // setCsrfHistory(data.csrf);
       })
       .catch((error) => {
-        console.log(error);
         const { message } = error.response.data;
         const { status } = error.response;
         Swal.fire({
@@ -107,8 +105,8 @@ const MyEvent: FC = () => {
       });
   };
 
-  console.log(dataHistory);
-  console.log(csrfHistory);
+  // console.log(dataHistory);
+  // console.log(csrfHistory);
 
   return (
     <Layout>
@@ -163,7 +161,7 @@ const MyEvent: FC = () => {
                     location={e.location}
                     participants={e.participants}
                     hosted_by={e.hosted_by}
-                    goTo={`/edit-event/${e.id}`}
+                    goTo={`/event/${e.id}/edit`}
                     dateEnd={dateEndString}
                     timeEnd={timeEndString}
                   />
