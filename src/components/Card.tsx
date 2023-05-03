@@ -169,7 +169,7 @@ export const CardTicket: FC<Partial<DataTicket>> = (props) => {
 interface DataCheckout {
   Event: string;
   Ticket: string;
-  Price: number;
+  Price: string;
   Qty: number;
   SubTotal: number;
 }
@@ -182,7 +182,7 @@ export const CardCart: FC<Partial<DataCheckout>> = (props) => {
         <h1>{Event}</h1>
       </div>
       <div className="flex justify-end">
-        <h1>Rp {Price?.toLocaleString("id-ID")}</h1>
+        <h1>Rp {Number(Price)?.toLocaleString("id-ID")}</h1>
       </div>
       <div className="flex justify-center">
         <h1>{Qty}</h1>
