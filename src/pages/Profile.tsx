@@ -161,7 +161,7 @@ const Profile: FC = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col bg-white pb-20">
+      <div className="flex flex-col bg-white dark:bg-gray-700 pb-20">
         <div className="relative h-40 bg-@night rounded-b-@nice flex flex-col place-content-end">
           <h1 className="hidden md:block ml-100 text-white text-3xl font-semibold mb-3">
             Detail
@@ -169,7 +169,7 @@ const Profile: FC = () => {
         </div>
         <div className="absolute md:ml-40 mt-10 w-full md:w-max flex justify-center md:justify-start">
           <div
-            className={`rounded-full border-8 border-gray-100 w-40 h-40 sm:w-56 sm:h-56 `}
+            className={`rounded-full border-8 border-gray-100 dark:border-gray-600 w-40 h-40 sm:w-56 sm:h-56 `}
           >
             <img
               src={
@@ -184,8 +184,8 @@ const Profile: FC = () => {
             />
           </div>
         </div>
-        <div className="h-10 sm:h-20 md:h-40 bg-white">
-          <h1 className="hidden md:block ml-100 text-black text-3xl font-semibold mt-3">
+        <div className="h-10 sm:h-20 md:h-40 bg-white dark:bg-gray-700">
+          <h1 className="hidden md:block ml-100 text-black dark:text-white text-3xl font-semibold mt-3">
             User Profile
           </h1>
         </div>

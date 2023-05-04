@@ -22,12 +22,20 @@ const MyEvent: FC = () => {
   const [count2, setCount2] = useState<number>(1);
   const [count, setCount] = useState<number>(1);
   const [csrf, setCsrf] = useState<string>("");
-
+  const [limit, setLimit] = useState<number>(4);
   const [cookie] = useCookies(["tkn"]);
   const checkToken = cookie.tkn;
-  const limit = 3;
 
   document.title = `My Event | Event Management`;
+
+  useEffect(() => {
+    const screenWidth = window.innerWidth;
+    if (screenWidth <= 768) {
+      setLimit(2);
+    } else {
+      setLimit(4);
+    }
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -35,6 +43,12 @@ const MyEvent: FC = () => {
   }, [count]);
 
   const fetchData = () => {
+    const screenWidth = window.innerWidth;
+    if (screenWidth <= 768) {
+      setLimit(2);
+    } else {
+      setLimit(4);
+    }
     axios
       .get(
         `https://go-event.online/users/events?page=${count}&limit=${limit}&search=`,
@@ -70,6 +84,12 @@ const MyEvent: FC = () => {
   };
 
   const fetchDataHistory = () => {
+    const screenWidth = window.innerWidth;
+    if (screenWidth <= 768) {
+      setLimit(2);
+    } else {
+      setLimit(4);
+    }
     axios
       .get(
         `https://go-event.online/users/history?page=${count2}&limit=${limit}&search=`,
@@ -145,8 +165,10 @@ const MyEvent: FC = () => {
     <Layout>
       <div className="h-full">
         <div className="bg-black py-10 flex justify-center">
-          <div className=" absolute w-[50%] bg-white top-42  py-6 rounded-full drop-shadow-lg flex justify-center hover:scale-105 duration-300">
-            <h1 className="text-black text-2xl font-semibold">My Event</h1>
+          <div className=" absolute w-[50%] bg-white dark:bg-slate-600 top-42  py-6 rounded-full drop-shadow-lg flex justify-center hover:scale-105 duration-300">
+            <h1 className="text-black text-2xl dark:text-white font-semibold">
+              My Event
+            </h1>
           </div>
         </div>
         {loading ? (
@@ -162,7 +184,7 @@ const MyEvent: FC = () => {
                 </h1>
               </div>
             ) : (
-              <div className="bg-white w-full pt-24 sm:pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-3 gap-10 2xl:gap-20 pb-20">
+              <div className="bg-white dark:bg-slate-800 w-full pt-24 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-32 xl:px-16 2xl:24 grid grid-cols-1 md:grid-cols-2  lg:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-4 md:gap-12 lg:gap-24  xl:gap-12 2xl:gap-10 gap-10 pb-10">
                 {data &&
                   data.map((e) => {
                     const date = new Date(e.date);
@@ -246,7 +268,7 @@ const MyEvent: FC = () => {
                 </div>
               )}
             </div>
-            <div className="bg-white py-10 flex justify-center">
+            <div className="bg-white dark:bg-slate-800 py-10 flex justify-center">
               <div className=" absolute w-[50%] bg-black top-42  py-6 rounded-full drop-shadow-lg flex justify-center hover:scale-105 duration-300">
                 <h1 className="text-white text-2xl font-semibold">
                   My History
@@ -254,13 +276,13 @@ const MyEvent: FC = () => {
               </div>
             </div>
             {dataNotFoundHistory ? (
-              <div className="bg-gray-300 flex justify-center pt-24 cols-span-3 pb-12">
+              <div className="bg-gray-300  dark:bg-slate-900 flex justify-center pt-24 cols-span-3 pb-12">
                 <h1 className="text-gray-400 text-2xl md:text-3xl lg:text-5xl font-bold ">
                   EMPTY DATA
                 </h1>
               </div>
             ) : (
-              <div className="bg-gray-300 w-full pt-24 sm:pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
+              <div className="bg-gray-300 w-full dark:bg-slate-900 pt-24 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-32 xl:px-16 2xl:24 grid grid-cols-1 md:grid-cols-2  lg:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-4 md:gap-12 lg:gap-24  xl:gap-12 2xl:gap-10 gap-10 pb-10">
                 {dataHistory &&
                   dataHistory.map((e) => {
                     const date = new Date(e.date);
@@ -310,7 +332,7 @@ const MyEvent: FC = () => {
                   })}
               </div>
             )}
-            <div className="bg-white flex justify-center items-center">
+            <div className="bg-white dark:bg-slate-700 flex justify-center items-center">
               {count2 <= 1 ? (
                 <div className="w-36"></div>
               ) : (

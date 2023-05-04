@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useState, useEffect, useMemo } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "../pages";
 import Login from "../pages/auth/Login";
@@ -7,15 +8,17 @@ import DetailEvent from "../pages/event/DetailEvent";
 import AddEvent from "../pages/event/AddEvent";
 import Cart from "../pages/transactions/Cart";
 import Profile from "../pages/Profile";
-import MyPdf from "../pages/PDF";
 import EditEvent from "../pages/event/EditEvent";
 import { useCookies } from "react-cookie";
 import MyEvent from "../pages/event/MyEvent";
 import Transaction from "../pages/transactions/Transaction";
+import { ThemeContext } from "../utils/context";
 
 axios.defaults.baseURL = "https://virtserver.swaggerhub.com/ropel12/tes/1.0.0";
 
 const Router = () => {
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const background = useMemo(() => ({ theme, setTheme }), [theme]);
   const [cookie] = useCookies(["tkn"]);
   const checToken = cookie.tkn;
   const router = createBrowserRouter([
@@ -59,13 +62,21 @@ const Router = () => {
       path: "/transaction",
       element: checToken ? <Transaction /> : <Home />,
     },
-    {
-      path: "/pdf",
-      element: checToken ? <MyPdf /> : <Home />,
-    },
   ]);
 
-  return <RouterProvider router={router} />;
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]);
+
+  return (
+    <ThemeContext.Provider value={background}>
+      <RouterProvider router={router} />
+    </ThemeContext.Provider>
+  );
 };
 
 export default Router;

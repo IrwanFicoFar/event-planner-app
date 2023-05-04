@@ -177,7 +177,7 @@ const Cart: FC = () => {
     <Layout>
       <div className="h-full grid grid-cols-1 md:grid-cols-2">
         {loading ? (
-          <div className=" text-white bg-black font-bold text-3xl flex justify-center pt-24">
+          <div className=" text-white dark:bg-gray-700 bg-black font-bold text-3xl flex justify-center pt-24">
             Loading...
           </div>
         ) : (
@@ -221,13 +221,13 @@ const Cart: FC = () => {
             )}
           </div>
         )}
-        <div className="bg-white rounded-l-3xl p-10">
+        <div className="bg-white dark:bg-gray-700 rounded-l-3xl p-10">
           <div className="top-16">
             <Listbox value={selectedOption} onChange={setSelectedOption}>
               {({ open }) => (
                 <>
                   <div className="relative">
-                    <Listbox.Button className="flex items-center justify-between relative w-full py-2 bg-white hover:bg-orange-400 text-black rounded-3xl border-4 border-black shadow-md duration-300  focus:outline-none sm:text-sm">
+                    <Listbox.Button className="flex items-center justify-between relative w-full py-2 bg-white dark:bg-gray-400 hover:bg-orange-400 text-black rounded-3xl border-4 border-black shadow-md duration-300  focus:outline-none sm:text-sm">
                       <span className="flex items-center sm:text-xl font-semibold">
                         <PaymentMethode
                           id={selectedOption.id}

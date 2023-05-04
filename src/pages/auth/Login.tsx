@@ -69,7 +69,7 @@ const Login: FC = () => {
 
   return (
     <div className="h-screen flex mx-auto space-x-10 bg-black">
-      <div className="hidden md:block  md:w-[50%] bg-[url('/login.jpg')] bg-center bg-cover rounded-r-3xl"></div>
+      <div className="hidden md:block md:w-[50%] bg-[url('/login.jpg')] bg-center bg-cover rounded-r-3xl"></div>
       <div className="h-full w-full  md:w-[50%] ">
         <div className="h-20 md:h-32 bg-black flex items-center">
           <h1 className="text-2xl font-semibold text-white">
