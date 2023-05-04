@@ -9,6 +9,7 @@ import { DataInvoice, DataEvent, DataTicket } from "../../utils/user";
 import { CardModalTicket } from "../../components/Card";
 import { Dialog, Transition } from "@headlessui/react";
 import { Layout } from "../../components/Layout";
+import { useNavigate } from "react-router-dom";
 
 const Transaction: FC = () => {
   const [dataNotFoundPending, setDataNotFoundPending] =
@@ -28,6 +29,7 @@ const Transaction: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [cookie] = useCookies(["tkn"]);
+  const navigate = useNavigate();
   const checkToken = cookie.tkn;
 
   document.title = `List | Transactions Management`;
@@ -168,32 +170,21 @@ const Transaction: FC = () => {
 
   useEffect(() => {}, []);
 
-  let localDateStr: string = "";
-  let localTimeStr: string = "";
-  let localDateStrExp: string = "";
-  let localTimeStrExp: string = "";
+  let dateString: string = "";
+  let timeString: string = "";
+  let dateStringExp: string = "";
+  let timeStringExp: string = "";
 
   if (datas.date) {
-    const option = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour12: false,
-    } as Intl.DateTimeFormatOptions;
     const dateObj = new Date(datas.date);
-    localTimeStr = dateObj.toLocaleTimeString();
-    localDateStr = dateObj.toLocaleDateString("en-US", option);
+    dateString = dateObj.toISOString().slice(0, 10);
+    timeString = dateObj.toISOString().slice(11, 19);
   }
+
   if (datas.expire) {
-    const option = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour12: false,
-    } as Intl.DateTimeFormatOptions;
     const dateObj = new Date(datas.expire);
-    localTimeStrExp = dateObj.toLocaleTimeString();
-    localDateStrExp = dateObj.toLocaleDateString("en-US", option);
+    dateStringExp = dateObj.toISOString().slice(0, 10);
+    timeStringExp = dateObj.toISOString().slice(11, 19);
   }
 
   const handlePayGopay = () => {
@@ -253,7 +244,7 @@ const Transaction: FC = () => {
                       key={index}
                       className="grid grid-cols-2 sm:grid-cols-3 text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
                     >
-                      <div className="col-span-2 sm:col-span-1 flex justify-center">
+                      <div className="col-span-2 sm:col-span-1 flex justify-center items-center">
                         <h1>{e.event_name}</h1>
                       </div>
                       <div className="flex justify-center">
@@ -304,7 +295,7 @@ const Transaction: FC = () => {
                         key={index}
                         className="p-5 grid grid-cols-2 sm:grid-cols-3 gap-5 md:gap-0  text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
                       >
-                        <div className="flex justify-center col-span-2 sm:col-span-1">
+                        <div className="flex justify-center items-center col-span-2 sm:col-span-1">
                           <h1>{e.event_name}</h1>
                         </div>
                         <div className="flex justify-center">
@@ -375,31 +366,33 @@ const Transaction: FC = () => {
                       </div>
                       <div className="mt-14 pl-10 flex items-center space-x-3 font-medium">
                         <h1 className="text-white text-xl">EVENT NAME : </h1>
-                        <h1 className="text-gray-500 text-xl">{eventName}</h1>
+                        <h1 className="text-gray-500 text-xl">
+                          {eventName.toUpperCase()}
+                        </h1>
                       </div>
                       <div className="grid grid-cols-3 px-10 mt-5 font-semibold">
                         <div>
                           <h1 className="text-gray-500">AMOUNT PAID</h1>
-                          <h1>Rp {datas && datas.total}</h1>
+                          <h1>Rp {datas && datas.total?.toLocaleString()}</h1>
                         </div>
                         <div>
                           <div>
                             <h1 className="text-gray-500">DATE</h1>
-                            <h1>{localDateStr}</h1>
-                            <h1>at {localTimeStr}</h1>
+                            <h1>{dateString}</h1>
+                            <h1>at {timeString} WIB</h1>
                           </div>
                           <div>
                             <h1 className="text-gray-500 mt-5">
                               {datas.status === "paid" ? "" : "EXPIRED"}
                             </h1>
                             <h1>
-                              {datas.status === "paid" ? "" : localDateStrExp}
+                              {datas.status === "paid" ? "" : dateStringExp}
                             </h1>
                             <h1>
                               {" "}
                               {datas.status === "paid"
                                 ? ""
-                                : `at ${localTimeStrExp}`}
+                                : `at ${timeStringExp} WIB`}
                             </h1>
                           </div>
                         </div>
@@ -444,7 +437,10 @@ const Transaction: FC = () => {
                                 <button
                                   type="button"
                                   className="w-full bg-orange-500 hover:bg-@028090 hover:-translate-y-1 duration-300 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
-                                  onClick={handlePayGopay}
+                                  onClick={() => {
+                                    closeModal();
+                                    handlePayGopay();
+                                  }}
                                 >
                                   Pay Now
                                 </button>
@@ -452,7 +448,10 @@ const Transaction: FC = () => {
                                 <button
                                   type="button"
                                   className="w-full  bg-orange-500 hover:bg-@028090 hover:-translate-y-1 duration-300 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
-                                  onClick={handlePayBca}
+                                  onClick={() => {
+                                    closeModal();
+                                    handlePayBca();
+                                  }}
                                 >
                                   Pay Now
                                 </button>
@@ -460,7 +459,10 @@ const Transaction: FC = () => {
                                 <button
                                   type="button"
                                   className="w-full  bg-orange-500 hover:bg-@028090 hover:-translate-y-1 duration-300 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
-                                  onClick={handlePayMandiri}
+                                  onClick={() => {
+                                    closeModal();
+                                    handlePayMandiri();
+                                  }}
                                 >
                                   Pay Now
                                 </button>
@@ -468,7 +470,10 @@ const Transaction: FC = () => {
                                 <button
                                   type="button"
                                   className=" w-full bg-orange-500 hover:bg-@028090 hover:-translate-y-1 duration-300 py-2 px-2 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold"
-                                  onClick={handlePayIndomaret}
+                                  onClick={() => {
+                                    closeModal();
+                                    handlePayIndomaret();
+                                  }}
                                 >
                                   Pay Now
                                 </button>
@@ -495,14 +500,14 @@ const Transaction: FC = () => {
                                     {e.qty <= 1 ? "pc" : "pcs"}
                                   </div>{" "}
                                 </td>
-                                <td>Rp {e.sub_total}</td>
+                                <td>Rp {e.sub_total?.toLocaleString("id")}</td>
                               </tr>
                             ))}
                             <tr className="border-2 text-center">
                               <th></th>
                               <td></td>
                               <td>Total</td>
-                              <td>Rp {datas.total}</td>
+                              <td>Rp {datas.total?.toLocaleString()}</td>
                             </tr>
                           </table>
                         </div>

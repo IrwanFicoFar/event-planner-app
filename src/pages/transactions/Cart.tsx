@@ -74,7 +74,7 @@ const Cart: FC = () => {
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        if (message === "data not found") {
+        if (message === "Data Not Found") {
           setDataNotFoundCart(true);
         } else {
           Swal.fire({
@@ -95,7 +95,15 @@ const Cart: FC = () => {
   };
 
   const openModal = () => {
-    setIsOpen(true);
+    if (dataNotFoundCart === true) {
+      Swal.fire({
+        icon: "warning",
+        title: "add ticket please !!",
+        showCancelButton: false,
+      });
+    } else {
+      setIsOpen(true);
+    }
   };
 
   const handleCheckout = () => {
@@ -470,7 +478,9 @@ const Cart: FC = () => {
                         <div className="flex flex-col gap-5">
                           <div>
                             <h1 className="text-gray-500">PAYMENT METHODE</h1>
-                            <h1>{modalInvoice?.payment_method}</h1>
+                            <h1>
+                              {modalInvoice?.payment_method.toUpperCase()}
+                            </h1>
                           </div>
                           <div>
                             <h1 className="text-gray-500">PAYMENT CODE</h1>
@@ -567,14 +577,14 @@ const Cart: FC = () => {
                                     {e.qty <= 1 ? "pc" : "pcs"}
                                   </div>{" "}
                                 </td>
-                                <td>Rp {e.sub_total}</td>
+                                <td>Rp {e.sub_total?.toLocaleString("id")}</td>
                               </tr>
                             ))}
                             <tr className="border-2 text-center">
                               <th></th>
                               <td></td>
                               <td>Total</td>
-                              <td>Rp {total}</td>
+                              <td>Rp {total?.toLocaleString("id")}</td>
                             </tr>
                           </table>
                         </div>

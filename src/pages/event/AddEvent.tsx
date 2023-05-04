@@ -107,7 +107,6 @@ const AddEvent: FC = () => {
       });
   };
 
-  const today = new Date().toISOString().slice(0, 16);
   const jakartaOffset = 7 * 60;
   const now = new Date();
   const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
@@ -190,8 +189,8 @@ const AddEvent: FC = () => {
                 id="input-date"
                 step="1"
                 type="datetime-local"
-                defaultValue={today}
-                min={`${tomorrow.toISOString().slice(0, 16)}`}
+                defaultValue={jakartaDate}
+                min={`${now.toISOString().slice(0, 16)}`}
                 onChange={(event) => handleChange(event.target.value, "date")}
               />
               <div className="flex space-x-3">

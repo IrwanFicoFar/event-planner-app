@@ -130,7 +130,7 @@ export interface MyEventType {
   date: string;
   time: string;
   location: string;
-  qty: number;
+  quota: number;
   duration: number;
   ticket: string;
   price: number;
