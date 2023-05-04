@@ -1,4 +1,4 @@
-import { FC, useState, FormEvent, MouseEvent } from "react";
+import { FC, useState, FormEvent, MouseEvent, useEffect } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 
@@ -23,6 +23,8 @@ const AddEvent: FC = () => {
   const checkToken = cookie.tkn;
 
   document.title = `Add Event | Event management`;
+
+  // useEffect(() => {}, []);
 
   const handleAddTicket = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -105,11 +107,11 @@ const AddEvent: FC = () => {
       });
   };
 
-  const jakartaOffset = 7 * 60; // UTC offset for Jakarta timezone in minutes
-  const now = new Date();
-  const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
-  const jakartaDate = new Date(jakartaTimestamp).toISOString().slice(0, 16);
+  // const jakartaOffset = 7 * 60; // UTC offset for Jakarta timezone in minutes
+  // const now = new Date();
+  // const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
 
+  const today = new Date().toISOString().slice(0, 16);
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
 
@@ -187,7 +189,7 @@ const AddEvent: FC = () => {
                 id="input-date"
                 step="1"
                 type="datetime-local"
-                defaultValue={jakartaDate}
+                defaultValue={today}
                 min={`${tomorrow.toISOString().slice(0, 16)}`}
                 onChange={(event) => handleChange(event.target.value, "date")}
               />
