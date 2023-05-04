@@ -292,13 +292,10 @@ const DetailEvent: FC = () => {
                     data.participants.map((data, index) => (
                       <CardAttandance
                         key={index}
-                        image={data.image}
+                        image={`https://storage.googleapis.com/prj1ropel/${data.image}`}
                         name={data.name}
                       />
                     ))}
-                  <CardAttandance image="/default.jpg" name="kosong" />
-                  <CardAttandance image="/default.jpg" name="kosong" />
-                  <CardAttandance image="/default.jpg" name="kosong" />
                 </div>
               </div>
               <div className="py-10">
