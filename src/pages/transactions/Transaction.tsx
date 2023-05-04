@@ -38,35 +38,62 @@ const Transaction: FC = () => {
   const [cookie] = useCookies(["tkn"]);
   const navigate = useNavigate();
   const checkToken = cookie.tkn;
+  const [pusherInvoice, setPusherInvoice] = useState<string>("");
+  const [pusherStatus, setPusherStatus] = useState<string>("");
 
   document.title = `List | Transactions Management`;
 
   useEffect(() => {
     const channel = pusher.subscribe("my-channel");
     channel.bind("my-event", (data: any) => {
-      Swal.fire({
-        icon: "info",
-        title: `${data.status}`,
-        text: `INVOICE NO: ${data.invoice}`,
-        showCancelButton: false,
-      });
+      setPusherInvoice(data.invoice);
+      setPusherStatus(data.status);
     });
-
-    // Clean up the subscription when the component unmounts
     return () => {
-      channel.unbind("my-event", handleEvent);
+      channel.unbind("my-event");
       pusher.unsubscribe("my-channel");
     };
   }, []);
 
-  function handleEvent(data: any) {
-    console.log("Received data:", data);
-  }
-
   useEffect(() => {
     fetchDataEventPending();
     fetchDataEventPaid();
-  }, []);
+    handleShowPusher();
+  }, [pusherStatus]);
+
+  const handleShowPusher = () => {
+    dataEvent.map((e) => {
+      if (e.invoice === pusherInvoice) {
+        Swal.fire({
+          icon: "info",
+          title: `${pusherStatus}`,
+          text: `INVOICE NO: ${pusherInvoice}`,
+          showCancelButton: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setPusherInvoice("");
+            setPusherStatus("");
+          }
+        });
+      }
+    });
+
+    dataEventPaid.map((e) => {
+      if (e.invoice === pusherInvoice) {
+        Swal.fire({
+          icon: "info",
+          title: `${pusherStatus}`,
+          text: `INVOICE NO: ${pusherInvoice}`,
+          showCancelButton: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setPusherInvoice("");
+            setPusherStatus("");
+          }
+        });
+      }
+    });
+  };
 
   const fetchDataEventPending = () => {
     axios
@@ -382,31 +409,6 @@ const Transaction: FC = () => {
                         </h1>
                       </div>
                       <div className="grid grid-cols-3 px-10 mt-5 font-semibold">
-                        <div>
-                          <h1 className="text-gray-500">AMOUNT PAID</h1>
-                          <h1>Rp {datas && datas.total?.toLocaleString()}</h1>
-                        </div>
-                        <div>
-                          <div>
-                            <h1 className="text-gray-500">DATE</h1>
-                            <h1>{dateString}</h1>
-                            <h1>at {timeString} WIB</h1>
-                          </div>
-                          <div>
-                            <h1 className="text-gray-500 mt-5">
-                              {datas.status === "paid" ? "" : "EXPIRED"}
-                            </h1>
-                            <h1>
-                              {datas.status === "paid" ? "" : dateStringExp}
-                            </h1>
-                            <h1>
-                              {" "}
-                              {datas.status === "paid"
-                                ? ""
-                                : `at ${timeStringExp} WIB`}
-                            </h1>
-                          </div>
-                        </div>
                         <div className="flex flex-col gap-5">
                           <div>
                             <h1 className="text-gray-500">PAYMENT METHODE</h1>
@@ -495,6 +497,31 @@ const Transaction: FC = () => {
                           ) : (
                             <></>
                           )}
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <h1 className="text-gray-500">AMOUNT PAID</h1>
+                          <h1>Rp {datas && datas.total?.toLocaleString()}</h1>
+                        </div>
+                        <div>
+                          <div>
+                            <h1 className="text-gray-500">DATE</h1>
+                            <h1>{dateString}</h1>
+                            <h1>at {timeString} WIB</h1>
+                          </div>
+                          <div>
+                            <h1 className="text-gray-500 mt-5">
+                              {datas.status === "paid" ? "" : "EXPIRED"}
+                            </h1>
+                            <h1>
+                              {datas.status === "paid" ? "" : dateStringExp}
+                            </h1>
+                            <h1>
+                              {" "}
+                              {datas.status === "paid"
+                                ? ""
+                                : `at ${timeStringExp} WIB`}
+                            </h1>
+                          </div>
                         </div>
                       </div>
                       <div className="p-10 ">
