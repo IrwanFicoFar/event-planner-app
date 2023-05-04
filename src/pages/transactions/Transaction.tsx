@@ -1,6 +1,7 @@
 import { FC, Fragment, useEffect, useState, ReactNode } from "react";
 import { TbFileInvoice } from "react-icons/tb";
 import { useCookies } from "react-cookie";
+import Pusher from "pusher-js";
 import Swal from "sweetalert2";
 import axios from "axios";
 
@@ -10,6 +11,13 @@ import { CardModalTicket } from "../../components/Card";
 import { Dialog, Transition } from "@headlessui/react";
 import { Layout } from "../../components/Layout";
 import { useNavigate } from "react-router-dom";
+
+const APP_KEY = "198b35e916a3f0811a9c";
+const CLUSTER_NAME = "ap1";
+
+const pusher = new Pusher(APP_KEY, {
+  cluster: CLUSTER_NAME,
+});
 
 const Transaction: FC = () => {
   const [dataNotFoundPending, setDataNotFoundPending] =
@@ -27,12 +35,33 @@ const Transaction: FC = () => {
   const [loading, setLoading] = useState(true);
   const [csrf, setCsrf] = useState<string>("");
   const [isOpen, setIsOpen] = useState(false);
-
   const [cookie] = useCookies(["tkn"]);
   const navigate = useNavigate();
   const checkToken = cookie.tkn;
 
   document.title = `List | Transactions Management`;
+
+  useEffect(() => {
+    const channel = pusher.subscribe("my-channel");
+    channel.bind("my-event", (data: any) => {
+      Swal.fire({
+        icon: "info",
+        title: `${data.status}`,
+        text: `INVOICE NO: ${data.invoice}`,
+        showCancelButton: false,
+      });
+    });
+
+    // Clean up the subscription when the component unmounts
+    return () => {
+      channel.unbind("my-event", handleEvent);
+      pusher.unsubscribe("my-channel");
+    };
+  }, []);
+
+  function handleEvent(data: any) {
+    console.log("Received data:", data);
+  }
 
   useEffect(() => {
     fetchDataEventPending();
@@ -53,16 +82,7 @@ const Transaction: FC = () => {
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        if (message === "data not found") {
-          setDataNotFoundPending(true);
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: code,
-            text: message,
-            showCancelButton: false,
-          });
-        }
+        setDataNotFoundPending(true);
       })
       .finally(() => setLoading(false));
   };
@@ -81,16 +101,7 @@ const Transaction: FC = () => {
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        if (message === "data not found") {
-          setDataNotFoundPaid(true);
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: code,
-            text: message,
-            showCancelButton: false,
-          });
-        }
+        setDataNotFoundPaid(true);
       })
       .finally(() => setLoading(false));
   };
