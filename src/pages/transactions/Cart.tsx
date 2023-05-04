@@ -1,20 +1,16 @@
-import { FC, Fragment, useState, useEffect, createContext } from "react";
-import { Layout } from "../../components/Layout";
-import { CardCart, PaymentMethode, CardSummary } from "../../components/Card";
 import { Dialog, Listbox, Transition } from "@headlessui/react";
 import { MdArrowForwardIos, MdCheck } from "react-icons/md";
-import { TbFileInvoice } from "react-icons/tb";
-import { ButtonCheckout } from "../../components/Button";
-import axios from "axios";
-import Swal from "sweetalert2";
+import { FC, Fragment, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import Swal from "sweetalert2";
+import axios from "axios";
 
-interface Option {
-  id: string;
-  name: string;
-  image: string;
-}
+import { CardCart, PaymentMethode, CardSummary } from "../../components/Card";
+import { Option, DataCartType, ModalInvoiceType } from "../../utils/user";
+import { ButtonCheckout } from "../../components/Button";
+import { Layout } from "../../components/Layout";
+import { TbFileInvoice } from "react-icons/tb";
 
 const options: Option[] = [
   {
@@ -39,58 +35,24 @@ const options: Option[] = [
   },
 ];
 
-const payBca = () => {
-  window.open("https://simulator.sandbox.midtrans.com/bca/va/index");
-};
-
-interface DataCartType {
-  event_id: number;
-  type_id: number;
-  type_name: string;
-  type_price: number;
-  qty: number;
-  sub_total: number;
-}
-
-interface dataCheckoutType {
-  event_id: number;
-  payment_methode: string;
-  items_detail: [
-    {
-      event_id: number;
-      type_id: number;
-      type_name: string;
-      type_price: number;
-      qty: number;
-      sub_total: number;
-    }
-  ];
-}
-
-interface ModalInvoiceType {
-  total: number;
-  expire: string;
-  payment_method: string;
-  invoice: string;
-  payment_code: string;
-}
-
 const classNames = (...classes: string[]) => {
   return classes.filter(Boolean).join(" ");
 };
 
 const Cart: FC = () => {
   const [selectedOption, setSelectedOption] = useState<Option>(options[0]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [total, setTotal] = useState<number>();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [invoice, setInvoice] = useState("");
-  const [type, setType] = useState<DataCartType[]>([]);
-  const navigate = useNavigate();
-  const [cookie] = useCookies(["tkn"]);
-  const checkToken = cookie.tkn;
-  const [modalInvoice, setModalInvoice] = useState<ModalInvoiceType>();
   const [openModalInvoice, setOpenModalInvoice] = useState<boolean>(false);
+  const [dataNotFoundCart, setDataNotFoundCart] = useState<boolean>(false);
+  const [modalInvoice, setModalInvoice] = useState<ModalInvoiceType>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [type, setType] = useState<DataCartType[]>([]);
+  const [total, setTotal] = useState<number>();
+  const [isOpen, setIsOpen] = useState(false);
+  const [invoice, setInvoice] = useState("");
+
+  const [cookie] = useCookies(["tkn"]);
+  const navigate = useNavigate();
+  const checkToken = cookie.tkn;
 
   document.title = `Cart | Transactions Management`;
 
@@ -106,27 +68,27 @@ const Cart: FC = () => {
         },
       })
       .then((response) => {
-        console.log(response);
         const { data } = response.data;
         setType(data.data);
         setTotal(data.total);
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        console.log(error);
-        Swal.fire({
-          icon: "error",
-          title: code,
-          text: message,
-          showCancelButton: false,
-        });
+        if (message === "data not found") {
+          setDataNotFoundCart(true);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: code,
+            text: message,
+            showCancelButton: false,
+          });
+        }
       })
       .finally(() => {
         setLoading(false);
       });
   };
-
-  console.log(type);
 
   const closeModal = () => {
     setIsOpen(false);
@@ -143,7 +105,6 @@ const Cart: FC = () => {
       payment_type: `${selectedOption.name.toLowerCase()}`,
       items_detail: type,
     };
-    console.log(data);
     if (event_id === undefined) {
       Swal.fire({
         icon: "warning",
@@ -161,7 +122,6 @@ const Cart: FC = () => {
           const { message, code, data } = response.data;
           setModalInvoice(data.data);
           setInvoice(data.data.invoice);
-          console.log(response);
           Swal.fire({
             icon: "success",
             title: code,
@@ -177,7 +137,6 @@ const Cart: FC = () => {
         })
         .catch((error) => {
           const { message, code } = error.response.data;
-          console.log(error);
           Swal.fire({
             icon: "error",
             title: code,
@@ -231,16 +190,27 @@ const Cart: FC = () => {
                 </div>
               </div>
             </div>
-            {type &&
-              type.map((e) => (
-                <CardCart
-                  key={e && e.type_id}
-                  Event={e && e.type_name}
-                  Price={e && e.type_price}
-                  Qty={e && e.qty}
-                  SubTotal={e && e.sub_total}
-                />
-              ))}
+            {dataNotFoundCart ? (
+              <div className=" flex justify-center py-16 cols-span-3">
+                <h1 className="text-gray-400 text-2xl md:text-3xl lg:text-5xl font-bold ">
+                  EMPTY DATA
+                </h1>
+              </div>
+            ) : (
+              <div>
+                {type &&
+                  type.map((e) => (
+                    <div key={e && e.type_id}>
+                      <CardCart
+                        Event={e && e.type_name}
+                        Price={e && e.type_price}
+                        Qty={e && e.qty}
+                        SubTotal={e && e.sub_total}
+                      />
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
         )}
         <div className="bg-white rounded-l-3xl p-10">

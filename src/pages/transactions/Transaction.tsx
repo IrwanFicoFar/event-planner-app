@@ -1,57 +1,32 @@
 import { FC, Fragment, useEffect, useState, ReactNode } from "react";
-import { Layout } from "../../components/Layout";
-import { ButtonAction, ButtonCheckout } from "../../components/Button";
-import { Dialog, Transition } from "@headlessui/react";
-import { TbFileInvoice, TbDownload } from "react-icons/tb";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import axios from "axios";
-import Swal from "sweetalert2";
-import { CardModalTicket } from "../../components/Card";
+import { TbFileInvoice } from "react-icons/tb";
 import { useCookies } from "react-cookie";
+import Swal from "sweetalert2";
+import axios from "axios";
 
-interface DataInvoice {
-  total: string;
-  date: string;
-  expire: string;
-  payment_method: string;
-  status: string;
-  payment_code: string;
-  item_details: [
-    {
-      name: ReactNode;
-      price: number;
-      qty: number;
-      sub_total: number;
-    }
-  ];
-}
-
-interface DataEvent {
-  event_name: string;
-  invoice: string;
-}
-
-interface DataTicket {
-  date: string;
-  event_name: string;
-  hosted_by: string;
-  location: string;
-  ticket_type: string;
-}
+import { ButtonAction, ButtonCheckout } from "../../components/Button";
+import { DataInvoice, DataEvent, DataTicket } from "../../utils/user";
+import { CardModalTicket } from "../../components/Card";
+import { Dialog, Transition } from "@headlessui/react";
+import { Layout } from "../../components/Layout";
 
 const Transaction: FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [ticketIsOpen, setTicketIsOpen] = useState(false);
-  const [csrf, setCsrf] = useState<string>("");
-  const [csrfTicket, setCsrfTicket] = useState<string>("");
-  const [dataEvent, setDataEvent] = useState<DataEvent[]>([]);
+  const [dataNotFoundPending, setDataNotFoundPending] =
+    useState<boolean>(false);
+  const [datasTicket, setDatasTicket] = useState<Partial<DataTicket[]>>([]);
+  const [dataNotFoundPaid, setDataNotFoundPaid] = useState<boolean>(false);
   const [dataEventPaid, setDataEventPaid] = useState<DataEvent[]>([]);
   const [datas, setDatas] = useState<Partial<DataInvoice>>({});
-  const [datasTicket, setDatasTicket] = useState<Partial<DataTicket[]>>([]);
-  const [loading, setLoading] = useState(true);
-  const [invoice, setInvoice] = useState<string>("");
+  const [dataEvent, setDataEvent] = useState<DataEvent[]>([]);
+  const [csrfTicket, setCsrfTicket] = useState<string>("");
+  const [ticketIsOpen, setTicketIsOpen] = useState(false);
   const [eventName, setEventName] = useState<string>("");
+  const [invoice, setInvoice] = useState<string>("");
   const [status, setStatus] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [csrf, setCsrf] = useState<string>("");
+  const [isOpen, setIsOpen] = useState(false);
+
   const [cookie] = useCookies(["tkn"]);
   const checkToken = cookie.tkn;
 
@@ -72,15 +47,20 @@ const Transaction: FC = () => {
       .then((response) => {
         const { data } = response.data;
         setDataEvent(data.data);
+        setDataNotFoundPending(false);
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        Swal.fire({
-          icon: "error",
-          title: code,
-          text: message,
-          showCancelButton: false,
-        });
+        if (message === "data not found") {
+          setDataNotFoundPending(true);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: code,
+            text: message,
+            showCancelButton: false,
+          });
+        }
       })
       .finally(() => setLoading(false));
   };
@@ -95,15 +75,20 @@ const Transaction: FC = () => {
       .then((response) => {
         const { data } = response.data;
         setDataEventPaid(data.data);
+        setDataNotFoundPaid(false);
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        Swal.fire({
-          icon: "error",
-          title: code,
-          text: message,
-          showCancelButton: false,
-        });
+        if (message === "data not found") {
+          setDataNotFoundPaid(true);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: code,
+            text: message,
+            showCancelButton: false,
+          });
+        }
       })
       .finally(() => setLoading(false));
   };
@@ -139,63 +124,30 @@ const Transaction: FC = () => {
   };
 
   const handleTicketModal = (invoice: string) => {
-    if (invoice !== "") {
-      console.log(invoice);
-      axios
-        .get(`https://go-event.online/transactions/${invoice}`, {
-          headers: {
-            Authorization: `Bearer ${checkToken}`,
-          },
-        })
-        .then((response) => {
-          const { data } = response.data;
-          console.log(data.data.status);
-          setStatus(data.data.status);
-        })
-        .finally(() => {
-          if (status === "cancel") {
-            Swal.fire({
-              icon: "info",
-              title: "expired",
-              showCancelButton: false,
-            });
-            return;
-          }
-          if (status !== "paid") {
-            Swal.fire({
-              icon: "info",
-              title: "please pay first",
-              showCancelButton: false,
-            });
-            return;
-          }
-
-          axios
-            .get(`https://go-event.online/tickets/${invoice}`, {
-              headers: {
-                Authorization: `Bearer ${checkToken}`,
-              },
-            })
-            .then((response) => {
-              const { data } = response.data;
-              setDatasTicket(data.data);
-              setCsrfTicket(data.csrf);
-            })
-            .catch((error) => {
-              const { message, code } = error.response.data;
-              Swal.fire({
-                icon: "error",
-                title: code,
-                text: message,
-                showCancelButton: false,
-              });
-            })
-            .finally(() => {
-              openModalTicket();
-              setLoading(false);
-            });
+    axios
+      .get(`https://go-event.online/tickets/${invoice}`, {
+        headers: {
+          Authorization: `Bearer ${checkToken}`,
+        },
+      })
+      .then((response) => {
+        const { data } = response.data;
+        setDatasTicket(data.data);
+        setCsrfTicket(data.csrf);
+      })
+      .catch((error) => {
+        const { message, code } = error.response.data;
+        Swal.fire({
+          icon: "error",
+          title: code,
+          text: message,
+          showCancelButton: false,
         });
-    }
+      })
+      .finally(() => {
+        openModalTicket();
+        setLoading(false);
+      });
   };
 
   const closeModal = () => {
@@ -213,6 +165,8 @@ const Transaction: FC = () => {
   const closeModalTicket = () => {
     setTicketIsOpen(false);
   };
+
+  useEffect(() => {}, []);
 
   let localDateStr: string = "";
   let localTimeStr: string = "";
@@ -285,28 +239,38 @@ const Transaction: FC = () => {
                 <h1>Ticket</h1>
               </div>
             </div>
-            {dataEvent &&
-              dataEvent.map((e: DataEvent, index: number) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-2 sm:grid-cols-3 text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
-                >
-                  <div className="col-span-2 sm:col-span-1 flex justify-center">
-                    <h1>{e.event_name}</h1>
-                  </div>
-                  <div className="flex justify-center">
-                    <ButtonCheckout
-                      id="1"
-                      label="Invoice"
-                      onClick={() => {
-                        setEventName(e.event_name);
-                        setInvoice(e.invoice);
-                        handleInvoiceModal(e.invoice);
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+            {dataNotFoundPending ? (
+              <div className="flex justify-center py-16 cols-span-3">
+                <h1 className="text-gray-400 text-2xl md:text-3xl lg:text-5xl font-bold ">
+                  EMPTY DATA
+                </h1>
+              </div>
+            ) : (
+              <div>
+                {dataEvent &&
+                  dataEvent.map((e: DataEvent, index: number) => (
+                    <div
+                      key={index}
+                      className="grid grid-cols-2 sm:grid-cols-3 text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
+                    >
+                      <div className="col-span-2 sm:col-span-1 flex justify-center">
+                        <h1>{e.event_name}</h1>
+                      </div>
+                      <div className="flex justify-center">
+                        <ButtonCheckout
+                          id="1"
+                          label="Invoice"
+                          onClick={() => {
+                            setEventName(e.event_name);
+                            setInvoice(e.invoice);
+                            handleInvoiceModal(e.invoice);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
           <div className="bg-gray-300 p-5 rounded-3xl mt-24">
             <div>
@@ -326,37 +290,47 @@ const Transaction: FC = () => {
                   <h1>Ticket</h1>
                 </div>
               </div>
-              {dataEventPaid &&
-                dataEventPaid.map((e: DataEvent, index: number) => (
-                  <div
-                    key={index}
-                    className="p-5 grid grid-cols-2 sm:grid-cols-3 gap-5 md:gap-0  text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
-                  >
-                    <div className="flex justify-center col-span-2 sm:col-span-1">
-                      <h1>{e.event_name}</h1>
-                    </div>
-                    <div className="flex justify-center">
-                      <ButtonCheckout
-                        id="1"
-                        label="Invoice"
-                        onClick={() => {
-                          setEventName(e.event_name);
-                          setInvoice(e.invoice);
-                          handleInvoiceModal(e.invoice);
-                        }}
-                      />
-                    </div>
-                    <div className="flex justify-center">
-                      <ButtonCheckout
-                        id="1"
-                        label="Ticket"
-                        onClick={() => {
-                          handleTicketModal(e.invoice);
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
+              {dataNotFoundPaid ? (
+                <div className="flex justify-center py-16 cols-span-3">
+                  <h1 className="text-gray-400 text-2xl md:text-3xl lg:text-5xl font-bold ">
+                    EMPTY DATA
+                  </h1>
+                </div>
+              ) : (
+                <div>
+                  {dataEventPaid &&
+                    dataEventPaid.map((e: DataEvent, index: number) => (
+                      <div
+                        key={index}
+                        className="p-5 grid grid-cols-2 sm:grid-cols-3 gap-5 md:gap-0  text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
+                      >
+                        <div className="flex justify-center col-span-2 sm:col-span-1">
+                          <h1>{e.event_name}</h1>
+                        </div>
+                        <div className="flex justify-center">
+                          <ButtonCheckout
+                            id="1"
+                            label="Invoice"
+                            onClick={() => {
+                              setEventName(e.event_name);
+                              setInvoice(e.invoice);
+                              handleInvoiceModal(e.invoice);
+                            }}
+                          />
+                        </div>
+                        <div className="flex justify-center">
+                          <ButtonCheckout
+                            id="1"
+                            label="Ticket"
+                            onClick={() => {
+                              handleTicketModal(e.invoice);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

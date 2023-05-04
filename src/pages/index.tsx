@@ -1,48 +1,27 @@
 import { FC, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Layout } from "../components/Layout";
-import { Input } from "../components/Input";
-import { BiSearchAlt, BiArrowFromLeft } from "react-icons/bi";
-import { ButtonAction } from "../components/Button";
-import { Card } from "../components/Card";
-import axios from "axios";
-import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import Swal from "sweetalert2";
+import axios from "axios";
 
-interface DataType {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  address: string;
-  detail: string;
-  date: string;
-  time: string;
-  location: string;
-  quota: number;
-  duration: number;
-  ticket: string;
-  price: number;
-  image: any;
-  hosted_by: string;
-  participants: string;
-  end_date: string;
-}
+import { BiSearchAlt } from "react-icons/bi";
+import { ButtonAction } from "../components/Button";
+import { Layout } from "../components/Layout";
+import { Card } from "../components/Card";
+import { DataType } from "../utils/user";
 
 const Home: FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
+  const [totalPage, setTotalPage] = useState<number>();
   const [datas, setDatas] = useState<DataType[]>([]);
+  // const [limit, setLimit] = useState<number>(1);
+  const [count, setCount] = useState<number>(1);
   const [csrf, setCsrf] = useState<string>("");
   const [cookie] = useCookies(["tkn"]);
-  const [totalPage, setTotalPage] = useState<number>();
-  const [count, setCount] = useState<number>(1);
-  // const [limit, setLimit] = useState<number>(1);
   const checToken = cookie.tkn;
 
-  const limit = 4;
-  const page = 2;
-
   const navigate = useNavigate();
+  const limit = 4;
 
   document.title = `Event Planner App | index management`;
 
@@ -58,7 +37,6 @@ const Home: FC = () => {
       .then((response) => {
         const { data } = response.data;
         setTotalPage(data.total_page);
-        console.log(data);
         setDatas(data.data);
         setCsrf(data.csrf);
       })
@@ -106,9 +84,6 @@ const Home: FC = () => {
       setCount(count - 1);
     }
   };
-
-  console.log(count);
-  console.log(totalPage);
 
   return (
     <Layout>

@@ -1,47 +1,28 @@
-import { FC, useEffect, useState, FormEvent, MouseEvent } from "react";
+import { FC, useState, FormEvent, MouseEvent } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 
 import { Input, TextArea } from "../../components/Input";
+import { AddType, dataTicket } from "../../utils/user";
 import { ButtonAction } from "../../components/Button";
 import { Layout } from "../../components/Layout";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
-interface EventAdd {
-  id: string;
-  name: string | undefined;
-  email: string | undefined;
-  password: string | undefined;
-  address: string | undefined;
-  details: string;
-  date: string;
-  time: string;
-  location: string;
-  quota: number;
-  duration: number;
-  ticket: string;
-  image: any;
-  hosted_by: string;
-}
-
-interface dataTicket {
-  type_name: string;
-  price: number;
-}
-
 const AddEvent: FC = () => {
-  const [objSubmit, setObjSubmit] = useState<Partial<EventAdd>>({});
-  const [data, setData] = useState<Partial<EventAdd>>({});
+  const [objSubmit, setObjSubmit] = useState<Partial<AddType>>({});
+  const [data, setData] = useState<Partial<AddType>>({});
   const [MyType, setMyType] = useState<dataTicket[]>([]);
   const [ticket, setTicket] = useState<dataTicket>({
     type_name: "",
     price: 0,
   });
+
   const [cookie] = useCookies(["tkn"]);
+  const navigate = useNavigate();
   const checkToken = cookie.tkn;
 
-  const navigate = useNavigate();
+  document.title = `Add Event | Event management`;
 
   const handleAddTicket = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -92,7 +73,6 @@ const AddEvent: FC = () => {
     event.preventDefault();
     const type = JSON.stringify(MyType);
     const join = { ...objSubmit, type };
-    console.log(join);
     axios
       .post("https://go-event.online/events", join, {
         headers: {
@@ -102,7 +82,6 @@ const AddEvent: FC = () => {
       })
       .then((response) => {
         const { message, code } = response.data;
-        console.log(message.data);
         Swal.fire({
           icon: "success",
           title: code,
@@ -125,8 +104,6 @@ const AddEvent: FC = () => {
         });
       });
   };
-
-  console.log(objSubmit);
 
   const jakartaOffset = 7 * 60; // UTC offset for Jakarta timezone in minutes
   const now = new Date();
@@ -266,8 +243,8 @@ const AddEvent: FC = () => {
                 />
               </div>
               <div>
-                {MyType.map((e) => (
-                  <div className="grid grid-cols-3 gap-5">
+                {MyType.map((e, index) => (
+                  <div className="grid grid-cols-3 gap-5" key={index}>
                     <div className="bg-orange-200 text-black text-lg py-2 px-3 my-2 font-semibold rounded-xl">
                       {e.type_name}
                     </div>
