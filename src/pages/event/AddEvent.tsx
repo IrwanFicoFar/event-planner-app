@@ -105,11 +105,10 @@ const AddEvent: FC = () => {
       });
   };
 
-  const jakartaOffset = 7 * 60; // UTC offset for Jakarta timezone in minutes
+  const jakartaOffset = 7 * 60;
   const now = new Date();
   const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
   const jakartaDate = new Date(jakartaTimestamp).toISOString().slice(0, 16);
-
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
 
