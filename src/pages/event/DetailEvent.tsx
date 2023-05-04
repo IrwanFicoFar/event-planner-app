@@ -55,10 +55,6 @@ const DetailEvent: FC = () => {
     updateDate = ExpDate.toISOString().slice(0, 19) + "Z";
   }
 
-  console.log(currentTime);
-  console.log(EventDate);
-  console.log(updateDate);
-
   useEffect(() => {
     fetchData();
   }, []);

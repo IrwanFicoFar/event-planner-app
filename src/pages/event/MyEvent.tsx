@@ -108,7 +108,6 @@ const MyEvent: FC = () => {
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        console.log(message);
         if (message === "data not found") {
           setDataNotFoundHistory(true);
         } else {

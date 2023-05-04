@@ -131,8 +131,6 @@ const EditEvent: FC = () => {
     });
   };
 
-  console.log(objSubmit);
-
   const handleEditEvent = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData();
@@ -142,7 +140,6 @@ const EditEvent: FC = () => {
     }
     const type = JSON.stringify(MyType);
     const join = { ...objSubmit, id: Number(id), type };
-    console.log(join);
     axios
       .put(`https://go-event.online/events`, join, {
         headers: {
