@@ -58,6 +58,7 @@ const Home: FC = () => {
       .then((response) => {
         const { data } = response.data;
         setTotalPage(data.total_page);
+        console.log(data);
         setDatas(data.data);
         setCsrf(data.csrf);
       })
@@ -89,7 +90,13 @@ const Home: FC = () => {
   };
 
   const handleIncrement = () => {
-    setCount(count + 1);
+    if (totalPage) {
+      if (count < totalPage) {
+        setCount(count + 1);
+      } else {
+        setCount(totalPage);
+      }
+    }
   };
 
   const handleDecrement = () => {
@@ -162,55 +169,56 @@ const Home: FC = () => {
           </div>
         ) : (
           <div className="bg-white w-full pt-24 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-32 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-10">
-            {datas.map((e) => {
-              const date = new Date(e.date);
-              const dateEnd = new Date(e.end_date);
-              const optionsHeader = {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour12: false,
-              } as Intl.DateTimeFormatOptions;
-              const options = {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour12: false,
-              } as Intl.DateTimeFormatOptions;
-              const dateStringHeader = date.toLocaleDateString(
-                "en-US",
-                optionsHeader
-              );
-              const dateString = date.toLocaleDateString("en-US", options);
-              const timeString = date.toLocaleTimeString(); // format: 5:17:02 PM
-              const dateEndString = dateEnd.toLocaleDateString(
-                "en-US",
-                options
-              );
-              const timeEndString = dateEnd.toLocaleTimeString();
-              return (
-                <Card
-                  key={e.id}
-                  image={
-                    e.image
-                      ? `https://storage.googleapis.com/prj1ropel/${e.image}`
-                      : `/header3.jpg`
-                  }
-                  name={e.name}
-                  dateHeader={dateStringHeader}
-                  date={dateString}
-                  time={timeString}
-                  location={e.location}
-                  participants={e.participants}
-                  hosted_by={e.hosted_by}
-                  id={e.id}
-                  dateEnd={dateEndString}
-                  timeEnd={timeEndString}
-                  quota={e.quota}
-                />
-              );
-            })}
+            {datas &&
+              datas.map((e) => {
+                const date = new Date(e.date);
+                const dateEnd = new Date(e.end_date);
+                const optionsHeader = {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour12: false,
+                } as Intl.DateTimeFormatOptions;
+                const options = {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour12: false,
+                } as Intl.DateTimeFormatOptions;
+                const dateStringHeader = date.toLocaleDateString(
+                  "en-US",
+                  optionsHeader
+                );
+                const dateString = date.toLocaleDateString("en-US", options);
+                const timeString = date.toLocaleTimeString(); // format: 5:17:02 PM
+                const dateEndString = dateEnd.toLocaleDateString(
+                  "en-US",
+                  options
+                );
+                const timeEndString = dateEnd.toLocaleTimeString();
+                return (
+                  <Card
+                    key={e.id}
+                    image={
+                      e.image
+                        ? `https://storage.googleapis.com/prj1ropel/${e.image}`
+                        : `/header3.jpg`
+                    }
+                    name={e.name}
+                    dateHeader={dateStringHeader}
+                    date={dateString}
+                    time={timeString}
+                    location={e.location}
+                    participants={e.participants}
+                    hosted_by={e.hosted_by}
+                    id={e.id}
+                    dateEnd={dateEndString}
+                    timeEnd={timeEndString}
+                    quota={e.quota}
+                  />
+                );
+              })}
           </div>
         )}
       </div>
@@ -224,8 +232,6 @@ const Home: FC = () => {
           </div>
         )}
         {totalPage === count ? (
-          <div className="w-36"></div>
-        ) : totalPage === 0 ? (
           <div className="w-36"></div>
         ) : (
           <div className="mx-2 flex items-center">

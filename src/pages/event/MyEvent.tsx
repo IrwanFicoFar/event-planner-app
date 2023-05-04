@@ -115,7 +115,13 @@ const MyEvent: FC = () => {
   };
 
   const handleIncrement = () => {
-    setCount(count + 1);
+    if (totalPage) {
+      if (count < totalPage) {
+        setCount(count + 1);
+      } else {
+        setCount(totalPage);
+      }
+    }
   };
 
   const handleDecrement = () => {
@@ -127,7 +133,13 @@ const MyEvent: FC = () => {
   };
 
   const handleIncrementHistory = () => {
-    setCount(count2 + 1);
+    if (totalPage) {
+      if (count2 < totalPage) {
+        setCount(count2 + 1);
+      } else {
+        setCount(totalPage);
+      }
+    }
   };
 
   const handleDecrementHistory = () => {
@@ -156,54 +168,55 @@ const MyEvent: FC = () => {
         ) : (
           <div>
             <div className="bg-white w-full pt-24 sm:pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-3 gap-10 2xl:gap-20 pb-20">
-              {data.map((e: EventAdd) => {
-                const date = new Date(e.date);
-                const dateEnd = new Date(e.end_date);
-                const optionsHeader = {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour12: false,
-                } as Intl.DateTimeFormatOptions;
-                const options = {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour12: false,
-                } as Intl.DateTimeFormatOptions;
-                const dateStringHeader = date.toLocaleDateString(
-                  "en-US",
-                  optionsHeader
-                );
-                const dateString = date.toLocaleDateString("en-US", options);
-                const timeString = date.toLocaleTimeString();
-                const dateEndString = dateEnd.toLocaleDateString(
-                  "en-US",
-                  options
-                );
-                const timeEndString = dateEnd.toLocaleTimeString();
-                return (
-                  <CardEdit
-                    key={e.id}
-                    image={
-                      e.image
-                        ? `https://storage.googleapis.com/prj1ropel/${e.image}`
-                        : `/header3.jpg`
-                    }
-                    name={e.name}
-                    dateHeader={dateStringHeader}
-                    date={dateString}
-                    time={timeString}
-                    location={e.location}
-                    participants={e.participants}
-                    hosted_by={e.hosted_by}
-                    goTo={`/event/${e.id}/edit`}
-                    dateEnd={dateEndString}
-                    timeEnd={timeEndString}
-                  />
-                );
-              })}
+              {data &&
+                data.map((e: EventAdd) => {
+                  const date = new Date(e.date);
+                  const dateEnd = new Date(e.end_date);
+                  const optionsHeader = {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour12: false,
+                  } as Intl.DateTimeFormatOptions;
+                  const options = {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour12: false,
+                  } as Intl.DateTimeFormatOptions;
+                  const dateStringHeader = date.toLocaleDateString(
+                    "en-US",
+                    optionsHeader
+                  );
+                  const dateString = date.toLocaleDateString("en-US", options);
+                  const timeString = date.toLocaleTimeString();
+                  const dateEndString = dateEnd.toLocaleDateString(
+                    "en-US",
+                    options
+                  );
+                  const timeEndString = dateEnd.toLocaleTimeString();
+                  return (
+                    <CardEdit
+                      key={e.id}
+                      image={
+                        e.image
+                          ? `https://storage.googleapis.com/prj1ropel/${e.image}`
+                          : `/header3.jpg`
+                      }
+                      name={e.name}
+                      dateHeader={dateStringHeader}
+                      date={dateString}
+                      time={timeString}
+                      location={e.location}
+                      participants={e.participants}
+                      hosted_by={e.hosted_by}
+                      goTo={`/event/${e.id}/edit`}
+                      dateEnd={dateEndString}
+                      timeEnd={timeEndString}
+                    />
+                  );
+                })}
             </div>
             <div className="bg-white flex justify-center items-center">
               {count <= 1 ? (
