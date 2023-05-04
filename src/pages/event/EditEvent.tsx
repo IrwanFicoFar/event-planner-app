@@ -131,6 +131,8 @@ const EditEvent: FC = () => {
     });
   };
 
+  console.log(objSubmit);
+
   const handleEditEvent = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData();
@@ -139,8 +141,8 @@ const EditEvent: FC = () => {
       formData.append(key, objSubmit[key]);
     }
     const type = JSON.stringify(MyType);
-
     const join = { ...objSubmit, id: Number(id), type };
+    console.log(join);
     axios
       .put(`https://go-event.online/events`, join, {
         headers: {
@@ -317,7 +319,8 @@ const EditEvent: FC = () => {
   const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
   const jakartaDate = new Date(jakartaTimestamp).toISOString().slice(0, 16);
 
-  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
   return (
     <Layout>
       {loading ? (
@@ -397,7 +400,7 @@ const EditEvent: FC = () => {
                     id="input-date"
                     step="1"
                     defaultValue={jakartaDate}
-                    min={`${today.toISOString().slice(0, 16)}`}
+                    min={`${now.toISOString().slice(0, 16)}`}
                     type="datetime-local"
                     onChange={(event) =>
                       handleChange(event.target.value, "date")
