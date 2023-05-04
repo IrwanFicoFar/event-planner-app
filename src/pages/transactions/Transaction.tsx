@@ -244,7 +244,7 @@ const Transaction: FC = () => {
                       key={index}
                       className="grid grid-cols-2 sm:grid-cols-3 text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
                     >
-                      <div className="col-span-2 sm:col-span-1 flex justify-center">
+                      <div className="col-span-2 sm:col-span-1 flex justify-center items-center">
                         <h1>{e.event_name}</h1>
                       </div>
                       <div className="flex justify-center">
@@ -295,7 +295,7 @@ const Transaction: FC = () => {
                         key={index}
                         className="p-5 grid grid-cols-2 sm:grid-cols-3 gap-5 md:gap-0  text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
                       >
-                        <div className="flex justify-center col-span-2 sm:col-span-1">
+                        <div className="flex justify-center items-center col-span-2 sm:col-span-1">
                           <h1>{e.event_name}</h1>
                         </div>
                         <div className="flex justify-center">
