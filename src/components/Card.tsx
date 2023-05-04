@@ -43,7 +43,7 @@ export const Card: FC<Partial<Props>> = (props) => {
           <h1 className="text-white">{dateHeader}</h1>
         </div>
         <div>
-          <h1 className="text-white">{time}</h1>
+          <h1 className="text-white">{time} WIB</h1>
         </div>
       </div>
       <div className="mb-5">
@@ -59,7 +59,7 @@ export const Card: FC<Partial<Props>> = (props) => {
               <BiTime className="text-orange-500 text-xl" />
               <div>
                 <h1>
-                  {date} {time}
+                  {date} {time} WIB
                 </h1>
               </div>
             </div>
@@ -67,7 +67,7 @@ export const Card: FC<Partial<Props>> = (props) => {
               <BiTimer className="text-orange-500 text-xl" />
               <div>
                 <h1>
-                  {dateEnd} {timeEnd}
+                  {dateEnd} {timeEnd} WIB
                 </h1>
               </div>
             </div>
@@ -260,6 +260,7 @@ interface DataCard {
   goTo: string;
   dateEnd: string;
   timeEnd: string;
+  quota: number;
 }
 
 export const CardEdit: FC<Partial<DataCard>> = (props) => {
@@ -277,6 +278,7 @@ export const CardEdit: FC<Partial<DataCard>> = (props) => {
     goTo,
     dateEnd,
     timeEnd,
+    quota,
   } = props;
 
   return (
@@ -286,7 +288,7 @@ export const CardEdit: FC<Partial<DataCard>> = (props) => {
           <h1 className="text-white">{dateHeader}</h1>
         </div>
         <div>
-          <h1 className="text-white">{time}</h1>
+          <h1 className="text-white">{time} WIB</h1>
         </div>
       </div>
       <div className="mb-5">
@@ -299,7 +301,7 @@ export const CardEdit: FC<Partial<DataCard>> = (props) => {
             <BiTime className="text-orange-500 text-xl" />
             <div>
               <h1>
-                {date} {time}
+                {date} {time} WIB
               </h1>
             </div>
           </div>
@@ -307,7 +309,7 @@ export const CardEdit: FC<Partial<DataCard>> = (props) => {
             <BiTimer className="text-orange-500 text-xl" />
             <div>
               <h1>
-                {dateEnd} {timeEnd}
+                {dateEnd} {timeEnd} WIB
               </h1>
             </div>
           </div>
@@ -321,7 +323,16 @@ export const CardEdit: FC<Partial<DataCard>> = (props) => {
           </div>
         </div>
       </div>
-      <div>participants = {participants}</div>
+      <div className="flex justify-between">
+        <h1>
+          participants ={" "}
+          <span className="text-orange-500">{participants} </span>{" "}
+        </h1>
+        <h1>
+          Avail = <span className="text-orange-500">{quota}</span>
+        </h1>
+      </div>
+
       <div className="py-5 flex flex-col justify-center ">
         <ButtonAction label="Edit" onClick={() => navigate(`${goTo}`)} />
       </div>

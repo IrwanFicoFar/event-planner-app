@@ -166,12 +166,16 @@ const Home: FC = () => {
                   optionsHeader
                 );
                 const dateString = date.toLocaleDateString("en-US", options);
-                const timeString = date.toLocaleTimeString(); // format: 5:17:02 PM
+                const timeString = date.toLocaleTimeString("en-US", {
+                  hour12: false,
+                });
                 const dateEndString = dateEnd.toLocaleDateString(
                   "en-US",
                   options
                 );
-                const timeEndString = dateEnd.toLocaleTimeString();
+                const timeEndString = dateEnd.toLocaleTimeString("en-US", {
+                  hour12: false,
+                });
                 return (
                   <Card
                     key={e.id}

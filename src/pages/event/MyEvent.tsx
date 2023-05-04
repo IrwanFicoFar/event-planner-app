@@ -188,12 +188,16 @@ const MyEvent: FC = () => {
                       "en-US",
                       options
                     );
-                    const timeString = date.toLocaleTimeString();
+                    const timeString = date.toLocaleTimeString("en-US", {
+                      hour12: false,
+                    });
                     const dateEndString = dateEnd.toLocaleDateString(
                       "en-US",
                       options
                     );
-                    const timeEndString = dateEnd.toLocaleTimeString();
+                    const timeEndString = dateEnd.toLocaleTimeString("en-US", {
+                      hour12: false,
+                    });
                     return (
                       <CardEdit
                         key={e.id}
@@ -212,6 +216,7 @@ const MyEvent: FC = () => {
                         goTo={`/event/${e.id}/edit`}
                         dateEnd={dateEndString}
                         timeEnd={timeEndString}
+                        quota={e.quota}
                       />
                     );
                   })}
