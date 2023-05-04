@@ -15,6 +15,7 @@ const DetailEvent: FC = () => {
   const [data, setData] = useState<Partial<DetailDataType>>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [csrf, setCsrf] = useState<string>("");
+  const [currentTime, setCurrentTime] = useState("");
 
   const params = useParams();
   const { id } = params;
@@ -27,6 +28,36 @@ const DetailEvent: FC = () => {
   const checToken = cookie.tkn;
 
   document.title = `Detail Event | Event management`;
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const jakartaOffset = 7 * 60; // UTC offset for Jakarta timezone in minutes
+      const now = new Date();
+      const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
+      const jakartaDate =
+        new Date(jakartaTimestamp).toISOString().slice(0, 19) + "Z";
+      setCurrentTime(jakartaDate);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  let EventDate = "";
+  let updateDate = "";
+
+  if (data.date) {
+    const jakartaOffset = 7 * 60; // UTC offset for Jakarta timezone in minutes
+    const now = new Date(data.date);
+    const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
+    EventDate = new Date(jakartaTimestamp).toISOString().slice(0, 19) + "Z"; // format: 2023-05-07T12:24:42Z
+    let ExpDate = new Date(jakartaTimestamp);
+    ExpDate.setHours(ExpDate.getHours() + 1);
+    updateDate = ExpDate.toISOString().slice(0, 19) + "Z";
+  }
+
+  console.log(currentTime);
+  console.log(EventDate);
+  console.log(updateDate);
 
   useEffect(() => {
     fetchData();
@@ -95,17 +126,28 @@ const DetailEvent: FC = () => {
     }
   };
 
+  const handleJointEvent = () => {
+    Swal.fire({
+      title: "Custom width, padding, color, background.",
+      width: 450,
+      padding: "3em",
+      color: "#716add",
+      background:
+        "#fff url(https://tenor.com/view/gwen-stacy-gif-18065640.gif)no-repeat",
+      backdrop: `
+    rgba(0,0,123,0.4)
+    url("https://media.tenor.com/-AyTtMgs2mMAAAAi/nyan-cat-nyan.gif")
+    left top
+    no-repeat
+  `,
+    });
+  };
+
   let dateString = "";
   let timeString = "";
 
   if (data.date) {
     const Newdate = new Date(data.date);
-    const optionsHeader = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour12: false,
-    } as Intl.DateTimeFormatOptions;
     const options = {
       weekday: "long",
       year: "numeric",
@@ -114,7 +156,9 @@ const DetailEvent: FC = () => {
       hour12: false,
     } as Intl.DateTimeFormatOptions;
     dateString = Newdate.toLocaleDateString("en-US", options);
-    timeString = Newdate.toLocaleTimeString(); // format: 5:17:02 PM
+    timeString = Newdate.toLocaleTimeString("en-US", {
+      hour12: false,
+    });
   }
 
   const handleToCart = (id: number) => {
@@ -197,7 +241,7 @@ const DetailEvent: FC = () => {
                     <div className="flex space-x-3 items-center">
                       <BiTime className="text-orange-500 text-2xl" />
                       <h1 className="text-xl xl:text-2xl font-semibold flex justify-between">
-                        {dateString} at {timeString}
+                        {dateString} at {timeString} WIB
                       </h1>
                     </div>
                     <div className="flex space-x-3 items-center">
@@ -214,24 +258,31 @@ const DetailEvent: FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="bg-black rounded-3xl">
-                <div className="border-b-4 border-white rounded-b-3xl py-7 flex justify-center">
-                  <h1 className="text-2xl font-semibold">Get Ticket</h1>
+              {currentTime > EventDate ? (
+                <ButtonAction
+                  label="Join Event"
+                  onClick={() => handleJointEvent()}
+                />
+              ) : (
+                <div className="bg-black rounded-3xl">
+                  <div className="border-b-4 border-white rounded-b-3xl py-7 flex justify-center">
+                    <h1 className="text-2xl font-semibold">Get Ticket</h1>
+                  </div>
+                  <div className="p-12 grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-5 xl:gap-10">
+                    {data.types &&
+                      data.types.map((type) => (
+                        <CardTicket
+                          key={type.id}
+                          ticket={type.type_name}
+                          price={type.price}
+                          onClick={() => {
+                            handleToCart(type.id);
+                          }}
+                        />
+                      ))}
+                  </div>
                 </div>
-                <div className="p-12 grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-5 xl:gap-10">
-                  {data.types &&
-                    data.types.map((type) => (
-                      <CardTicket
-                        key={type.id}
-                        ticket={type.type_name}
-                        price={type.price}
-                        onClick={() => {
-                          handleToCart(type.id);
-                        }}
-                      />
-                    ))}
-                </div>
-              </div>
+              )}
             </div>
           </div>
           <div className="grid lg:grid-cols-2 ">

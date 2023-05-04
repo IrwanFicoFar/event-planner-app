@@ -171,7 +171,7 @@ export const CardTicket: FC<Partial<DataTicket>> = (props) => {
         </div>
       </div>
       <div className="py-5 flex justify-center">
-        <ButtonCheckout label="Add to Cart" onClick={onClick} />
+        <ButtonCheckout label="Add" onClick={onClick} />
       </div>
     </div>
   );
