@@ -1,8 +1,7 @@
-import { FC, ReactNode } from "react";
-import { Disclosure } from "@headlessui/react";
 import { BiTime, BiMap, BiMicrophone, BiTimer } from "react-icons/bi";
-import { Link, useNavigate } from "react-router-dom";
 import { ButtonAction, ButtonCheckout } from "./Button";
+import { Link, useNavigate } from "react-router-dom";
+import { FC, ReactNode } from "react";
 
 interface Props {
   image: string;
@@ -185,9 +184,9 @@ interface DataCheckout {
 }
 
 export const CardCart: FC<Partial<DataCheckout>> = (props) => {
-  const { Event, Ticket, Price, Qty, SubTotal } = props;
+  const { Event, Price, Qty, SubTotal } = props;
   return (
-    <div className="grid grid-cols-4 bg-white text-black sm:text-xl font-semibold px-5 pt-5 pb-10 rounded-3xl">
+    <div className="grid grid-cols-4 bg-white dark:bg-gray-500 my-3 text-black dark:text-white items-center sm:text-xl font-semibold px-5 py-5 rounded-3xl">
       <div className="flex justify-center">
         <h1>{Event}</h1>
       </div>
