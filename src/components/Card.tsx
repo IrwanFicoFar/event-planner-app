@@ -84,8 +84,7 @@ export const Card: FC<Partial<Props>> = (props) => {
       </Link>
       <div className="flex gap-4 flex-col mid-lg:flex-row  mid-lg:justify-between">
         <h1>
-          participants ={" "}
-          <span className="text-orange-500">{participants} </span>{" "}
+          Attand = <span className="text-orange-500">{participants} </span>{" "}
         </h1>
         <h1>
           Avail = <span className="text-orange-500">{quota}</span>

@@ -1,6 +1,6 @@
-import React, { FC, useEffect, useState } from "react";
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import React, { FC, useEffect, useState, useContext } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import {
   BiMenu,
   BiX,
@@ -13,13 +13,21 @@ import {
   BiCartAlt,
   BiLogIn,
   BiUserPlus,
+  BiMoon,
+  BiSun,
 } from "react-icons/bi";
 import { useCookies } from "react-cookie";
 import Swal from "sweetalert2";
 
+import { ThemeContext } from "../utils/context";
+
 export const Navbar: FC = () => {
-  const [login, setLogin] = useState<boolean>(true);
   const [cookie, , removeCookie] = useCookies(["tkn", "uname"]);
+  const { theme, setTheme } = useContext(ThemeContext);
+  const handleTheme = (mode: string) => {
+    setTheme(mode);
+    localStorage.setItem("theme", mode);
+  };
   const navigate = useNavigate();
   const checkToken = cookie.tkn;
 
@@ -46,10 +54,6 @@ export const Navbar: FC = () => {
     });
   };
 
-  useEffect(() => {
-    // setLogin(false);
-  }, []);
-
   return (
     <Disclosure as="nav" className="bg-black z-50">
       {({ open }) => (
@@ -74,7 +78,6 @@ export const Navbar: FC = () => {
                       src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
                       alt="Workflow"
                     />
-
                     <div className="hidden md:flex h-8 w-auto flex-row items-center space-x-4">
                       <img
                         className="h-8 w-auto"
@@ -123,12 +126,12 @@ export const Navbar: FC = () => {
                           leaveFrom="transform opacity-100 scale-100"
                           leaveTo="transform opacity-0 scale-95"
                         >
-                          <Menu.Items className="absolute right-0 mt-2 w-56 rounded-2xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none p-3">
+                          <Menu.Items className="absolute right-0 mt-2 w-56 rounded-2xl shadow-lg bg-white dark:bg-black dark:border-white dark:border-2 ring-1 ring-black ring-opacity-5 focus:outline-none p-3">
                             <div className="py-1">
                               <Menu.Item>
                                 <Link
                                   to="/"
-                                  className=" flex gap-2 items-center px-4  py-2 text-md font-medium text-black hover:bg-gray-200 hover:rounded-2xl duration-700"
+                                  className=" flex gap-2 items-center px-4  py-2 text-md font-medium text-black dark:text-white hover:bg-gray-200 dark:hover:bg-slate-700 hover:rounded-2xl duration-700"
                                 >
                                   <BiHome />
                                   Home Page
@@ -137,7 +140,7 @@ export const Navbar: FC = () => {
                               <Menu.Item>
                                 <Link
                                   to="/profile"
-                                  className=" flex gap-2 items-center px-4 py-2 text-md font-medium text-black hover:bg-gray-200 hover:rounded-2xl duration-700"
+                                  className=" flex gap-2 items-center px-4 py-2 text-md font-medium text-black dark:text-white hover:bg-gray-200 dark:hover:bg-slate-700 hover:rounded-2xl duration-700"
                                 >
                                   <BiUser />
                                   Profile
@@ -146,7 +149,7 @@ export const Navbar: FC = () => {
                               <Menu.Item>
                                 <Link
                                   to="/my-event"
-                                  className="flex gap-2 items-center px-4 py-2 text-md font-medium text-black hover:bg-gray-200 hover:rounded-2xl duration-700"
+                                  className="flex gap-2 items-center px-4 py-2 text-md font-medium text-black dark:text-white hover:bg-gray-200 dark:hover:bg-slate-700 hover:rounded-2xl duration-700"
                                 >
                                   <BiCalendarCheck />
                                   My Event
@@ -154,7 +157,21 @@ export const Navbar: FC = () => {
                               </Menu.Item>
                               <Menu.Item>
                                 <button
-                                  className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-black hover:bg-gray-200 hover:rounded-2xl duration-700"
+                                  onClick={() => {
+                                    handleTheme(
+                                      theme === "light" ? "dark" : "light"
+                                    );
+                                  }}
+                                  id="btn-dark"
+                                  className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-black dark:text-white hover:bg-gray-200 dark:hover:bg-slate-700 hover:rounded-2xl duration-700"
+                                >
+                                  {theme === "dark" ? <BiMoon /> : <BiSun />}
+                                  {theme} Mode
+                                </button>
+                              </Menu.Item>
+                              <Menu.Item>
+                                <button
+                                  className="flex gap-2 items-center px-4 w-full py-2 text-md font-medium text-black dark:text-white hover:bg-gray-200 dark:hover:bg-slate-700 hover:rounded-2xl duration-700"
                                   onClick={() => handleLogout()}
                                 >
                                   <BiLogOut />

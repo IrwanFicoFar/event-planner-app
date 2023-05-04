@@ -208,12 +208,12 @@ const Transaction: FC = () => {
   return (
     <Layout>
       {loading ? (
-        <div className="h-screen text-black bg-white font-bold text-3xl flex justify-center pt-24">
+        <div className="h-screen text-black bg-white dark:bg-gray-700 font-bold text-3xl flex justify-center pt-24">
           Loading...
         </div>
       ) : (
-        <div className="h-full bg-white py-10 px-3 md:px-20">
-          <div className="bg-gray-300 p-5 rounded-3xl">
+        <div className="h-full bg-white dark:bg-gray-700 py-10 px-3 md:px-20">
+          <div className="bg-gray-300 dark:bg-gray-600 p-5 rounded-3xl">
             <div className="text-lg md:text-2xl font-semibold bg-orange-500 py-8 rounded-3xl my-5 px-5 flex w-[50%]">
               <h1 className="text-white text-lg md:text-2xl font-semibold">
                 Pending
@@ -242,7 +242,7 @@ const Transaction: FC = () => {
                   dataEvent.map((e: DataEvent, index: number) => (
                     <div
                       key={index}
-                      className="grid grid-cols-2 sm:grid-cols-3 text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
+                      className="grid grid-cols-2 sm:grid-cols-3 text-black text-lg md:text-2xl font-semibold bg-gray-200 dark:bg-gray-700 py-8 rounded-3xl my-5"
                     >
                       <div className="col-span-2 sm:col-span-1 flex justify-center items-center">
                         <h1>{e.event_name}</h1>
@@ -263,7 +263,7 @@ const Transaction: FC = () => {
               </div>
             )}
           </div>
-          <div className="bg-gray-300 p-5 rounded-3xl mt-24">
+          <div className="bg-gray-300 dark:bg-gray-600 p-5 rounded-3xl mt-24">
             <div>
               <div className=" text-lg md:text-2xl font-semibold bg-orange-500 py-8 rounded-3xl my-5 px-5 flex w-[50%]">
                 <h1 className="text-white text-lg md:text-2xl font-semibold">
@@ -293,7 +293,7 @@ const Transaction: FC = () => {
                     dataEventPaid.map((e: DataEvent, index: number) => (
                       <div
                         key={index}
-                        className="p-5 grid grid-cols-2 sm:grid-cols-3 gap-5 md:gap-0  text-black text-lg md:text-2xl font-semibold bg-gray-200 py-8 rounded-3xl my-5"
+                        className="p-5 grid grid-cols-2 sm:grid-cols-3 gap-5 md:gap-0  text-black text-lg md:text-2xl font-semibold bg-gray-200 dark:bg-gray-700 py-8 rounded-3xl my-5"
                       >
                         <div className="flex justify-center items-center col-span-2 sm:col-span-1">
                           <h1>{e.event_name}</h1>
