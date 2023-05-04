@@ -46,8 +46,8 @@ const Transaction: FC = () => {
     channel.bind("my-event", (data: any) => {
       Swal.fire({
         icon: "info",
-        title: `INVOICE NO: ${data.invoice}`,
-        text: `${data.status}`,
+        title: `${data.status}`,
+        text: `INVOICE NO: ${data.invoice}`,
         showCancelButton: false,
       });
     });
