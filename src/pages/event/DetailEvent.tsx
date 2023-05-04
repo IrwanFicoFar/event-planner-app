@@ -55,10 +55,6 @@ const DetailEvent: FC = () => {
     updateDate = ExpDate.toISOString().slice(0, 19) + "Z";
   }
 
-  console.log(currentTime);
-  console.log(EventDate);
-  console.log(updateDate);
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -296,13 +292,10 @@ const DetailEvent: FC = () => {
                     data.participants.map((data, index) => (
                       <CardAttandance
                         key={index}
-                        image={data.image}
+                        image={`https://storage.googleapis.com/prj1ropel/${data.image}`}
                         name={data.name}
                       />
                     ))}
-                  <CardAttandance image="/default.jpg" name="kosong" />
-                  <CardAttandance image="/default.jpg" name="kosong" />
-                  <CardAttandance image="/default.jpg" name="kosong" />
                 </div>
               </div>
               <div className="py-10">

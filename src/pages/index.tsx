@@ -9,6 +9,7 @@ import { ButtonAction } from "../components/Button";
 import { Layout } from "../components/Layout";
 import { Card } from "../components/Card";
 import { DataType } from "../utils/user";
+import { Input } from "../components/Input";
 
 const Home: FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -17,6 +18,7 @@ const Home: FC = () => {
   const [limit, setLimit] = useState<number>(4);
   const [count, setCount] = useState<number>(1);
   const [csrf, setCsrf] = useState<string>("");
+  const [inputSearch, setInputSearch] = useState<string>("");
   const [cookie] = useCookies(["tkn"]);
   const checToken = cookie.tkn;
 
@@ -69,7 +71,26 @@ const Home: FC = () => {
   };
 
   const handleSeacrh = () => {
-    alert("oke");
+    axios
+      .get(
+        `https://go-event.online/events?page=${count}&limit=${limit}&search=${inputSearch}`
+      )
+      .then((response) => {
+        const { data } = response.data;
+        setTotalPage(data.total_page);
+        setDatas(data.data);
+        setCsrf(data.csrf);
+      })
+      .catch((error) => {
+        console.log(error);
+        const { message, code } = error.response.data;
+        Swal.fire({
+          icon: "error",
+          title: code,
+          text: message,
+          showCancelButton: false,
+        });
+      });
   };
 
   const handleGoToAddEventPage = () => {
@@ -145,7 +166,10 @@ const Home: FC = () => {
                     >
                       <BiSearchAlt className="text-2xl hover:text-3xl duration-300 hover:bg-orange-700 hover:rounded-full hover:p-1 " />
                     </button>
-                    <input className="w-full bg-@F46036 hover:bg-orange-700 duration-300 rounded-lg px-2 mr-3 text-white font-semibold focus:outline-none" />
+                    <input
+                      className="w-full bg-@F46036 hover:bg-orange-700 duration-300 rounded-lg px-2 mr-3 text-white font-semibold focus:outline-none"
+                      onChange={(e) => setInputSearch(e.target.value)}
+                    />
                   </div>
                 </div>
               </div>
