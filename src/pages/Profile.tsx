@@ -81,8 +81,6 @@ const Profile: FC = () => {
       formData.append(key, objSubmit[key]);
     }
 
-    console.log(formData);
-
     axios
       .put("https://go-event.online/users", formData, {
         headers: {
@@ -171,7 +169,7 @@ const Profile: FC = () => {
         </div>
         <div className="absolute md:ml-40 mt-10 w-full md:w-max flex justify-center md:justify-start">
           <div
-            className={`rounded-full border-8 border-white w-40 h-40 sm:w-56 sm:h-56 `}
+            className={`rounded-full border-8 border-gray-100 w-40 h-40 sm:w-56 sm:h-56 `}
           >
             <img
               src={

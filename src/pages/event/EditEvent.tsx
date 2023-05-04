@@ -7,45 +7,21 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useCookies } from "react-cookie";
-
-interface EventAdd {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  address: string;
-  details: string;
-  date: string;
-  time: string;
-  location: string;
-  quota: number;
-  duration: number;
-  image: any;
-  hosted_by: string;
-  participants: string;
-  types: { id: number; type_name: string; price: number }[];
-}
-
-interface DataEditTicketType {
-  id: Number;
-  type_name: string;
-  price: number;
-}
-
-interface DataAddTicketType {
-  event_id: Number;
-  type_name: string;
-  price: number;
-}
+import {
+  EventEditType,
+  DataEditTicketType,
+  DataAddTicketType,
+} from "../../utils/user";
 
 const EditEvent: FC = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [objSubmit, setObjSubmit] = useState<Partial<EventAdd>>({});
-  const [data, setData] = useState<Partial<EventAdd>>({});
   const [MyType, setMyType] = useState<Partial<DataEditTicketType[]>>([]);
+  const [objSubmit, setObjSubmit] = useState<Partial<EventEditType>>({});
+  const [data, setData] = useState<Partial<EventEditType>>({});
   const [loading, setLoading] = useState<boolean>(true);
-  const [csrf, setCsrf] = useState<string>("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [type_id, setType_id] = useState<Number>();
+  const [csrf, setCsrf] = useState<string>("");
+
   const params = useParams();
   const { id } = params;
   const [ticket, setTicket] = useState<Partial<DataEditTicketType>>({
@@ -56,14 +32,14 @@ const EditEvent: FC = () => {
   const [addTicket, setAddTicket] = useState<Partial<DataAddTicketType>>({
     event_id: Number(id),
     type_name: "",
-    price: 0,
+    type_price: 0,
   });
+
   const [cookie] = useCookies(["tkn"]);
+  const navigate = useNavigate();
   const checkToken = cookie.tkn;
 
-  const navigate = useNavigate();
-
-  // console.log(type_id);
+  document.title = `Edit Event | Event management`;
 
   useEffect(() => {
     fetchData();
@@ -78,7 +54,6 @@ const EditEvent: FC = () => {
       .get(`https://go-event.online/events/${id}`)
       .then((response) => {
         const { data } = response.data;
-        // console.log(data.data.date);
         setData(data.data);
         setMyType([...data.data.types]);
         setCsrf(data.csrf);
@@ -95,24 +70,27 @@ const EditEvent: FC = () => {
         setLoading(false);
       });
   };
-  // console.log(data);
-  // console.log(objSubmit);
 
   const handleChange = (
-    value: string | File | number,
+    value: string | File | number | null,
     key: keyof typeof objSubmit
   ) => {
     let temp = { ...objSubmit };
     if (value === null) {
       temp[key] = null;
     } else {
-      temp[key] = value;
+      if (key === "date") {
+        const date = new Date(value as string);
+        const formattedDate = date.toISOString().slice(0, 19);
+        temp[key] = formattedDate;
+      } else {
+        temp[key] = value;
+      }
     }
     setObjSubmit(temp);
   };
 
   const handleUpdateTicket = (Mytype: number) => {
-    // console.log(Mytype);
     setTicket({ ...ticket, id: Mytype });
   };
 
@@ -160,13 +138,9 @@ const EditEvent: FC = () => {
     for (key in objSubmit) {
       formData.append(key, objSubmit[key]);
     }
-
-    console.log(formData);
-
     const type = JSON.stringify(MyType);
 
     const join = { ...objSubmit, id: Number(id), type };
-    console.log(join);
     axios
       .put(`https://go-event.online/events`, join, {
         headers: {
@@ -176,7 +150,6 @@ const EditEvent: FC = () => {
       })
       .then((response) => {
         const { message, code } = response.data;
-        // console.log(response);
         Swal.fire({
           icon: "success",
           title: code,
@@ -186,7 +159,7 @@ const EditEvent: FC = () => {
         }).then((result) => {
           if (result.isConfirmed) {
             setObjSubmit({});
-            navigate("/event");
+            navigate("/my-event");
           }
         });
       })
@@ -203,7 +176,6 @@ const EditEvent: FC = () => {
   };
 
   const handleDeleteEvent = () => {
-    console.log(id);
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -289,14 +261,12 @@ const EditEvent: FC = () => {
     });
   };
 
-  // console.log(addTicket);
-
   const handleAddTicket = () => {
     axios
       .post(
         "https://go-event.online/tickets",
         {
-          addTicket,
+          ...addTicket,
         },
         {
           headers: {
@@ -347,10 +317,7 @@ const EditEvent: FC = () => {
   const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
   const jakartaDate = new Date(jakartaTimestamp).toISOString().slice(0, 16);
 
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  console.log(data);
-
+  const today = new Date();
   return (
     <Layout>
       {loading ? (
@@ -430,7 +397,7 @@ const EditEvent: FC = () => {
                     id="input-date"
                     step="1"
                     defaultValue={jakartaDate}
-                    min={`${tomorrow.toISOString().slice(0, 16)}`}
+                    min={`${today.toISOString().slice(0, 16)}`}
                     type="datetime-local"
                     onChange={(event) =>
                       handleChange(event.target.value, "date")
@@ -485,7 +452,7 @@ const EditEvent: FC = () => {
                       onChange={(event) =>
                         setAddTicket({
                           ...addTicket,
-                          price: Number(event.target.value),
+                          type_price: Number(event.target.value),
                         })
                       }
                     />

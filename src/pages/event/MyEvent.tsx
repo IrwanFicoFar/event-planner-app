@@ -1,48 +1,31 @@
 import { FC, useEffect, useState } from "react";
-import { Layout } from "../../components/Layout";
-import { CardEdit } from "../../components/Card";
-import { Card } from "../../components/Card";
-import axios from "axios";
-import Swal from "sweetalert2";
 import { useCookies } from "react-cookie";
-import { ButtonAction } from "../../components/Button";
+import Swal from "sweetalert2";
+import axios from "axios";
 
-interface EventAdd {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  address: string;
-  detail: string;
-  date: string;
-  time: string;
-  location: string;
-  qty: number;
-  duration: number;
-  ticket: string;
-  price: number;
-  image: any;
-  hosted_by: string;
-  participants: string;
-  end_date: string;
-}
+import { ButtonAction } from "../../components/Button";
+import { CardEdit } from "../../components/Card";
+import { Layout } from "../../components/Layout";
+import { Card } from "../../components/Card";
+import { MyEventType } from "../../utils/user";
 
 const MyEvent: FC = () => {
-  const [data, setData] = useState<EventAdd[]>([]);
-  const [dataHistory, setDataHistory] = useState<EventAdd[]>([]);
-  // const [image, setImage] = useState<Partial<EventAdd>>({});
-  const [csrf, setCsrf] = useState<string>("");
+  const [dataNotFoundHistory, setDataNotFoundHistory] =
+    useState<boolean>(false);
+  const [dataHistory, setDataHistory] = useState<MyEventType[]>([]);
+  const [dataNotFound, setDataNotFound] = useState<boolean>(false);
   const [csrfHistory, setCsrfHistory] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [totalPage2, setTotalPage2] = useState<number>();
+  const [totalPage, setTotalPage] = useState<number>();
+  const [data, setData] = useState<MyEventType[]>([]);
+  const [count2, setCount2] = useState<number>(1);
+  const [count, setCount] = useState<number>(1);
+  const [csrf, setCsrf] = useState<string>("");
+
   const [cookie] = useCookies(["tkn"]);
   const checkToken = cookie.tkn;
-  const [count, setCount] = useState<number>(1);
-  const [totalPage, setTotalPage] = useState<number>();
-  const [count2, setCount2] = useState<number>(1);
-  const [totalPage2, setTotalPage2] = useState<number>();
-
   const limit = 3;
-  const page = 1;
 
   document.title = `My Event | Event Management`;
 
@@ -63,20 +46,23 @@ const MyEvent: FC = () => {
       )
       .then((response) => {
         const { data } = response.data;
-        console.log(response);
-        // console.log(data);
         setData(data.data);
         setTotalPage(data.total_page);
         // setCsrf(data.csrf);
+        setDataNotFound(false);
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        Swal.fire({
-          icon: "error",
-          title: code,
-          text: message,
-          showCancelButton: false,
-        });
+        if (message === "data not found") {
+          setDataNotFound(true);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: code,
+            text: message,
+            showCancelButton: false,
+          });
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -95,19 +81,24 @@ const MyEvent: FC = () => {
       )
       .then((response) => {
         const { data } = response.data;
-        console.log(response);
         setDataHistory(data.data);
         setTotalPage2(data.total_page);
         // setCsrfHistory(data.csrf);
+        setDataNotFoundHistory(false);
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        Swal.fire({
-          icon: "error",
-          title: code,
-          text: message,
-          showCancelButton: false,
-        });
+        console.log(message);
+        if (message === "data not found") {
+          setDataNotFoundHistory(true);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: code,
+            text: message,
+            showCancelButton: false,
+          });
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -115,7 +106,13 @@ const MyEvent: FC = () => {
   };
 
   const handleIncrement = () => {
-    setCount(count + 1);
+    if (totalPage) {
+      if (count < totalPage) {
+        setCount(count + 1);
+      } else {
+        setCount(totalPage);
+      }
+    }
   };
 
   const handleDecrement = () => {
@@ -127,7 +124,13 @@ const MyEvent: FC = () => {
   };
 
   const handleIncrementHistory = () => {
-    setCount(count2 + 1);
+    if (totalPage) {
+      if (count2 < totalPage) {
+        setCount(count2 + 1);
+      } else {
+        setCount(totalPage);
+      }
+    }
   };
 
   const handleDecrementHistory = () => {
@@ -137,9 +140,6 @@ const MyEvent: FC = () => {
       setCount(count2 - 1);
     }
   };
-
-  console.log(totalPage2);
-  console.log(count2);
 
   return (
     <Layout>
@@ -155,56 +155,68 @@ const MyEvent: FC = () => {
           </div>
         ) : (
           <div>
-            <div className="bg-white w-full pt-24 sm:pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-3 gap-10 2xl:gap-20 pb-20">
-              {data.map((e: EventAdd) => {
-                const date = new Date(e.date);
-                const dateEnd = new Date(e.end_date);
-                const optionsHeader = {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour12: false,
-                } as Intl.DateTimeFormatOptions;
-                const options = {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour12: false,
-                } as Intl.DateTimeFormatOptions;
-                const dateStringHeader = date.toLocaleDateString(
-                  "en-US",
-                  optionsHeader
-                );
-                const dateString = date.toLocaleDateString("en-US", options);
-                const timeString = date.toLocaleTimeString();
-                const dateEndString = dateEnd.toLocaleDateString(
-                  "en-US",
-                  options
-                );
-                const timeEndString = dateEnd.toLocaleTimeString();
-                return (
-                  <CardEdit
-                    key={e.id}
-                    image={
-                      e.image
-                        ? `https://storage.googleapis.com/prj1ropel/${e.image}`
-                        : `/header3.jpg`
-                    }
-                    name={e.name}
-                    dateHeader={dateStringHeader}
-                    date={dateString}
-                    time={timeString}
-                    location={e.location}
-                    participants={e.participants}
-                    hosted_by={e.hosted_by}
-                    goTo={`/event/${e.id}/edit`}
-                    dateEnd={dateEndString}
-                    timeEnd={timeEndString}
-                  />
-                );
-              })}
-            </div>
+            {dataNotFound ? (
+              <div className="bg-white flex justify-center pt-24 cols-span-3">
+                <h1 className="text-gray-400 text-2xl md:text-3xl lg:text-5xl font-bold ">
+                  EMPTY DATA
+                </h1>
+              </div>
+            ) : (
+              <div className="bg-white w-full pt-24 sm:pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-3 gap-10 2xl:gap-20 pb-20">
+                {data &&
+                  data.map((e) => {
+                    const date = new Date(e.date);
+                    const dateEnd = new Date(e.end_date);
+                    const optionsHeader = {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour12: false,
+                    } as Intl.DateTimeFormatOptions;
+                    const options = {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour12: false,
+                    } as Intl.DateTimeFormatOptions;
+                    const dateStringHeader = date.toLocaleDateString(
+                      "en-US",
+                      optionsHeader
+                    );
+                    const dateString = date.toLocaleDateString(
+                      "en-US",
+                      options
+                    );
+                    const timeString = date.toLocaleTimeString();
+                    const dateEndString = dateEnd.toLocaleDateString(
+                      "en-US",
+                      options
+                    );
+                    const timeEndString = dateEnd.toLocaleTimeString();
+                    return (
+                      <CardEdit
+                        key={e.id}
+                        image={
+                          e.image
+                            ? `https://storage.googleapis.com/prj1ropel/${e.image}`
+                            : `/header3.jpg`
+                        }
+                        name={e.name}
+                        dateHeader={dateStringHeader}
+                        date={dateString}
+                        time={timeString}
+                        location={e.location}
+                        participants={e.participants}
+                        hosted_by={e.hosted_by}
+                        goTo={`/event/${e.id}/edit`}
+                        dateEnd={dateEndString}
+                        timeEnd={timeEndString}
+                      />
+                    );
+                  })}
+              </div>
+            )}
             <div className="bg-white flex justify-center items-center">
               {count <= 1 ? (
                 <div className="w-36"></div>
@@ -236,54 +248,63 @@ const MyEvent: FC = () => {
                 </h1>
               </div>
             </div>
-            <div className="bg-gray-300 w-full pt-24 sm:pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
-              {dataHistory.map((e) => {
-                if (!e) {
-                  return null;
-                }
-                const date = new Date(e.date);
-                const dateEnd = new Date(e.end_date);
-                const optionsHeader = {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour12: false,
-                } as Intl.DateTimeFormatOptions;
-                const options = {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour12: false,
-                } as Intl.DateTimeFormatOptions;
-                const dateStringHeader = date.toLocaleDateString(
-                  "en-US",
-                  optionsHeader
-                );
-                const dateString = date.toLocaleDateString("en-US", options);
-                const timeString = date.toLocaleTimeString();
-                const dateEndString = dateEnd.toLocaleDateString(
-                  "en-US",
-                  options
-                );
-                const timeEndString = dateEnd.toLocaleTimeString();
-                return (
-                  <Card
-                    key={e.id}
-                    image={e.image === "" ? e.image : `/header2.jpg`}
-                    name={e.name}
-                    dateHeader={dateStringHeader}
-                    date={dateString}
-                    time={timeString}
-                    location={e.location}
-                    participants={e.participants}
-                    hosted_by={e.hosted_by}
-                    dateEnd={dateEndString}
-                    timeEnd={timeEndString}
-                  />
-                );
-              })}
-            </div>
+            {dataNotFoundHistory ? (
+              <div className="bg-gray-300 flex justify-center pt-24 cols-span-3 pb-12">
+                <h1 className="text-gray-400 text-2xl md:text-3xl lg:text-5xl font-bold ">
+                  EMPTY DATA
+                </h1>
+              </div>
+            ) : (
+              <div className="bg-gray-300 w-full pt-24 sm:pt-32 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-40 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-20">
+                {dataHistory &&
+                  dataHistory.map((e) => {
+                    const date = new Date(e.date);
+                    const dateEnd = new Date(e.end_date);
+                    const optionsHeader = {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour12: false,
+                    } as Intl.DateTimeFormatOptions;
+                    const options = {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour12: false,
+                    } as Intl.DateTimeFormatOptions;
+                    const dateStringHeader = date.toLocaleDateString(
+                      "en-US",
+                      optionsHeader
+                    );
+                    const dateString = date.toLocaleDateString(
+                      "en-US",
+                      options
+                    );
+                    const timeString = date.toLocaleTimeString();
+                    const dateEndString = dateEnd.toLocaleDateString(
+                      "en-US",
+                      options
+                    );
+                    const timeEndString = dateEnd.toLocaleTimeString();
+                    return (
+                      <Card
+                        key={e.id}
+                        image={e.image === "" ? e.image : `/header2.jpg`}
+                        name={e.name}
+                        dateHeader={dateStringHeader}
+                        date={dateString}
+                        time={timeString}
+                        location={e.location}
+                        participants={e.participants}
+                        hosted_by={e.hosted_by}
+                        dateEnd={dateEndString}
+                        timeEnd={timeEndString}
+                      />
+                    );
+                  })}
+              </div>
+            )}
             <div className="bg-white flex justify-center items-center">
               {count2 <= 1 ? (
                 <div className="w-36"></div>
@@ -291,19 +312,19 @@ const MyEvent: FC = () => {
                 <div className="mx-2">
                   <ButtonAction
                     label="Back"
-                    onClick={() => handleDecrement()}
+                    onClick={() => handleDecrementHistory()}
                   />
                 </div>
               )}
               {totalPage2 === count2 ? (
                 <div className="w-36"></div>
-              ) : totalPage2 === 0 ? (
+              ) : totalPage2 === undefined ? (
                 <div className="w-36"></div>
               ) : (
                 <div className="mx-2 flex items-center">
                   <ButtonAction
                     label="Next"
-                    onClick={() => handleIncrement()}
+                    onClick={() => handleIncrementHistory()}
                   />
                 </div>
               )}

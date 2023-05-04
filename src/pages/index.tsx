@@ -1,48 +1,27 @@
 import { FC, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Layout } from "../components/Layout";
-import { Input } from "../components/Input";
-import { BiSearchAlt, BiArrowFromLeft } from "react-icons/bi";
-import { ButtonAction } from "../components/Button";
-import { Card } from "../components/Card";
-import axios from "axios";
-import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import Swal from "sweetalert2";
+import axios from "axios";
 
-interface DataType {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  address: string;
-  detail: string;
-  date: string;
-  time: string;
-  location: string;
-  quota: number;
-  duration: number;
-  ticket: string;
-  price: number;
-  image: any;
-  hosted_by: string;
-  participants: string;
-  end_date: string;
-}
+import { BiSearchAlt } from "react-icons/bi";
+import { ButtonAction } from "../components/Button";
+import { Layout } from "../components/Layout";
+import { Card } from "../components/Card";
+import { DataType } from "../utils/user";
 
 const Home: FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
+  const [totalPage, setTotalPage] = useState<number>();
   const [datas, setDatas] = useState<DataType[]>([]);
+  // const [limit, setLimit] = useState<number>(1);
+  const [count, setCount] = useState<number>(1);
   const [csrf, setCsrf] = useState<string>("");
   const [cookie] = useCookies(["tkn"]);
-  const [totalPage, setTotalPage] = useState<number>();
-  const [count, setCount] = useState<number>(1);
-  // const [limit, setLimit] = useState<number>(1);
   const checToken = cookie.tkn;
 
-  const limit = 4;
-  const page = 2;
-
   const navigate = useNavigate();
+  const limit = 4;
 
   document.title = `Event Planner App | index management`;
 
@@ -89,7 +68,13 @@ const Home: FC = () => {
   };
 
   const handleIncrement = () => {
-    setCount(count + 1);
+    if (totalPage) {
+      if (count < totalPage) {
+        setCount(count + 1);
+      } else {
+        setCount(totalPage);
+      }
+    }
   };
 
   const handleDecrement = () => {
@@ -99,9 +84,6 @@ const Home: FC = () => {
       setCount(count - 1);
     }
   };
-
-  console.log(count);
-  console.log(totalPage);
 
   return (
     <Layout>
@@ -162,55 +144,56 @@ const Home: FC = () => {
           </div>
         ) : (
           <div className="bg-white w-full pt-24 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-32 grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4 gap-10 pb-10">
-            {datas.map((e) => {
-              const date = new Date(e.date);
-              const dateEnd = new Date(e.end_date);
-              const optionsHeader = {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour12: false,
-              } as Intl.DateTimeFormatOptions;
-              const options = {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour12: false,
-              } as Intl.DateTimeFormatOptions;
-              const dateStringHeader = date.toLocaleDateString(
-                "en-US",
-                optionsHeader
-              );
-              const dateString = date.toLocaleDateString("en-US", options);
-              const timeString = date.toLocaleTimeString(); // format: 5:17:02 PM
-              const dateEndString = dateEnd.toLocaleDateString(
-                "en-US",
-                options
-              );
-              const timeEndString = dateEnd.toLocaleTimeString();
-              return (
-                <Card
-                  key={e.id}
-                  image={
-                    e.image
-                      ? `https://storage.googleapis.com/prj1ropel/${e.image}`
-                      : `/header3.jpg`
-                  }
-                  name={e.name}
-                  dateHeader={dateStringHeader}
-                  date={dateString}
-                  time={timeString}
-                  location={e.location}
-                  participants={e.participants}
-                  hosted_by={e.hosted_by}
-                  id={e.id}
-                  dateEnd={dateEndString}
-                  timeEnd={timeEndString}
-                  quota={e.quota}
-                />
-              );
-            })}
+            {datas &&
+              datas.map((e) => {
+                const date = new Date(e.date);
+                const dateEnd = new Date(e.end_date);
+                const optionsHeader = {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour12: false,
+                } as Intl.DateTimeFormatOptions;
+                const options = {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour12: false,
+                } as Intl.DateTimeFormatOptions;
+                const dateStringHeader = date.toLocaleDateString(
+                  "en-US",
+                  optionsHeader
+                );
+                const dateString = date.toLocaleDateString("en-US", options);
+                const timeString = date.toLocaleTimeString(); // format: 5:17:02 PM
+                const dateEndString = dateEnd.toLocaleDateString(
+                  "en-US",
+                  options
+                );
+                const timeEndString = dateEnd.toLocaleTimeString();
+                return (
+                  <Card
+                    key={e.id}
+                    image={
+                      e.image
+                        ? `https://storage.googleapis.com/prj1ropel/${e.image}`
+                        : `/header3.jpg`
+                    }
+                    name={e.name}
+                    dateHeader={dateStringHeader}
+                    date={dateString}
+                    time={timeString}
+                    location={e.location}
+                    participants={e.participants}
+                    hosted_by={e.hosted_by}
+                    id={e.id}
+                    dateEnd={dateEndString}
+                    timeEnd={timeEndString}
+                    quota={e.quota}
+                  />
+                );
+              })}
           </div>
         )}
       </div>
@@ -224,8 +207,6 @@ const Home: FC = () => {
           </div>
         )}
         {totalPage === count ? (
-          <div className="w-36"></div>
-        ) : totalPage === 0 ? (
           <div className="w-36"></div>
         ) : (
           <div className="mx-2 flex items-center">
