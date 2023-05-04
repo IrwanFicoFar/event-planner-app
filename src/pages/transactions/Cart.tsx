@@ -74,16 +74,7 @@ const Cart: FC = () => {
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        if (message === "Data Not Found") {
-          setDataNotFoundCart(true);
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: code,
-            text: message,
-            showCancelButton: false,
-          });
-        }
+        setDataNotFoundCart(true);
       })
       .finally(() => {
         setLoading(false);
