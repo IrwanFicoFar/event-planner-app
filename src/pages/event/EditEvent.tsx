@@ -61,7 +61,7 @@ const EditEvent: FC = () => {
       .catch((error) => {
         Swal.fire({
           icon: "error",
-          title: "Failed",
+          title: "Failed to Fetch Event!!",
           text: error,
           showCancelButton: false,
         });
@@ -151,7 +151,7 @@ const EditEvent: FC = () => {
         const { message, code } = response.data;
         Swal.fire({
           icon: "success",
-          title: code,
+          title: "Success Update Event!!",
           text: message,
           showCancelButton: false,
           showConfirmButton: true,
@@ -166,7 +166,7 @@ const EditEvent: FC = () => {
         const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: code,
+          title: "Failed to Update Event!!",
           text: message,
           showCancelButton: false,
         });
@@ -194,8 +194,8 @@ const EditEvent: FC = () => {
           .then((response) => {
             const { message, code } = response.data;
             Swal.fire({
-              icon: "info",
-              title: code,
+              icon: "success",
+              title: "Success Delete Event!!",
               text: message,
               showCancelButton: false,
             }).then((result) => {
@@ -208,7 +208,7 @@ const EditEvent: FC = () => {
             const { message, code } = error.response.data;
             Swal.fire({
               icon: "error",
-              title: code,
+              title: "Failed Delete Event!!",
               text: message,
               showCancelButton: false,
             });
@@ -236,7 +236,7 @@ const EditEvent: FC = () => {
             const { message, code } = response.data && response.data;
             Swal.fire({
               icon: "success",
-              title: code,
+              title: "Success Delete Ticket!!",
               text: message,
               showCancelButton: false,
               showConfirmButton: true,
@@ -251,7 +251,7 @@ const EditEvent: FC = () => {
             const { message, code } = error.response.data;
             Swal.fire({
               icon: "error",
-              title: code,
+              title: "Failed Delete Ticket!!",
               text: message,
               showCancelButton: false,
             });
@@ -278,7 +278,7 @@ const EditEvent: FC = () => {
         const { message, code } = response.data;
         Swal.fire({
           icon: "success",
-          title: code,
+          title: "Success Add Ticket!!",
           text: message,
           showCancelButton: false,
           showConfirmButton: true,
@@ -293,7 +293,7 @@ const EditEvent: FC = () => {
         const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: code,
+          title: "Failed Add Ticket!!",
           text: message,
           showCancelButton: false,
         });

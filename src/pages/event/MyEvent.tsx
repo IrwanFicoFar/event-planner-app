@@ -62,21 +62,16 @@ const MyEvent: FC = () => {
         const { data } = response.data;
         setData(data.data);
         setTotalPage(data.total_page);
-        // setCsrf(data.csrf);
-        setDataNotFound(false);
+        setCsrf(data.csrf);
+        if (data.data === null) {
+          setDataNotFound(true);
+        } else {
+          setDataNotFound(false);
+        }
       })
       .catch((error) => {
         const { message, code } = error.response.data;
-        if (message === "data not found") {
-          setDataNotFound(true);
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: code,
-            text: message,
-            showCancelButton: false,
-          });
-        }
+        setDataNotFound(true);
       })
       .finally(() => {
         setLoading(false);
@@ -103,8 +98,12 @@ const MyEvent: FC = () => {
         const { data } = response.data;
         setDataHistory(data.data);
         setTotalPage2(data.total_page);
-        // setCsrfHistory(data.csrf);
-        setDataNotFoundHistory(false);
+        setCsrfHistory(data.csrf);
+        if (data.data === null) {
+          setDataNotFound(true);
+        } else {
+          setDataNotFound(false);
+        }
       })
       .catch((error) => {
         const { message, code } = error.response.data;
@@ -113,7 +112,7 @@ const MyEvent: FC = () => {
         } else {
           Swal.fire({
             icon: "error",
-            title: code,
+            title: "Failed to Fetch My History",
             text: message,
             showCancelButton: false,
           });
@@ -160,6 +159,8 @@ const MyEvent: FC = () => {
     }
   };
 
+  console.log(dataNotFound);
+
   return (
     <Layout>
       <div className="h-full">
@@ -183,90 +184,98 @@ const MyEvent: FC = () => {
                 </h1>
               </div>
             ) : (
-              <div className="bg-white dark:bg-slate-800 w-full pt-24 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-32 xl:px-16 2xl:24 grid grid-cols-1 md:grid-cols-2  lg:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-4 md:gap-12 lg:gap-24  xl:gap-12 2xl:gap-10 gap-10 pb-10">
-                {data &&
-                  data.map((e) => {
-                    const date = new Date(e.date);
-                    const dateEnd = new Date(e.end_date);
-                    const optionsHeader = {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour12: false,
-                    } as Intl.DateTimeFormatOptions;
-                    const options = {
-                      weekday: "long",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour12: false,
-                    } as Intl.DateTimeFormatOptions;
-                    const dateStringHeader = date.toLocaleDateString(
-                      "en-US",
-                      optionsHeader
-                    );
-                    const dateString = date.toLocaleDateString(
-                      "en-US",
-                      options
-                    );
-                    const timeString = date.toLocaleTimeString("en-US", {
-                      hour12: false,
-                    });
-                    const dateEndString = dateEnd.toLocaleDateString(
-                      "en-US",
-                      options
-                    );
-                    const timeEndString = dateEnd.toLocaleTimeString("en-US", {
-                      hour12: false,
-                    });
-                    return (
-                      <CardEdit
-                        key={e.id}
-                        image={
-                          e.image
-                            ? `https://storage.googleapis.com/prj1ropel/${e.image}`
-                            : `/header3.jpg`
+              <div>
+                <div className="bg-white dark:bg-slate-800 w-full pt-24 px-10 sm:px-12 md:px-20 mid-lg:px-32 lg:px-32 xl:px-16 2xl:24 grid grid-cols-1 md:grid-cols-2  lg:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-4 md:gap-12 lg:gap-24  xl:gap-12 2xl:gap-10 gap-10 pb-10">
+                  {data &&
+                    data.map((e) => {
+                      const date = new Date(e.date);
+                      const dateEnd = new Date(e.end_date);
+                      const optionsHeader = {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour12: false,
+                      } as Intl.DateTimeFormatOptions;
+                      const options = {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour12: false,
+                      } as Intl.DateTimeFormatOptions;
+                      const dateStringHeader = date.toLocaleDateString(
+                        "en-US",
+                        optionsHeader
+                      );
+                      const dateString = date.toLocaleDateString(
+                        "en-US",
+                        options
+                      );
+                      const timeString = date.toLocaleTimeString("en-US", {
+                        hour12: false,
+                      });
+                      const dateEndString = dateEnd.toLocaleDateString(
+                        "en-US",
+                        options
+                      );
+                      const timeEndString = dateEnd.toLocaleTimeString(
+                        "en-US",
+                        {
+                          hour12: false,
                         }
-                        name={e.name}
-                        dateHeader={dateStringHeader}
-                        date={dateString}
-                        time={timeString}
-                        location={e.location}
-                        participants={e.participants}
-                        hosted_by={e.hosted_by}
-                        goTo={`/event/${e.id}/edit`}
-                        dateEnd={dateEndString}
-                        timeEnd={timeEndString}
-                        quota={e.quota}
-                      />
-                    );
-                  })}
+                      );
+                      return (
+                        <CardEdit
+                          key={e.id}
+                          image={
+                            e.image
+                              ? `https://storage.googleapis.com/prj1ropel/${e.image}`
+                              : `/header3.jpg`
+                          }
+                          name={e.name}
+                          dateHeader={dateStringHeader}
+                          date={dateString}
+                          time={timeString}
+                          location={e.location}
+                          participants={e.participants}
+                          hosted_by={e.hosted_by}
+                          goTo={`/event/${e.id}/edit`}
+                          dateEnd={dateEndString}
+                          timeEnd={timeEndString}
+                          quota={e.quota}
+                        />
+                      );
+                    })}
+                </div>
+                <div>
+                  <div className="bg-white flex justify-center items-center">
+                    {count <= 1 ? (
+                      <div className="w-36"></div>
+                    ) : (
+                      <div className="mx-2">
+                        <ButtonAction
+                          label="Back"
+                          onClick={() => handleDecrement()}
+                        />
+                      </div>
+                    )}
+                    {totalPage === count ? (
+                      <div className="w-36"></div>
+                    ) : totalPage === 0 ? (
+                      <div className="w-36"></div>
+                    ) : (
+                      <div className="mx-2 flex items-center">
+                        <ButtonAction
+                          label="Next"
+                          onClick={() => handleIncrement()}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
-            <div className="bg-white flex justify-center items-center">
-              {count <= 1 ? (
-                <div className="w-36"></div>
-              ) : (
-                <div className="mx-2">
-                  <ButtonAction
-                    label="Back"
-                    onClick={() => handleDecrement()}
-                  />
-                </div>
-              )}
-              {totalPage === count ? (
-                <div className="w-36"></div>
-              ) : totalPage === 0 ? (
-                <div className="w-36"></div>
-              ) : (
-                <div className="mx-2 flex items-center">
-                  <ButtonAction
-                    label="Next"
-                    onClick={() => handleIncrement()}
-                  />
-                </div>
-              )}
-            </div>
+
             <div className="bg-white dark:bg-slate-800 py-10 flex justify-center">
               <div className=" absolute w-[50%] bg-black top-42  py-6 rounded-full drop-shadow-lg flex justify-center hover:scale-105 duration-300">
                 <h1 className="text-white text-2xl font-semibold">

@@ -71,7 +71,7 @@ const DetailEvent: FC = () => {
         const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: code,
+          title: "Failed to Fetch Event!!",
           text: message,
           showCancelButton: false,
         });
@@ -94,7 +94,7 @@ const DetailEvent: FC = () => {
               const { message, code } = response.data;
               Swal.fire({
                 icon: "success",
-                title: code,
+                title: "Success Add Comment!!",
                 text: message,
                 showCancelButton: false,
               }).then((result) => {
@@ -107,7 +107,7 @@ const DetailEvent: FC = () => {
               const { message, code } = error.response.data;
               Swal.fire({
                 icon: "error",
-                title: code,
+                title: "Failed Add Comment!!",
                 text: message,
                 showCancelButton: false,
               });
@@ -176,7 +176,7 @@ const DetailEvent: FC = () => {
               const { message, code } = response.data;
               Swal.fire({
                 icon: "success",
-                title: code,
+                title: "Success add to Cart!!",
                 text: message,
                 showCancelButton: false,
               });
@@ -185,7 +185,7 @@ const DetailEvent: FC = () => {
               const { message, code } = error.response.data;
               Swal.fire({
                 icon: "error",
-                title: code,
+                title: "Failed add to Cart!!",
                 text: message,
                 showCancelButton: false,
               });

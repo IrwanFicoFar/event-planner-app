@@ -86,7 +86,7 @@ const AddEvent: FC = () => {
         const { message, code } = response.data;
         Swal.fire({
           icon: "success",
-          title: code,
+          title: "Success Add Event!!",
           text: message,
           showCancelButton: false,
           showConfirmButton: true,
@@ -100,7 +100,7 @@ const AddEvent: FC = () => {
         const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: code,
+          title: "Failed to add Event!!",
           text: message,
           showCancelButton: false,
         });
