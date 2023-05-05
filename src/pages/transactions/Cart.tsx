@@ -8,7 +8,7 @@ import axios from "axios";
 
 import { CardCart, PaymentMethode, CardSummary } from "../../components/Card";
 import { Option, DataCartType, ModalInvoiceType } from "../../utils/user";
-import { ButtonCheckout } from "../../components/Button";
+import { ButtonCancelOrDelete, ButtonCheckout } from "../../components/Button";
 import { Layout } from "../../components/Layout";
 import { TbFileInvoice } from "react-icons/tb";
 
@@ -71,6 +71,11 @@ const Cart: FC = () => {
         const { data } = response.data;
         setType(data.data);
         setTotal(data.total);
+        if (data.data === null) {
+          setDataNotFoundCart(true);
+        } else {
+          setDataNotFoundCart(false);
+        }
       })
       .catch((error) => {
         const { message, code } = error.response.data;
@@ -123,7 +128,7 @@ const Cart: FC = () => {
           setInvoice(data.data.invoice);
           Swal.fire({
             icon: "success",
-            title: code,
+            title: "Success Checkout!!",
             text: message,
             showCancelButton: false,
             showConfirmButton: true,
@@ -145,6 +150,49 @@ const Cart: FC = () => {
         })
         .finally(() => {});
     }
+  };
+
+  const handleDeleteCart = () => {
+    Swal.fire({
+      icon: "question",
+      title: "Are You Sure to Deleted ticket",
+      showCancelButton: true,
+      showConfirmButton: true,
+      confirmButtonText: "Yes Deleted",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`https://go-event.online/transactions/cart`, {
+            headers: {
+              Authorization: `Bearer ${checkToken}`,
+            },
+          })
+          .then((response) => {
+            const { message, code } = response.data && response.data;
+            Swal.fire({
+              icon: "success",
+              title: "Cart Empty!!",
+              text: message,
+              showCancelButton: false,
+              showConfirmButton: true,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                setIsOpen(false);
+                fetchData();
+              }
+            });
+          })
+          .catch((error) => {
+            const { message } = error.response.data;
+            Swal.fire({
+              icon: "error",
+              title: "Failed to Empty!!",
+              text: message,
+              showCancelButton: false,
+            });
+          });
+      }
+    });
   };
 
   const handlePayGopay = () => {
@@ -308,12 +356,16 @@ const Cart: FC = () => {
                 Rp {total?.toLocaleString("id-ID")}
               </h1>
             </div>
-            <div className=" flex flex-col">
+            <div className=" flex flex-col gap-5">
               <ButtonCheckout
                 label="Checkout "
                 onClick={() => {
                   openModal();
                 }}
+              />
+              <ButtonCancelOrDelete
+                label="Empty Cart"
+                onClick={() => handleDeleteCart()}
               />
             </div>
           </div>
@@ -604,93 +656,3 @@ const Cart: FC = () => {
 };
 
 export default Cart;
-
-{
-  /* <div>
-        <Transition appear show={isOpen} as={Fragment}>
-          <Dialog as="div" className="relative z-10" onClose={closeModal}>
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <div className="fixed inset-0 bg-black bg-opacity-25" />
-            </Transition.Child>
-            <div className="fixed inset-0 overflow-y-auto">
-              <div className="flex min-h-full items-center justify-center p-4 text-center">
-                <Transition.Child
-                  as={Fragment}
-                  enter="ease-out duration-300"
-                  enterFrom="opacity-0 scale-95"
-                  enterTo="opacity-100 scale-100"
-                  leave="ease-in duration-200"
-                  leaveFrom="opacity-100 scale-100"
-                  leaveTo="opacity-0 scale-95"
-                >
-                  <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                    <Dialog.Title
-                      as="h3"
-                      className="flex flex-col text-lg font-semibold items-center justify-center leading-6 text-gray-900 py-5"
-                    >
-                      <h1>Transaction</h1>
-                      <h1 className="italic text-gray-500">(NO:{invoice})</h1>
-                    </Dialog.Title>
-                    <div className="mt-2 text-black">
-                      <div className="grid grid-cols-2">
-                        <div className="flex flex-col justify-center">
-                          <h1 className="text-xl font-semibold">
-                            Payment Methode
-                          </h1>
-                          <img src={selectedOption.image} alt="" />
-                        </div>
-                        <div className="bg-black rounded-3xl p-5 text-white flex flex-col justify-between">
-                          <div className="flex flex-col sm:flex-row justify-between py-5 ">
-                            <h1 className="md:text-xl font-semibold">Total</h1>
-                            <h1 className="md:text-xl font-semibold">
-                              {total}
-                            </h1>
-                          </div>
-                          <div className=" flex flex-col">
-                            <ButtonCheckout
-                              label="Pay Now"
-                              onClick={() => payBca()}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-4 flex justify-between">
-                      <button
-                        type="button"
-                        className="bg-red-600 hover:bg-blue-500 hover:-translate-y-1 duration-300 py-3 px-10 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold "
-                        onClick={() => {
-                          closeModal();
-                        }}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="button"
-                        className="bg-red-600 hover:bg-blue-500 hover:-translate-y-1 duration-300 py-3 px-10 inline-flex justify-center items-center rounded-2xl text-lg sm:text-xl  text-white font-semibold "
-                        onClick={() => {
-                          navigate(`/transaction`);
-                        }}
-                      >
-                        List transaction
-                      </button>
-                      <div className="text-black flex space-x-3 items-center ">
-                        <h1>Pay before : {} </h1>
-                      </div>
-                    </div>
-                  </Dialog.Panel>
-                </Transition.Child>
-              </div>
-            </div>
-          </Dialog>
-        </Transition>
-      </div>{" "} */
-}

@@ -49,7 +49,7 @@ const Register: FC = () => {
         const { message, code } = response.data;
         Swal.fire({
           icon: "success",
-          title: code,
+          title: "Success Register!!",
           text: message,
           showCancelButton: false,
           showConfirmButton: true,
@@ -63,7 +63,7 @@ const Register: FC = () => {
         const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: code,
+          title: "Failed to Register!!",
           text: message,
           showCancelButton: false,
         });

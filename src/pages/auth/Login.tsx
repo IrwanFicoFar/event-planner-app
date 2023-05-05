@@ -48,7 +48,7 @@ const Login: FC = () => {
         Swal.fire({
           position: "center",
           icon: "success",
-          title: code,
+          title: "Success Login!!",
           text: message,
           showConfirmButton: false,
           showCancelButton: false,
@@ -60,7 +60,7 @@ const Login: FC = () => {
         const { message, code } = error.response.data;
         Swal.fire({
           icon: "error",
-          title: code,
+          title: "Failed to Login!!",
           text: message,
           showCancelButton: false,
         });

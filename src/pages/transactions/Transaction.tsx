@@ -105,7 +105,11 @@ const Transaction: FC = () => {
       .then((response) => {
         const { data } = response.data;
         setDataEvent(data.data);
-        setDataNotFoundPending(false);
+        if (data.data === null) {
+          setDataNotFoundPending(true);
+        } else {
+          setDataNotFoundPending(false);
+        }
       })
       .catch((error) => {
         const { message, code } = error.response.data;
@@ -124,7 +128,11 @@ const Transaction: FC = () => {
       .then((response) => {
         const { data } = response.data;
         setDataEventPaid(data.data);
-        setDataNotFoundPaid(false);
+        if (data.data === null) {
+          setDataNotFoundPaid(true);
+        } else {
+          setDataNotFoundPaid(false);
+        }
       })
       .catch((error) => {
         const { message, code } = error.response.data;
@@ -364,7 +372,6 @@ const Transaction: FC = () => {
           </div>
         </div>
       )}
-
       {/* modal invoice */}
       <div>
         <Transition appear show={isOpen} as={Fragment}>
