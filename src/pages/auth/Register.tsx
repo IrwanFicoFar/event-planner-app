@@ -76,9 +76,7 @@ const Register: FC = () => {
       <div className="hidden md:block  md:w-[50%] bg-[url('/register.jpg')] bg-center bg-cover rounded-r-3xl"></div>
       <div className="w-full  md:w-[50%] ">
         <div className="h-20 md:h-32 bg-black flex items-center">
-          <h1 className="text-2xl font-semibold text-white">
-            Event Planner App
-          </h1>
+          <h1 className="text-2xl font-semibold text-white">Go Event App</h1>
         </div>
         <h1 className="text-xl text-white font-semibold my-5 md:my-20">
           Sign Up

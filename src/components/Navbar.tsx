@@ -85,7 +85,7 @@ export const Navbar: FC = () => {
                         alt="Event planner App image"
                       />
                       <h1 className="text-xl font-semibold text-white">
-                        Event Planner App
+                        Go Event App
                       </h1>
                     </div>
                   </div>
