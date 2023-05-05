@@ -214,7 +214,7 @@ const Cart: FC = () => {
   };
   return (
     <Layout>
-      <div className="h-full grid grid-cols-1 md:grid-cols-2">
+      <div className="h-full grid grid-cols-1 lg:grid-cols-2">
         {loading ? (
           <div className=" text-white dark:bg-gray-700 bg-black font-bold text-3xl flex justify-center pt-24">
             Loading...
