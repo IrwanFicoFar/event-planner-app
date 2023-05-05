@@ -190,7 +190,7 @@ const AddEvent: FC = () => {
                 step="1"
                 type="datetime-local"
                 defaultValue={jakartaDate}
-                min={`${now.toISOString().slice(0, 16)}`}
+                min={`${tomorrow.toISOString().slice(0, 16)}`}
                 onChange={(event) => handleChange(event.target.value, "date")}
               />
               <div className="flex space-x-3">
