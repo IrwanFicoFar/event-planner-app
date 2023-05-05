@@ -23,6 +23,10 @@ const DetailEvent: FC = () => {
     event_id: Number(id),
     comment: "",
   });
+  const [dateString, setDateString] = useState<string>("");
+  const [timeString, setTimeString] = useState<string>("");
+  const [eventDate, setEventDate] = useState<string>("");
+  const [updateDate, setUpdateDate] = useState<string>("");
 
   const [cookie] = useCookies(["tkn"]);
   const checToken = cookie.tkn;
@@ -42,22 +46,50 @@ const DetailEvent: FC = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  let EventDate = "";
-  let updateDate = "";
-
-  if (data.date) {
-    const jakartaOffset = 7 * 60; // UTC offset for Jakarta timezone in minutes
-    const now = new Date(data.date);
-    const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
-    EventDate = new Date(jakartaTimestamp).toISOString().slice(0, 19) + "Z"; // format: 2023-05-07T12:24:42Z
-    let ExpDate = new Date(jakartaTimestamp);
-    ExpDate.setHours(ExpDate.getHours() + 1);
-    updateDate = ExpDate.toISOString().slice(0, 19) + "Z";
-  }
-
   useEffect(() => {
+    dateAndTime();
+    StartEndDate();
     fetchData();
   }, []);
+
+  const StartEndDate = () => {
+    let EventDate = "";
+    let updateDate = "";
+
+    if (data.date) {
+      const jakartaOffset = 7 * 60; // UTC offset for Jakarta timezone in minutes
+      const now = new Date(data.date);
+      const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
+      EventDate = new Date(jakartaTimestamp).toISOString().slice(0, 19) + "Z"; // format: 2023-05-07T12:24:42Z
+      let ExpDate = new Date(jakartaTimestamp);
+      ExpDate.setHours(ExpDate.getHours() + 1);
+      updateDate = ExpDate.toISOString().slice(0, 19) + "Z";
+    }
+    setEventDate(eventDate);
+    setUpdateDate(updateDate);
+  };
+
+  const dateAndTime = () => {
+    let dateString = "";
+    let timeString = "";
+
+    if (data.date) {
+      const Newdate = new Date(data.date);
+      const options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour12: false,
+      } as Intl.DateTimeFormatOptions;
+      dateString = Newdate.toLocaleDateString("en-US", options);
+      timeString = Newdate.toLocaleTimeString("en-US", {
+        hour12: false,
+      });
+      setDateString(dateString);
+      setTimeString(timeString);
+    }
+  };
 
   const fetchData = () => {
     axios
@@ -138,24 +170,6 @@ const DetailEvent: FC = () => {
   `,
     });
   };
-
-  let dateString = "";
-  let timeString = "";
-
-  if (data.date) {
-    const Newdate = new Date(data.date);
-    const options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour12: false,
-    } as Intl.DateTimeFormatOptions;
-    dateString = Newdate.toLocaleDateString("en-US", options);
-    timeString = Newdate.toLocaleTimeString("en-US", {
-      hour12: false,
-    });
-  }
 
   const handleToCart = (id: number) => {
     {
@@ -254,7 +268,7 @@ const DetailEvent: FC = () => {
                   </div>
                 </div>
               </div>
-              {currentTime > EventDate ? (
+              {currentTime > eventDate ? (
                 <ButtonAction
                   label="Join Event"
                   onClick={() => handleJointEvent()}

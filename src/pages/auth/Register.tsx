@@ -40,7 +40,7 @@ const Register: FC = () => {
       return;
     }
     axios
-      .post("https://go-event.online/register", objSubmit, {
+      .post("/register", objSubmit, {
         headers: {
           "Content-Type": "application/json",
         },

@@ -17,14 +17,17 @@ const AddEvent: FC = () => {
     type_name: "",
     price: 0,
   });
-
+  const [tomorrow, setTomorrow] = useState<Date>();
+  const [jakartaDate, setJakartaDate] = useState<string>("");
   const [cookie] = useCookies(["tkn"]);
   const navigate = useNavigate();
   const checkToken = cookie.tkn;
 
   document.title = `Add Event | Event management`;
 
-  // useEffect(() => {}, []);
+  useEffect(() => {
+    minTomorrow();
+  }, []);
 
   const handleAddTicket = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -76,7 +79,7 @@ const AddEvent: FC = () => {
     const type = JSON.stringify(MyType);
     const join = { ...objSubmit, type };
     axios
-      .post("https://go-event.online/events", join, {
+      .post("/events", join, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${checkToken}`,
@@ -107,13 +110,16 @@ const AddEvent: FC = () => {
       });
   };
 
-  const jakartaOffset = 7 * 60;
-  const now = new Date();
-  const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
-  const jakartaDate = new Date(jakartaTimestamp).toISOString().slice(0, 16);
-
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minTomorrow = () => {
+    const jakartaOffset = 7 * 60;
+    const now = new Date();
+    const jakartaTimestamp = now.getTime() + jakartaOffset * 60 * 1000;
+    const jakartaDate = new Date(jakartaTimestamp).toISOString().slice(0, 16);
+    setJakartaDate(jakartaDate);
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    setTomorrow(tomorrow);
+  };
 
   return (
     <Layout>
@@ -190,7 +196,7 @@ const AddEvent: FC = () => {
                 step="1"
                 type="datetime-local"
                 defaultValue={jakartaDate}
-                min={`${tomorrow.toISOString().slice(0, 16)}`}
+                min={`${tomorrow && tomorrow.toISOString().slice(0, 16)}`}
                 onChange={(event) => handleChange(event.target.value, "date")}
               />
               <div className="flex space-x-3">
