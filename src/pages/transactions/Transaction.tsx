@@ -40,6 +40,10 @@ const Transaction: FC = () => {
   const checkToken = cookie.tkn;
   const [pusherInvoice, setPusherInvoice] = useState<string>("");
   const [pusherStatus, setPusherStatus] = useState<string>("");
+  const [dateString, setDateString] = useState<string>("");
+  const [timeString, setTimeString] = useState<string>("");
+  const [dateStringExp, setDateStringExp] = useState<string>("");
+  const [timeStringExp, setTimeStringExp] = useState<string>("");
 
   document.title = `List | Transactions Management`;
 
@@ -59,6 +63,7 @@ const Transaction: FC = () => {
     fetchDataEventPending();
     fetchDataEventPaid();
     handleShowPusher();
+    startEndDate();
   }, [pusherStatus]);
 
   const handleShowPusher = () => {
@@ -214,24 +219,29 @@ const Transaction: FC = () => {
     setTicketIsOpen(false);
   };
 
-  useEffect(() => {}, []);
+  const startEndDate = () => {
+    let dateString: string = "";
+    let timeString: string = "";
+    let dateStringExp: string = "";
+    let timeStringExp: string = "";
 
-  let dateString: string = "";
-  let timeString: string = "";
-  let dateStringExp: string = "";
-  let timeStringExp: string = "";
+    if (datas.date) {
+      const dateObj = new Date(datas.date);
+      dateString = dateObj.toISOString().slice(0, 10);
+      timeString = dateObj.toISOString().slice(11, 19);
+    }
 
-  if (datas.date) {
-    const dateObj = new Date(datas.date);
-    dateString = dateObj.toISOString().slice(0, 10);
-    timeString = dateObj.toISOString().slice(11, 19);
-  }
+    if (datas.expire) {
+      const dateObj = new Date(datas.expire);
+      dateStringExp = dateObj.toISOString().slice(0, 10);
+      timeStringExp = dateObj.toISOString().slice(11, 19);
+    }
 
-  if (datas.expire) {
-    const dateObj = new Date(datas.expire);
-    dateStringExp = dateObj.toISOString().slice(0, 10);
-    timeStringExp = dateObj.toISOString().slice(11, 19);
-  }
+    setDateString(dateString);
+    setTimeString(timeString);
+    setDateStringExp(dateStringExp);
+    setTimeStringExp(timeStringExp);
+  };
 
   const handlePayGopay = () => {
     window.open("https://simulator.sandbox.midtrans.com/qris/index");

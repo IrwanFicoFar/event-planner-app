@@ -37,7 +37,7 @@ const Login: FC = () => {
     }
 
     axios
-      .post("https://go-event.online/login", objSubmit, {
+      .post("/login", objSubmit, {
         headers: {
           "Content-Type": "application/json",
         },
